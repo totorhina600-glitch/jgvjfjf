@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-09-01T00:00:00Z",
+  "generator": "F06_DIRECTOR implementation",
+  
+  "fleet_status": {
+    "F00_CAPTEURS": "done",
+    "F01_SCOUT": "done",
+    "F02_TYRANT_CAMP": "done",
+    "F03_SOURCE_HUNTER": "done",
+    "F04_COPYWRITER": "done",
+    "F05_PACKAGER": "done",
+    "F06_DIRECTOR": "pending"
+  },
+  
+  "modes": {
+    "informatif": {
+      "status": "active",
+      "sieges_completed": ["NBA_WESTBROOK"]
+    },
+    "humour": {
+      "status": "active",
+      "sieges_completed": ["NBA_WESTBROOK_humour"]
+    },
+    "meme": {
+      "status": "active",
+      "sieges_completed": ["STUDENT_DEBT", "MARVEL_DOOMSDAY"]
+    },
+    "pur": {
+      "status": "planned",
+      "sieges_completed": [],
+      "frigates": ["F00", "F01", "F02", "F03", "F04", "F05", "F06"]
+    }
+  },
+  
+  "frigates_status": {
+    "F00_CAPTEURS": {
+      "status": "done",
+      "last_run": "2026-08-18",
+      "outputs": ["raw_source.json"]
+    },
+    "F01_SCOUT": {
+      "status": "done",
+      "last_run": "2026-08-18",
+      "outputs": ["transcript.json"]
+    },
+    "F02_TYRANT_CAMP": {
+      "status": "done",
+      "last_run": "2026-08-18",
+      "outputs": ["campaign_verdict.json", "angles.json"]
+    },
+    "F03_SOURCE_HUNTER": {
+      "status": "done",
+      "last_run": "2026-08-18",
+      "outputs": ["segment.json"]
+    },
+    "F04_COPYWRITER": {
+      "status": "done",
+      "last_run": "2026-08-18",
+      "outputs": ["text_payload.json", "text_payload.md"]
+    },
+    "F05_PACKAGER": {
+      "status": "done",
+      "last_run": "2026-08-18",
+      "outputs": ["production_pack.json"]
+    },
+    "F06_DIRECTOR": {
+      "status": "pending",
+      "last_run": null,
+      "outputs": ["montage_instructions.json"],
+      "created_at": "2026-09-01",
+      "version": "1.0.0"
+    }
+  },
+  
+  "sieges": {
+    "NBA_WESTBROOK": {
+      "status": "closed",
+      "mode": "informatif",
+      "date": "2026-08-14"
+    },
+    "NBA_WESTBROOK_humour": {
+      "status": "closed",
+      "mode": "humour",
+      "date": "2026-08-15"
+    },
+    "STUDENT_DEBT": {
+      "status": "closed",
+      "mode": "meme",
+      "date": "2026-08-15"
+    },
+    "MARVEL_DOOMSDAY": {
+      "status": "closed",
+      "mode": "meme",
+      "date": "2026-08-18"
+    }
+  },
+  
+  "archivum": {
+    "channels": ["cocktail_meme", "starflash_us"],
+    "montage": {
+      "transcripts": [],
+      "patterns": ["hook_patterns.json"],
+      "rules": ["youtube_shorts.md", "tiktok.md", "instagram_reels.md"]
+    }
+  },
+  
+  "inputs_warsmith": {
+    "platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
+    "markets": ["us_young_english"],
+    "modes": ["informatif", "humour", "meme", "pur"]
+  },
+  
+  "gate_decisions": {},
+  
+  "packs_expedied_count": 0,
+  
+  "notes": [
+    "F06_DIRECTOR ajouté le 2026-09-01",
+    "Mode PUR ajouté le 2026-09-01",
+    "ARCHIVUM/montage/ créé pour la bibliothèque de montage"
+  ]
+}
