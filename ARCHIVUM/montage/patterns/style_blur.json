@@ -51,6 +51,36 @@
       "music": "Selon le contexte"
     }
   },
+  "anti_detection": {
+    "required": true,
+    "reference": "ARCHIVUM/montage/patterns/anti_detection.json",
+    "blur_specific": {
+      "zoom_invisible": {
+        "type": "breathing_zoom",
+        "intensity": "Moyen (105-110%)",
+        "timing": "Cycle avant/arrière sur la clip nette",
+        "note": "Le blur est déjà un traitement visuel fort. Le zoom invisible ajoute une couche d'unicité."
+      },
+      "mirror_flip": "Optionnel - le blur rend déjà le clip très différent de l'original",
+      "speed_variation": "Léger speed up (1.05x) si le clip est lent",
+      "sfx": {
+        "whoosh": "Sur le hook",
+        "boom": "Sur le moment clé",
+        "count": "1-2 SFX max"
+      },
+      "crop": "Pas nécessaire - le blur fait déjà le travail de recadrage"
+    }
+  },
+  "broll": {
+    "required": false,
+    "reference": "ARCHIVUM/montage/patterns/broll_integration.json",
+    "blur_specific": {
+      "note": "Le blur est un traitement visuel d'un clip existant. Le B-roll n'est généralement PAS nécessaire.",
+      "exception": "Si le clip source est long (>30s) et qu'on veut couvrir des transitions",
+      "max_broll": "0-1",
+      "source_priority": "Campaign assets > AI generated"
+    }
+  },
   "capcut_method": {
     "steps": [
       "1. Ouvrir CapCut → Nouveau projet 9:16",
@@ -60,26 +90,11 @@
       "5. Sur la couche de fond : Zoom pour remplir tout le 9:16",
       "6. Sur la couche de fond : Effects → Blur → intensity 30px",
       "7. La couche du dessus : garder taille originale, centrer",
-      "8. Ajouter captions, title, music",
-      "9. Exporter 1080p"
+      "8. Appliquer anti-detection (mirror OU speed OU crop)",
+      "9. Ajouter SFX si nécessaire",
+      "10. Ajouter captions, title, music",
+      "11. Exporter 1080p"
     ]
-  },
-  "blur_presets": {
-    "subtle": {
-      "blur_radius": "10-20px",
-      "use_case": "On veut encore reconnaître la scène derrière",
-      "mood": "Professionnel, subtil"
-    },
-    "medium": {
-      "blur_radius": "20-40px",
-      "use_case": "Standard - ambiance sans distraction",
-      "mood": "Classique, propre"
-    },
-    "strong": {
-      "blur_radius": "40-60px",
-      "use_case": "Juste les couleurs/lumière en arrière-plan",
-      "mood": "Artistique, focus total sur le speaker"
-    }
   },
   "vs_reframing": {
     "blur": "Duplique + agrandit + flou → clip nette au centre, fond flou",

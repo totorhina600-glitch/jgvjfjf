@@ -45,8 +45,37 @@
       "name": "Édition supplémentaire",
       "captions": "Dynamic word-by-word, centrées",
       "title_card": "Optionnel mais recommandé",
-      "music": "Selon le contexte",
-      "note": "Le reframing est un TRAITEMENT VISUEL, pas un style de contenu"
+      "music": "Selon le contexte"
+    }
+  },
+  "anti_detection": {
+    "required": true,
+    "reference": "ARCHIVUM/montage/patterns/anti_detection.json",
+    "reframing_specific": {
+      "zoom_invisible": {
+        "type": "slow_push_in",
+        "intensity": "Léger (102-108%)",
+        "timing": "Progressif sur toute la durée du clip",
+        "note": "Le zoom de reframing (2.25x) est déjà un traitement. Ajouter un zoom invisible en plus pour encore plus d'unicité."
+      },
+      "mirror_flip": "Optionnel - appliquer si le clip n'a pas de texte inversé",
+      "speed_variation": "Léger speed up (1.05x) pour dynamiser",
+      "sfx": {
+        "whoosh": "Sur le hook ou la transition",
+        "boom": "Sur le moment clé si applicable",
+        "count": "1-2 SFX max"
+      },
+      "crop": "Crop léger (2-3%) après le reframing pour changer la composition"
+    }
+  },
+  "broll": {
+    "required": false,
+    "reference": "ARCHIVUM/montage/patterns/broll_integration.json",
+    "reframing_specific": {
+      "note": "Le reframing est un traitement visuel d'un clip existant. Le B-roll n'est généralement PAS nécessaire car on travaille sur un clip déjà édité.",
+      "exception": "Si le clip source est long (>30s) et qu'on veut ajouter des inserts visuels",
+      "max_broll": "0-1",
+      "source_priority": "Campaign assets > AI generated"
     }
   },
   "capcut_method": {
@@ -54,10 +83,12 @@
       "1. Ouvrir CapCut → Nouveau projet",
       "2. Changer le ratio en 9:16",
       "3. Importer la clip",
-      "4. Sélectionner la clip → Zoom (pincer avec les doigts OU slider scale)",
+      "4. Sélectionner la clip → Zoom pour remplir",
       "5. Centrer sur le speaker",
-      "6. Ajouter captions + title si nécessaire",
-      "7. Exporter en 1080p"
+      "6. Appliquer anti-detection (mirror OU crop OU speed)",
+      "7. Ajouter SFX si nécessaire",
+      "8. Ajouter captions + title",
+      "9. Exporter en 1080p"
     ]
   },
   "way_in_video_method": {
@@ -65,7 +96,8 @@
       "1. Coller le lien YouTube",
       "2. Sélectionner TikTok ratio",
       "3. One-click reframe",
-      "4. L'IA détecte le speaker et centre automatiquement"
+      "4. L'IA détecte le speaker et centre automatiquement",
+      "5. Appliquer anti-detection manuellement"
     ]
   }
 }

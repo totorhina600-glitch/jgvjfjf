@@ -17,7 +17,7 @@
   "workflow": {
     "step_1": {
       "name": "Trouver 5 moments viraux",
-      "action": "Analyser le transcript, identifier les moments choquants/droll/drôles/controversés",
+      "action": "Analyser le transcript, identifier les moments choquants/drôles/controversés",
       "criteria": [
         "Hook fort en < 2 secondes",
         "Émotion forte (choc, rire, outrage, surprise)",
@@ -30,7 +30,7 @@
       "name": "Extraire les segments",
       "action": "Couper chaque moment avec timestamp précis",
       "rules": [
-        "Couper AVANS le hook (1-2s de buildup)",
+        "Couper AVANT le hook (1-2s de buildup)",
         "Couper APRÈS le punchline (pas de fluff)",
         "Chaque segment = 2-5 secondes"
       ]
@@ -60,6 +60,39 @@
       "duration_check": "Total 60-120s"
     }
   },
+  "anti_detection": {
+    "required": true,
+    "reference": "ARCHIVUM/montage/patterns/anti_detection.json",
+    "ranking_specific": {
+      "zoom_pattern": {
+        "type": "punch_zoom",
+        "intensity": "Fort (110-115%)",
+        "timing": "Sur le numéro de rang à chaque segment"
+      },
+      "mirror_flip": "Appliquer 1 flip pour le clip entier",
+      "speed_variation": "Léger speed up (1.05x) sur les segments lents",
+      "sfx": {
+        "whoosh": "Entre chaque transition de segment",
+        "boom": "Sur le #1 (meilleur moment)",
+        "count": "5-6 SFX (1 par transition + 1 sur le #1)"
+      },
+      "crop": "Crop léger (2-3% des bords) pour changer la composition"
+    }
+  },
+  "broll": {
+    "required": true,
+    "reference": "ARCHIVUM/montage/patterns/broll_integration.json",
+    "ranking_specific": {
+      "max_broll": "2-3 pour le clip entier",
+      "timing": "Après le hook (3s+), entre les segments",
+      "usage": "Illustrer le contexte de chaque moment",
+      "source_priority": "Campaign assets > AI generated > Stock",
+      "broll_schedule_example": [
+        {"insert_at_sec": 3.0, "duration_sec": 2, "reason": "contexte segment #5"},
+        {"insert_at_sec": 25.0, "duration_sec": 2, "reason": "contexte segment #2"}
+      ]
+    }
+  },
   "example_output": {
     "title": "TOP 5 MOMENTS LES PLUS CHOQUANTS",
     "segments": [
@@ -69,6 +102,8 @@
       {"rank": 2, "hook": "My wife got pregnant by a man", "duration_sec": 4},
       {"rank": 1, "hook": "The most shocking moment", "duration_sec": 5}
     ],
-    "total_duration_sec": 60
+    "total_duration_sec": 60,
+    "anti_detection_applied": ["mirror", "zoom_punch", "sfx_whoosh", "crop"],
+    "broll_count": 2
   }
 }
