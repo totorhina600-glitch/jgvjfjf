@@ -1,0 +1,88 @@
+{
+  "style_name": "blur",
+  "description": "Dupliquer la vidéo, agrandir la copie, appliquer un flou, garder l'originale centrée par-dessus",
+  "applicable_to": ["clip existant", "extrait podcast", "clip campagne"],
+  "input": {
+    "source": "clip existant (16:9, 4:3, ou autre)",
+    "what_to_do": "Créer un fond flou avec la même vidéo + clip net au centre"
+  },
+  "output": {
+    "type": "blurred_clip",
+    "format": "9:16 vertical",
+    "resolution": "1080x1920",
+    "layers": ["fond_flou (copie agrandie + blur)", "clip_net (originale centrée)"]
+  },
+  "workflow": {
+    "step_1": {
+      "name": "Dupliquer la clip",
+      "action": "Créer 2 copies de la même vidéo sur le timeline",
+      "layers": [
+        "Couche 1 (dessous) = copie pour le fond flou",
+        "Couche 2 (dessus) = originale nette"
+      ]
+    },
+    "step_2": {
+      "name": "Agrandir la couche de fond",
+      "action": "Zoomer la couche 1 pour remplir tout le cadre 9:16",
+      "zoom_factor": "2.25x-2.5x selon le ratio source",
+      "note": "Cette couche sera floue donc le zoom exact n'est pas critique"
+    },
+    "step_3": {
+      "name": "Appliquer le blur sur la couche de fond",
+      "action": "Ajouter un effet de flou sur la couche 1",
+      "intensity": {
+        "subtle": "10-20px (légèrement flou, on reconnaît encore la scène)",
+        "medium": "20-40px (flou modéré, ambiance)",
+        "strong": "40-60px (très flou, juste les couleurs/lumière)"
+      },
+      "recommendation": "Commencer par medium (30px)"
+    },
+    "step_4": {
+      "name": "Positionner la clip nette",
+      "action": "La couche 2 (originale) reste à sa taille normale, centrée",
+      "position": "Centre du cadre vertical",
+      "margins": "Bords flous visibles de chaque côté",
+      "optional": "Ajouter une légère ombre/portée pour séparer du fond"
+    },
+    "step_5": {
+      "name": "Édition supplémentaire",
+      "captions": "Dynamic word-by-word, sur la clip nette",
+      "title_card": "Au-dessus de tout, top du cadre",
+      "music": "Selon le contexte"
+    }
+  },
+  "capcut_method": {
+    "steps": [
+      "1. Ouvrir CapCut → Nouveau projet 9:16",
+      "2. Importer la clip → la placer sur le timeline (couche principale)",
+      "3. Dupliquer la clip (long press → Duplicate)",
+      "4. La copie devient la couche de fond (dessous)",
+      "5. Sur la couche de fond : Zoom pour remplir tout le 9:16",
+      "6. Sur la couche de fond : Effects → Blur → intensity 30px",
+      "7. La couche du dessus : garder taille originale, centrer",
+      "8. Ajouter captions, title, music",
+      "9. Exporter 1080p"
+    ]
+  },
+  "blur_presets": {
+    "subtle": {
+      "blur_radius": "10-20px",
+      "use_case": "On veut encore reconnaître la scène derrière",
+      "mood": "Professionnel, subtil"
+    },
+    "medium": {
+      "blur_radius": "20-40px",
+      "use_case": "Standard - ambiance sans distraction",
+      "mood": "Classique, propre"
+    },
+    "strong": {
+      "blur_radius": "40-60px",
+      "use_case": "Juste les couleurs/lumière en arrière-plan",
+      "mood": "Artistique, focus total sur le speaker"
+    }
+  },
+  "vs_reframing": {
+    "blur": "Duplique + agrandit + flou → clip nette au centre, fond flou",
+    "reframing": "Zoom simple → clip remplit tout le cadre, pas de fond"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "style_name": "reframing",
+  "description": "Agrandir une vidéo pour remplir le cadre vertical 9:16 sans blur",
+  "applicable_to": ["clip existant", "extrait podcast", "clip campagne"],
+  "input": {
+    "source": "clip existant (16:9, 4:3, ou autre)",
+    "what_to_do": "Convertir en 9:16 en zoomant simplement"
+  },
+  "output": {
+    "type": "reframed_clip",
+    "format": "9:16 vertical",
+    "resolution": "1080x1920",
+    "note": "Pas de blur, pas de duplication"
+  },
+  "workflow": {
+    "step_1": {
+      "name": "Détecter le ratio source",
+      "action": "Identifier le format d'origine (16:9, 4:3, 1:1, etc.)",
+      "formula": "zoom_factor = 1920 / source_height"
+    },
+    "step_2": {
+      "name": "Zoom pour remplir",
+      "action": "Agrandir la vidéo jusqu'à ce qu'elle remplisse tout le cadre 9:16",
+      "rules": [
+        "Zoom horizontal ET vertical",
+        "Ne JAMAIS laisser de bandes noires",
+        "Centrer sur le speaker/subject principal"
+      ],
+      "zoom_factor_examples": {
+        "16:9_to_9:16": "2.25x (1920/1080 × 16/9 = 2.25)",
+        "4:3_to_9:16": "2.67x",
+        "1:1_to_9:16": "1.78x"
+      }
+    },
+    "step_3": {
+      "name": "Positionner le subject",
+      "action": "Centrer le speaker/subject dans le cadre vertical",
+      "rules": [
+        "Le visage doit être dans le tiers supérieur",
+        "Si 2 speakers → split screen OU alternating zoom",
+        "Si large shot → zoom sur le speaker actif"
+      ]
+    },
+    "step_4": {
+      "name": "Édition supplémentaire",
+      "captions": "Dynamic word-by-word, centrées",
+      "title_card": "Optionnel mais recommandé",
+      "music": "Selon le contexte",
+      "note": "Le reframing est un TRAITEMENT VISUEL, pas un style de contenu"
+    }
+  },
+  "capcut_method": {
+    "steps": [
+      "1. Ouvrir CapCut → Nouveau projet",
+      "2. Changer le ratio en 9:16",
+      "3. Importer la clip",
+      "4. Sélectionner la clip → Zoom (pincer avec les doigts OU slider scale)",
+      "5. Centrer sur le speaker",
+      "6. Ajouter captions + title si nécessaire",
+      "7. Exporter en 1080p"
+    ]
+  },
+  "way_in_video_method": {
+    "steps": [
+      "1. Coller le lien YouTube",
+      "2. Sélectionner TikTok ratio",
+      "3. One-click reframe",
+      "4. L'IA détecte le speaker et centre automatiquement"
+    ]
+  }
+}

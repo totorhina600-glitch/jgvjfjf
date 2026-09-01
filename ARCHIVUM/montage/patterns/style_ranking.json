@@ -1,0 +1,74 @@
+{
+  "style_name": "ranking",
+  "description": "Extraire 5 moments viraux d'un podcast/long-form et les classer en Top 5 countdown",
+  "applicable_to": ["podcast", "interview", "long-form", "conférence"],
+  "input": {
+    "source": "podcast/long-form (transcript + vidéo)",
+    "what_to_find": "5 moments viraux distincts",
+    "search_method": "ARCHIVUM/montage/patterns/clipping_workflow.json → step_1_find_viral_moments"
+  },
+  "output": {
+    "type": "ranking_clip",
+    "format": "9:16 vertical",
+    "duration_total": "60-120 secondes",
+    "segment_duration": "2-5 secondes chacun",
+    "count": "5 segments classés"
+  },
+  "workflow": {
+    "step_1": {
+      "name": "Trouver 5 moments viraux",
+      "action": "Analyser le transcript, identifier les moments choquants/droll/drôles/controversés",
+      "criteria": [
+        "Hook fort en < 2 secondes",
+        "Émotion forte (choc, rire, outrage, surprise)",
+        "Peut tenir seul sans contexte",
+        "Pas de moment mort"
+      ],
+      "sorting": "Classer du MOINS viral au PLUS viral (5 → 1)"
+    },
+    "step_2": {
+      "name": "Extraire les segments",
+      "action": "Couper chaque moment avec timestamp précis",
+      "rules": [
+        "Couper AVANS le hook (1-2s de buildup)",
+        "Couper APRÈS le punchline (pas de fluff)",
+        "Chaque segment = 2-5 secondes"
+      ]
+    },
+    "step_3": {
+      "name": "Assembler en countdown",
+      "order": "5 → 4 → 3 → 2 → 1 (meilleur en dernier)",
+      "transitions": "Cut direct OU zoom transition entre segments",
+      "number_overlay": "Afficher le numéro (#5, #4, etc.) sur chaque segment"
+    },
+    "step_4": {
+      "name": "Édition visuelle",
+      "title_card": {
+        "position": "Top du cadre",
+        "style": "Bold, haute contraste",
+        "example": "TOP 5 MOMENTS LES PLUS FOUS"
+      },
+      "zoom": "Zoom sur le speaker à chaque segment",
+      "captions": "Dynamic word-by-word, centrées",
+      "music": "Musique de fond subtile, crescendo vers #1",
+      "sound_effects": "Whoosh entre chaque segment, boom sur le #1"
+    },
+    "step_5": {
+      "name": "Export",
+      "resolution": "1080p",
+      "ratio": "9:16",
+      "duration_check": "Total 60-120s"
+    }
+  },
+  "example_output": {
+    "title": "TOP 5 MOMENTS LES PLUS CHOQUANTS",
+    "segments": [
+      {"rank": 5, "hook": "She was flirting with him", "duration_sec": 3},
+      {"rank": 4, "hook": "He's a compulsive liar", "duration_sec": 4},
+      {"rank": 3, "hook": "I can't do this anymore", "duration_sec": 3},
+      {"rank": 2, "hook": "My wife got pregnant by a man", "duration_sec": 4},
+      {"rank": 1, "hook": "The most shocking moment", "duration_sec": 5}
+    ],
+    "total_duration_sec": 60
+  }
+}
