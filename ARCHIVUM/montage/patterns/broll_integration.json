@@ -1,0 +1,81 @@
+{
+  "pattern_name": "broll_integration",
+  "description": "Gestion du B-roll dans le pipeline CLIPPING PUR - sources, timing, format production_pack",
+  "sources": {
+    "campaign_provided": {
+      "description": "La campagne fournit des B-roll (Google Drive, liens)",
+      "action": "Cut aux bons timestamps (IN/OUT) pour avoir la bonne durée",
+      "priority": "1 - toujours utiliser en priorité"
+    },
+    "ai_generated": {
+      "description": "Générer 1-2 B-roll par IA si pas assez de sources campagne",
+      "action": "F04/F06 génère un prompt → AI génère le clip/image",
+      "priority": "2 - backup uniquement",
+      "max_per_clip": 2
+    },
+    "archivum_stock": {
+      "description": "Assets stock réutilisables dans ARCHIVUM/broll/",
+      "action": "F06 sélectionne le meilleur asset correspondant",
+      "priority": "3 - si pas d'autre option"
+    }
+  },
+  "timing_rules": {
+    "hook_zone": {
+      "range": "0s-3s",
+      "broll_allowed": false,
+      "reason": "Le hook doit montrer le visage du speaker pour connexion émotionnelle"
+    },
+    "post_hook_zone": {
+      "range": "3s-fin",
+      "broll_interval": "toutes les 7-10 secondes",
+      "max_broll_per_30s": 3,
+      "max_broll_per_60s": 5
+    },
+    "never_on": [
+      "moment émotionnel le plus intense (punchline)",
+      "expression faciale forte du speaker",
+      "premiers 3 secondes (hook)"
+    ]
+  },
+  "operator_workflow": {
+    "step_1": "F06 génère le broll_schedule avec timestamps et sources",
+    "step_2": "Opérateur valide les cuts IN/OUT pour chaque B-roll",
+    "step_3": "Instructions écrites dans le production_pack final",
+    "step_4": "OMNIS_WATCH récupère les fichiers + applique les cuts + insère au bon moment"
+  },
+  "production_pack_format": {
+    "broll_schedule": [
+      {
+        "id": "broll_1",
+        "source": "campaign_drive/fishing_moment.mp4",
+        "cut": {"in": "0:02", "out": "0:05"},
+        "insert_at_sec": 3.0,
+        "duration_sec": 2,
+        "reason": "illustre le contexte"
+      },
+      {
+        "id": "broll_2",
+        "source": "ai_generated",
+        "prompt": "description du visuel à générer",
+        "insert_at_sec": 14.0,
+        "duration_sec": 2.5,
+        "reason": "support visuel moment clé"
+      }
+    ]
+  },
+  "omnis_watch_execution": {
+    "step_1": "Lire broll_schedule du production_pack",
+    "step_2": "Pour chaque broll: récupérer le fichier source",
+    "step_3": "Si cut requis: couper de IN à OUT",
+    "step_4": "Si ai_generated: générer via service IA",
+    "step_5": "Insérer au timestamp insert_at_sec dans le timeline",
+    "step_6": "Ajuster la durée si nécessaire"
+  },
+  "broll_types": {
+    "stock_footage": "Clip vidéo générique (pexels, pixabay)",
+    "ai_generated": "Image/vidéo générée par IA (DALL-E, Runway)",
+    "campaign_asset": "Fourni par la campagne Whop",
+    "text_overlay": "Texte à l'écran (pas un vrai B-roll mais effet similaire)",
+    "screenshot": "Capture d'écran pertinente"
+  }
+}
