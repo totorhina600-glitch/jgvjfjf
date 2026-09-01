@@ -1,103 +1,35 @@
 {
   "style_name": "reframing",
-  "description": "Agrandir une vidéo pour remplir le cadre vertical 9:16 sans blur",
-  "applicable_to": ["clip existant", "extrait podcast", "clip campagne"],
-  "input": {
-    "source": "clip existant (16:9, 4:3, ou autre)",
-    "what_to_do": "Convertir en 9:16 en zoomant simplement"
+  "description": "Agrandir une vidéo pour remplir le cadre 9:16 sans blur",
+  "broll_by_duration": {
+    "15sec": {"max_broll": 1},
+    "30sec": {"max_broll": 3},
+    "45sec": {"max_broll": 3},
+    "60sec": {"max_broll": 4}
   },
-  "output": {
-    "type": "reframed_clip",
-    "format": "9:16 vertical",
-    "resolution": "1080x1920",
-    "note": "Pas de blur, pas de duplication"
+  "broll_strategy": {
+    "rule": "Scoring intelligent, B-roll optionnel mais utile si clip > 20s",
+    "scoring_ref": "ARCHIVUM/montage/patterns/broll_integration.json",
+    "reframing_specific": {
+      "note": "Le reframing est déjà un traitement. B-roll en plus uniquement si nécessaire.",
+      "when_to_add": "Clip > 20s avec moments visuels à illustrer",
+      "avoid": "Ne pas surcharger"
+    }
   },
   "workflow": {
-    "step_1": {
-      "name": "Détecter le ratio source",
-      "action": "Identifier le format d'origine (16:9, 4:3, 1:1, etc.)",
-      "formula": "zoom_factor = 1920 / source_height"
-    },
-    "step_2": {
-      "name": "Zoom pour remplir",
-      "action": "Agrandir la vidéo jusqu'à ce qu'elle remplisse tout le cadre 9:16",
-      "rules": [
-        "Zoom horizontal ET vertical",
-        "Ne JAMAIS laisser de bandes noires",
-        "Centrer sur le speaker/subject principal"
-      ],
-      "zoom_factor_examples": {
-        "16:9_to_9:16": "2.25x (1920/1080 × 16/9 = 2.25)",
-        "4:3_to_9:16": "2.67x",
-        "1:1_to_9:16": "1.78x"
-      }
-    },
-    "step_3": {
-      "name": "Positionner le subject",
-      "action": "Centrer le speaker/subject dans le cadre vertical",
-      "rules": [
-        "Le visage doit être dans le tiers supérieur",
-        "Si 2 speakers → split screen OU alternating zoom",
-        "Si large shot → zoom sur le speaker actif"
-      ]
-    },
-    "step_4": {
-      "name": "Édition supplémentaire",
-      "captions": "Dynamic word-by-word, centrées",
-      "title_card": "Optionnel mais recommandé",
-      "music": "Selon le contexte"
-    }
+    "step_1": {"name": "Détecter ratio source"},
+    "step_2": {"name": "Zoom pour remplir 9:16"},
+    "step_3": {"name": "Scorer moments B-roll si clip > 20s"},
+    "step_4": {"name": "Positionner subject au centre"},
+    "step_5": {"name": "Édition: captions, title, music"}
   },
   "anti_detection": {
     "required": true,
-    "reference": "ARCHIVUM/montage/patterns/anti_detection.json",
-    "reframing_specific": {
-      "zoom_invisible": {
-        "type": "slow_push_in",
-        "intensity": "Léger (102-108%)",
-        "timing": "Progressif sur toute la durée du clip",
-        "note": "Le zoom de reframing (2.25x) est déjà un traitement. Ajouter un zoom invisible en plus pour encore plus d'unicité."
-      },
-      "mirror_flip": "Optionnel - appliquer si le clip n'a pas de texte inversé",
-      "speed_variation": "Léger speed up (1.05x) pour dynamiser",
-      "sfx": {
-        "whoosh": "Sur le hook ou la transition",
-        "boom": "Sur le moment clé si applicable",
-        "count": "1-2 SFX max"
-      },
-      "crop": "Crop léger (2-3%) après le reframing pour changer la composition"
-    }
+    "zoom": "slow_push_in (102-108%)",
+    "mirror": "Optionnel si pas de texte inversé",
+    "speed": "1.05x",
+    "sfx": "1-2 max",
+    "crop": "2-3%"
   },
-  "broll": {
-    "required": false,
-    "reference": "ARCHIVUM/montage/patterns/broll_integration.json",
-    "reframing_specific": {
-      "note": "Le reframing est un traitement visuel d'un clip existant. Le B-roll n'est généralement PAS nécessaire car on travaille sur un clip déjà édité.",
-      "exception": "Si le clip source est long (>30s) et qu'on veut ajouter des inserts visuels",
-      "max_broll": "0-1",
-      "source_priority": "Campaign assets > AI generated"
-    }
-  },
-  "capcut_method": {
-    "steps": [
-      "1. Ouvrir CapCut → Nouveau projet",
-      "2. Changer le ratio en 9:16",
-      "3. Importer la clip",
-      "4. Sélectionner la clip → Zoom pour remplir",
-      "5. Centrer sur le speaker",
-      "6. Appliquer anti-detection (mirror OU crop OU speed)",
-      "7. Ajouter SFX si nécessaire",
-      "8. Ajouter captions + title",
-      "9. Exporter en 1080p"
-    ]
-  },
-  "way_in_video_method": {
-    "steps": [
-      "1. Coller le lien YouTube",
-      "2. Sélectionner TikTok ratio",
-      "3. One-click reframe",
-      "4. L'IA détecte le speaker et centre automatiquement",
-      "5. Appliquer anti-detection manuellement"
-    ]
-  }
+  "broll": {"required": false, "ref": "ARCHIVUM/montage/patterns/broll_integration.json"}
 }

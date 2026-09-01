@@ -1,81 +1,74 @@
 {
   "pattern_name": "broll_integration",
-  "description": "Gestion du B-roll dans le pipeline CLIPPING PUR - sources, timing, format production_pack",
-  "sources": {
-    "campaign_provided": {
-      "description": "La campagne fournit des B-roll (Google Drive, liens)",
-      "action": "Cut aux bons timestamps (IN/OUT) pour avoir la bonne durée",
-      "priority": "1 - toujours utiliser en priorité"
+  "description": "Système de B-roll avec scoring intelligent basé sur ARCHIVUM",
+  "duration_rules": {
+    "15sec": {"max_broll": 1},
+    "30sec": {"max_broll": 3},
+    "45sec": {"max_broll": 3},
+    "60sec": {"max_broll": 4},
+    "90sec": {"max_broll": 5},
+    "120sec": {"max_broll": 6}
+  },
+  "hook_rule": {
+    "description": "Le hook (0-3s) est JAMAIS un B-roll. Le 4e seconde n'est PAS automatiquement un B-roll.",
+    "correct_approach": "Hook → scoring du transcript → placement intelligent"
+  },
+  "scoring_system": {
+    "description": "Scorer chaque segment de 2-3s pour trouver les MEILLEURS moments de B-roll",
+    "method": "Analyser le texte et les patterns ARCHIVUM",
+    "factors": {
+      "visual_trigger": {"score": 3, "examples": ["she was flirting", "pregnant by a man", "look at this"]},
+      "context_gap": {"score": 3, "examples": ["look at what happened", "the result was", "when that happened"]},
+      "enumeration": {"score": 2, "examples": ["first, second, third", "number one, number two"]},
+      "description_word": {"score": 2, "words": ["imagine", "picture this", "you see", "this guy", "she said"]},
+      "dead_air": {"score": 2, "description": "Silence ou hésitation"},
+      "emotion_peak": {"score": 1, "note": "PAS de B-roll → garder le visage"}
     },
-    "ai_generated": {
-      "description": "Générer 1-2 B-roll par IA si pas assez de sources campagne",
-      "action": "F04/F06 génère un prompt → AI génère le clip/image",
-      "priority": "2 - backup uniquement",
-      "max_per_clip": 2
-    },
-    "archivum_stock": {
-      "description": "Assets stock réutilisables dans ARCHIVUM/broll/",
-      "action": "F06 sélectionne le meilleur asset correspondant",
-      "priority": "3 - si pas d'autre option"
+    "algorithm": [
+      "1. Découper le clip en segments de 2-3 secondes",
+      "2. Scorer chaque segment",
+      "3. Trier par score décroissant",
+      "4. Sélectionner N meilleurs moments (selon duration_rules)",
+      "5. Vérifier écart minimum 5 secondes entre B-roll",
+      "6. Placer aux meilleurs moments"
+    ],
+    "example_30sec": {
+      "scored": [
+        {"seg": "3-5s", "text": "she was flirting", "score": 5, "broll": true},
+        {"seg": "8-10s", "text": "first he did this", "score": 4, "broll": false, "skip": "trop proche"},
+        {"seg": "12-14s", "text": "I can't do this", "score": 1, "broll": false, "skip": "emotion_peak"},
+        {"seg": "18-20s", "text": "look at what happened", "score": 5, "broll": true},
+        {"seg": "22-24s", "text": "result was insane", "score": 4, "broll": false, "skip": "trop proche"},
+        {"seg": "26-28s", "text": "that's how it ended", "score": 2, "broll": true}
+      ]
     }
   },
-  "timing_rules": {
-    "hook_zone": {
-      "range": "0s-3s",
-      "broll_allowed": false,
-      "reason": "Le hook doit montrer le visage du speaker pour connexion émotionnelle"
-    },
-    "post_hook_zone": {
-      "range": "3s-fin",
-      "broll_interval": "toutes les 7-10 secondes",
-      "max_broll_per_30s": 3,
-      "max_broll_per_60s": 5
-    },
-    "never_on": [
-      "moment émotionnel le plus intense (punchline)",
-      "expression faciale forte du speaker",
-      "premiers 3 secondes (hook)"
-    ]
+  "minimum_gap_between_broll": "5 secondes",
+  "never_place_broll_on": ["hook (0-3s)", "emotion_peak", "punchline principal", "silence intentionnel"],
+  "always_place_broll_on": ["énumération", "description visuelle", "context_gap", "dead_air"],
+  "sources": {
+    "campaign_provided": {"priority": 1, "action": "Utiliser les B-roll fournis, cut aux bons timestamps"},
+    "ai_generated": {"priority": 2, "action": "Générer 1-2 si pas assez de sources", "max_per_clip": 2},
+    "archivum_stock": {"priority": 3, "action": "Chercher dans ARCHIVUM/broll/"}
   },
-  "operator_workflow": {
-    "step_1": "F06 génère le broll_schedule avec timestamps et sources",
-    "step_2": "Opérateur valide les cuts IN/OUT pour chaque B-roll",
-    "step_3": "Instructions écrites dans le production_pack final",
-    "step_4": "OMNIS_WATCH récupère les fichiers + applique les cuts + insère au bon moment"
-  },
+  "operator_workflow": [
+    "1. F06 génère le broll_schedule avec scoring",
+    "2. Opérateur valide les cuts IN/OUT",
+    "3. Opérateur peut déplacer un B-roll si scoring mauvais",
+    "4. Instructions finales dans production_pack",
+    "5. OMNIS_WATCH exécute"
+  ],
   "production_pack_format": {
     "broll_schedule": [
       {
         "id": "broll_1",
-        "source": "campaign_drive/fishing_moment.mp4",
+        "source": "campaign_drive/clip.mp4",
         "cut": {"in": "0:02", "out": "0:05"},
         "insert_at_sec": 3.0,
         "duration_sec": 2,
-        "reason": "illustre le contexte"
-      },
-      {
-        "id": "broll_2",
-        "source": "ai_generated",
-        "prompt": "description du visuel à générer",
-        "insert_at_sec": 14.0,
-        "duration_sec": 2.5,
-        "reason": "support visuel moment clé"
+        "score": 5,
+        "reason": "visual_trigger: 'she was flirting'"
       }
     ]
-  },
-  "omnis_watch_execution": {
-    "step_1": "Lire broll_schedule du production_pack",
-    "step_2": "Pour chaque broll: récupérer le fichier source",
-    "step_3": "Si cut requis: couper de IN à OUT",
-    "step_4": "Si ai_generated: générer via service IA",
-    "step_5": "Insérer au timestamp insert_at_sec dans le timeline",
-    "step_6": "Ajuster la durée si nécessaire"
-  },
-  "broll_types": {
-    "stock_footage": "Clip vidéo générique (pexels, pixabay)",
-    "ai_generated": "Image/vidéo générée par IA (DALL-E, Runway)",
-    "campaign_asset": "Fourni par la campagne Whop",
-    "text_overlay": "Texte à l'écran (pas un vrai B-roll mais effet similaire)",
-    "screenshot": "Capture d'écran pertinente"
   }
 }
