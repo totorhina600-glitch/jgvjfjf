@@ -1,9 +1,9 @@
 # 11_MODE_PUR — Guide complet
-> Le mode **pur** : tu fournis un **podcast/long-form** (transcript + vidéo) + un **style** (ranking/reframing/blur) → le forge extrait les moments viraux et produit des clips courts avec hooks, B-roll scoringué, anti-detection et instructions de montage.
+> Le mode **pur** : tu fournis un **podcast/long-form** (transcript + vidéo) + un **style** (ranking/reframing/blur/split_scene) → le forge extrait les moments viraux et produit des clips courts avec hooks, B-roll scoringué, anti-detection et instructions de montage.
 ---
 ## 🎯 Le but en 3 lignes
 1. Tu donnes un **podcast** (`transcript.json` + vidéo source) → c'est la matière première.
-2. Tu choisis un **style** (`ranking`, `reframing`, ou `blur`) → c'est le traitement visuel.
+2. Tu choisis un **style** (`ranking`, `reframing`, `blur`, ou `split_scene`) → c'est le traitement visuel.
 3. Le forge produit un **production_pack_pur.json** → clip(s) prêt(s) pour OMNIS_WATCH.
 ---
 ## 🧾 Les inputs (ce que TU fournis)
@@ -107,6 +107,46 @@ git commit -m "CLIPPING: pack PUR exporté"
 git push origin main
 ```
 ---
+## 🎬 Mode Split Scene (4e mode)
+Le split_scene est un mode **composable** : clip podcast en haut, titre hook au centre, contenu variable en bas.
+
+### Les 4 sous-layouts
+| Sous-layout | Bas = quoi | Quand l'utiliser |
+|---|---|---|
+| **A_image_ia** | Image IA générée | Pour amplifier l'histoire |
+| **B_video_broll** | Clip vidéo / B-roll | Preuve visuelle, autre partie du podcast |
+| **C_2_speakers** | Réaction 2e personne | Conversations, interviews |
+| **D_preuve** | Tweet, screenshot, stats | Social proof |
+
+### Commandes Split Scene
+```bash
+# Lancer un siège Split Scene
+python3 pur.py --start-siege --style split_scene
+
+# Même pipeline que les autres modes
+python3 pur.py --verdict
+python3 pur.py --select --n-moments 5
+python3 pur.py --text --style split_scene
+python3 pur.py --assemble --style split_scene
+
+# Gate 5 : Enrichissement Split Scene (nouveau)
+python3 pur.py --direct
+
+# Export
+python3 pur.py --export
+```
+
+### Règles spécifiques Split Scene
+- **Haut** : TOUJOURS le clip podcast (fixe)
+- **Centre** : Titre hook (suit `hooks_psychology.json`)
+- **Bas** : Variable selon le sous-layout (A/B/C/D)
+- **B-roll en split** : couvre TOUT l'écran temporairement
+- **GIF** : boucle si un seul, un par numéro en ranking
+- **Composabilité** : peut intervenir DANS le ranking
+- **Anti-detection** : mêmes règles que les autres modes
+
+---
+
 ## ⚙️ Les règles verrouillées
 | Règle | Valeur |
 |---|---|

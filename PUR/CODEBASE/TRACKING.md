@@ -66,13 +66,20 @@ PUR/
 **Output** : production_pack_pur.json
 **Commande** : `python3 pur.py --assemble --style blur --finalize`
 
+### Gate 5 — Enrichissement Split Scene (F06_DIRECTOR)
+**Input** : production_pack_pur.json (style=split_scene)
+**Output** : production_pack_pur.json enrichi avec instructions split_scene
+**Commande** : `python3 pur.py --direct`
+**Note** : Gate 5 spécifique au mode split_scene — layout, sous-layout, broll fullscreen
+
 ## 📊 Styles supportés
 
-| Style | Description | B-roll |
-|-------|-------------|--------|
-| `ranking` | 5 moments, countdown 5→1 | 4-6 par clip |
-| `reframing` | Zoom simple 9:16 | 1-3 par clip |
-| `blur` | Dupliquer + blur + centrer | 1-3 par clip |
+| Style | Description | B-roll | Gate 5 |
+|-------|-------------|--------|--------|
+| `ranking` | 5 moments, countdown 5→1 | 4-6 par clip | Non |
+| `reframing` | Zoom simple 9:16 | 1-3 par clip | Non |
+| `blur` | Dupliquer + blur + centrer | 1-3 par clip | Non |
+| `split_scene` | Podcast haut + titre centre + bas variable | Full-screen overlay | **Oui** |
 
 ## 🛡️ Anti-detection
 
@@ -108,7 +115,8 @@ Minimum 5 secondes entre chaque B-roll.
 | Élément | Statut |
 |---------|--------|
 | Structure | ✅ Créée |
-| Patterns ARCHIVUM | ✅ En place |
-| Guides | ⏳ En cours |
-| Scripts Python | ⏳ En cours |
+| Patterns ARCHIVUM | ✅ En place (7 fichiers + style_split_scene) |
+| Guides | ✅ En place (11_MODE_PUR + 12_NOTE_TECHNIQUE + _PIEGES_APPRIS) |
+| Scripts Python | ✅ En place (pur.py + 4 libs, 5 gates) |
+| Split Scene | ✅ Implémenté (pattern + pur.py + docs) |
 | Tests | ⏳ En attente |

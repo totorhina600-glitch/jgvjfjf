@@ -253,6 +253,22 @@ def cmd_assemble(args):
     # Assemble production pack
     packs = []
     for payload in texts.get("payloads", []):
+        # Anti-detection config (shared)
+        anti_detection = {
+            "mirror": style == "ranking",
+            "zoom": {
+                "type": "punch" if style == "ranking" else "slow_push_in" if style == "reframing" else "breathing" if style == "blur" else "slow_push_in",
+                "start_pct": 100,
+                "end_pct": 115 if style == "ranking" else 108 if style == "reframing" else 110 if style == "blur" else 108
+            },
+            "speed": {"base": 1.0, "variations": [{"at_sec": 15, "speed": 1.05, "duration_sec": 3}]},
+            "sfx": [
+                {"type": "whoosh", "at_sec": 3.0, "volume_db": -18},
+                {"type": "boom", "at_sec": 15.0, "volume_db": -15}
+            ],
+            "crop": {"top": 0.02, "bottom": 0.02, "left": 0.01, "right": 0.01}
+        }
+
         pack = {
             "clip_id": f"pur_{payload['moment_id'].lower()}",
             "style": style,
@@ -262,20 +278,7 @@ def cmd_assemble(args):
             ),
             "text_payload": payload,
             "broll_schedule": payload.get("broll_schedule", []),
-            "anti_detection": {
-                "mirror": style == "ranking",
-                "zoom": {
-                    "type": "punch" if style == "ranking" else "slow_push_in" if style == "reframing" else "breathing",
-                    "start_pct": 100,
-                    "end_pct": 115 if style == "ranking" else 108 if style == "reframing" else 110
-                },
-                "speed": {"base": 1.0, "variations": [{"at_sec": 15, "speed": 1.05, "duration_sec": 3}]},
-                "sfx": [
-                    {"type": "whoosh", "at_sec": 3.0, "volume_db": -18},
-                    {"type": "boom", "at_sec": 15.0, "volume_db": -15}
-                ],
-                "crop": {"top": 0.02, "bottom": 0.02, "left": 0.01, "right": 0.01}
-            },
+            "anti_detection": anti_detection,
             "montage_instructions": {
                 "hook_duration_sec": 3,
                 "total_duration_sec": 30,
@@ -283,6 +286,20 @@ def cmd_assemble(args):
                 "energy_curve": ["hook_100", "build_70", "punchline_100", "outro_50"]
             }
         }
+
+        # Split Scene specific: add layout info
+        if style == "split_scene":
+            pack["split_scene"] = {
+                "layout": {
+                    "top": "podcast_clip_source",
+                    "center": "title_hook",
+                    "bottom": "variable_content"
+                },
+                "sub_layout": "A_image_ia",  # Default, operator overrides
+                "broll_behavior": "full_screen_overlay",
+                "gif_behavior": "loop_if_single"
+            }
+
         packs.append(pack)
 
     pack_data = {
@@ -295,6 +312,84 @@ def cmd_assemble(args):
 
     save_json(pack_data, OUT_DIR / "production_pack_pur.json")
     print(f"   Assembled {len(packs)} packs")
+
+
+def cmd_direct(args):
+    """Gate 5 (Split Scene): Enrich with F06_DIRECTOR instructions."""
+    print("🚪 Gate 5: Split Scene enrichment...")
+
+    pack_path = OUT_DIR / "production_pack_pur.json"
+    if not pack_path.exists():
+        print("❌ production_pack_pur.json not found (run --assemble first)")
+        return
+
+    packs = load_json(pack_path)
+    style = packs.get("style", "")
+
+    if style != "split_scene":
+        print(f"   ⚠️ Style is '{style}', not split_scene. Skipping split enrichment.")
+        return
+
+    # Load split scene pattern
+    split_pattern_path = ARCHIVUM_DIR / "montage" / "patterns" / "style_split_scene.json"
+    if split_pattern_path.exists():
+        split_pattern = load_json(split_pattern_path)
+        print(f"   Loaded split_scene pattern")
+    else:
+        split_pattern = {}
+        print(f"   ⚠️ style_split_scene.json not found")
+
+    # Load hooks psychology for title generation
+    hooks_path = ARCHIVUM_DIR / "montage" / "patterns" / "hooks_psychology.json"
+    hooks_rules = load_json(hooks_path) if hooks_path.exists() else {}
+
+    # Enrich each pack with split_scene specific instructions
+    enriched_packs = []
+    for pack in packs.get("packs", []):
+        enriched = pack.copy()
+        enriched["split_scene"] = {
+            "layout": {
+                "top": {
+                    "source": "podcast_clip",
+                    "instruction": "Extraire le segment du podcast, speaker face visible"
+                },
+                "center": {
+                    "type": "title_hook",
+                    "instruction": "Generer un titre narratif qui transforme le sens du clip",
+                    "format": "hooks_psychology.json - court, narratif, hook fort"
+                },
+                "bottom": {
+                    "type": pack.get("split_scene", {}).get("sub_layout", "A_image_ia"),
+                    "instruction": "Contenu variable selon le sous-layout choisi"
+                }
+            },
+            "broll_fullscreen": {
+                "rule": "Quand broll intervient, couvre TOUT l'ecran",
+                "format": "split -> broll_fullscreen -> split",
+                "timing_scoring": "broll_integration.json"
+            },
+            "anti_detection": pack.get("anti_detection", {}),
+            "gif_behavior": {
+                "single": "loop_continue",
+                "ranking": "un_gif_par_numero"
+            },
+            "composability": {
+                "ranking_composition": "Tous les segments en split si mode ranking+split"
+            }
+        }
+        enriched_packs.append(enriched)
+
+    enriched_data = {
+        "siege_id": packs.get("siege_id", ""),
+        "style": "split_scene",
+        "n_packs": len(enriched_packs),
+        "packs": enriched_packs,
+        "timestamp": datetime.now().isoformat(),
+        "gate": "5_direct"
+    }
+
+    save_json(enriched_data, OUT_DIR / "production_pack_pur.json")
+    print(f"   Enriched {len(enriched_packs)} packs with split_scene instructions")
 
 
 def cmd_export(args):
@@ -332,7 +427,7 @@ def main():
 
     # start-siege
     p_start = subparsers.add_parser("start-siege")
-    p_start.add_argument("--style", default="ranking", choices=["ranking", "reframing", "blur"])
+    p_start.add_argument("--style", default="ranking", choices=["ranking", "reframing", "blur", "split_scene"])
 
     # verdict
     subparsers.add_parser("verdict")
@@ -343,12 +438,15 @@ def main():
 
     # text
     p_text = subparsers.add_parser("text")
-    p_text.add_argument("--style", default="ranking", choices=["ranking", "reframing", "blur"])
+    p_text.add_argument("--style", default="ranking", choices=["ranking", "reframing", "blur", "split_scene"])
 
     # assemble
     p_assemble = subparsers.add_parser("assemble")
-    p_assemble.add_argument("--style", default="ranking", choices=["ranking", "reframing", "blur"])
+    p_assemble.add_argument("--style", default="ranking", choices=["ranking", "reframing", "blur", "split_scene"])
     p_assemble.add_argument("--finalize", action="store_true")
+
+    # direct (split scene enrichment)
+    subparsers.add_parser("direct")
 
     # export
     subparsers.add_parser("export")
@@ -368,6 +466,8 @@ def main():
         cmd_text(args)
     elif args.command == "assemble":
         cmd_assemble(args)
+    elif args.command == "direct":
+        cmd_direct(args)
     elif args.command == "export":
         cmd_export(args)
     elif args.command == "status":
