@@ -1,0 +1,178 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Patterns de hook extraits des 14 transcripts YouTube - templates reutilisables",
+    "usage": "Ces patterns sont les structures reutilisables. Le Warsmith les adapte au contenu du podcast."
+  },
+
+  "spoken_hook_formats": {
+    "description": "Les formats grammaticaux des hooks spoken (ce qu'on dit)",
+    "formats": {
+      "question_hook": {
+        "pattern": "[Question surprenante]?",
+        "exemple": "Would you like to know a useless fact about ancient Greek sculptures?",
+        "usage": "Creer la curiosite immediatement"
+      },
+      "tutorial_hook": {
+        "pattern": "Here's how I [action] [result]",
+        "exemple": "Here's how I grew from 0 to 100K subs on YouTube",
+        "usage": "Montrer l'expertise et le resultat"
+      },
+      "problem_solution_hook": {
+        "pattern": "[Problem statement]. [Solution tease]",
+        "exemple": "Your videos aren't bad. It's your hooks.",
+        "usage": "Identifier le probleme du spectateur"
+      },
+      "secret_reveal_hook": {
+        "pattern": "[Nobody talks about/The secret of] [subject]",
+        "exemple": "Nobody talks about mini PCs. This is the old way.",
+        "usage": "Reveler un secret ou une verite cachee"
+      },
+      "statement_hook": {
+        "pattern": "[Affirmation controversée ou surprenante]",
+        "exemple": "The Business Class c'est la pire chose du monde",
+        "usage": "Provoquer un reaction immediate"
+      },
+      "identification_hook": {
+        "pattern": "Imagine [situation commune]...",
+        "exemple": "Imagine tu es a la salle de sport, tu rencontres un mec dans les vestiaires...",
+        "usage": "Connecter avec une situation vécue"
+      },
+      "contrast_hook": {
+        "pattern": "[Ancien etat] vs [Nouveau etat]",
+        "exemple": "If I had to grow from 0 to 100K subs on YouTube again, here's how I would do it",
+        "usage": "Montrer la transformation"
+      },
+      "anti_hook": {
+        "pattern": "[Action directe sans contexte]",
+        "exemple": "He strapped the shock collar around her neck",
+        "usage": "Forcer le spectateur a chercher l'info"
+      }
+    }
+  },
+
+  "text_hook_patterns": {
+    "description": "Les patterns du texte a l'ecran",
+    "patterns": {
+      "subject_repeater_plus_pain": {
+        "pattern": "[SUJET] + [PROBLEME]",
+        "exemple": "People-pleasing",
+        "regle": "Le sujet EST le hook - les mots cles attirent l'oeil"
+      },
+      "subject_repeater_plus_outcome": {
+        "pattern": "[SUJET] + [RESULTAT DESIRE]",
+        "exemple": "ChatGPT will sell things for you",
+        "regle": "Montrer le resultat possible"
+      },
+      "subject_repeater_plus_state_change": {
+        "pattern": "[SUJET] + [CHANGEMENT FUTUR]",
+        "exemple": "Claude just changed social media forever",
+        "regle": "Indiquer que quelque chose a change"
+      }
+    }
+  },
+
+  "visual_hook_patterns": {
+    "description": "Les patterns visuels pour interrompre le scroll",
+    "patterns": {
+      "movement_interrupt": {
+        "description": "Mouvement inattendu dans le frame",
+        "exemple": "Ripping paper, throwing object, sudden zoom",
+        "regle": "Le mouvement doit etre INATTENDU par rapport au feed"
+      },
+      "foreshadowing": {
+        "description": "Montrer le resultat final au debut",
+        "exemple": "Montrer le produit fini avant de montrer le processus",
+        "regle": "Le cerveau voit le resultat et veut savoir comment y arriver"
+      },
+      "unusual_angle": {
+        "description": "Angle de camera inhabituel",
+        "exemple": "High angle, low angle, fish eye, extreme close-up",
+        "regle": "Casse le pattern visuel du feed"
+      },
+      "prop_appearance": {
+        "description": "Un objet qui apparait de maniere inattendue",
+        "exemple": "Un verre d'eau qui apparait, un telephone qui tombe",
+        "regle": "L'objet doit etre lie au contenu"
+      }
+    }
+  },
+
+  "audio_hook_patterns": {
+    "description": "Les patterns audio pour interrompre le scroll",
+    "patterns": {
+      "snap_pop": {
+        "description": "Son court et percussif",
+        "exemple": "Snap de doigts, pop, clap",
+        "regle": "Declenche l'orienting response immediatement"
+      },
+      "sudden_silence": {
+        "description": "Couper le son du feed",
+        "exemple": "Le feed a de la musique → ton video commence en silence",
+        "regle": "Le contraste audio force l'attention"
+      },
+      "trending_audio": {
+        "description": "Utiliser un son trending/reconnaissable",
+        "exemple": "Un son viral que le spectateur reconnait",
+        "regle": "La reconnaissance = interromp le scroll"
+      }
+    }
+  },
+
+  "platform_specific": {
+    "youtube_shorts": {
+      "hook_duration": "2-3 secondes MAX",
+      "text_size": "72px minimum",
+      "zoom": "Leger zoom sur le visage au debut",
+      "son": "Pas de musique au debut - voix claire",
+      "cuts": "Densite HAUTE (cut toutes les 2-3 secondes)",
+      "energy_curve": ["hook_100", "build_70", "punchline_100", "outro_50"]
+    },
+    "tiktok": {
+      "hook_duration": "1-2 secondes MAX",
+      "text_size": "80px minimum",
+      "zoom": "Zoom rapide sur le visage",
+      "son": "Sounds trending si possible",
+      "cuts": "Densite TRES HAUTE (cut toutes les 1-2 secondes)",
+      "energy_curve": ["hook_100", "build_60", "punchline_100", "loop"]
+    },
+    "instagram_reels": {
+      "hook_duration": "1-2 secondes MAX",
+      "text_size": "72px",
+      "zoom": "Leger zoom ou mouvement de camera",
+      "son": "Musique trending ou voix claire",
+      "cuts": "Densite MOYENNE a HAUTE (cut toutes les 2-3 secondes)",
+      "energy_curve": ["hook_100", "build_70", "moment_cle_100", "outro_60"]
+    }
+  },
+
+  "examples_from_transcripts": {
+    "description": "Exemples concrets extraits des transcripts",
+    "hooks_with_high_views": [
+      {
+        "video": "BMJAU2n7o2A (460K vues)",
+        "hook": "Ne voyagez jamais en business class dans l'avion",
+        "type": "statement_hook + contradiction",
+        "pourquoi_ca_marche": "Phrase contradictoire qui force a rester pour comprendre"
+      },
+      {
+        "video": "pNIYikmYsyw (15M vues)",
+        "hook": "These are called life-size floor plans. You can literally walk through your exact home design before you build it.",
+        "type": "tutorial_hook + foreshadowing",
+        "pourquoi_ca_marche": "Montre un resultat incroyable et promet de montrer comment"
+      },
+      {
+        "video": "S9FlxFv9dxg (2.9M vues)",
+        "hook": "If we were smarter, we would listen to 13-year-olds more.",
+        "type": "statement_hook + contrast",
+        "pourquoi_ca_marche": "Affirmation surprenante qui cree un gap de comprehension"
+      },
+      {
+        "video": "bcjDAb7BheI (171M vues)",
+        "hook": "He strapped the shock collar around her neck.",
+        "type": "anti_hook",
+        "pourquoi_ca_marche": "Pas de contexte = le spectateur doit chercher l'info"
+      }
+    ]
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Banque de power words par categorie - extraits des 14 transcripts YouTube",
+    "sources": [
+      "pNIYikmYsyw - Power Words (Callaway)",
+      "S9FlxFv9dxg - 6 Power Words",
+      "BMJAU2n7o2A - Hooks FR (Antoine Bogan)",
+      "5A6XVQUopYA - Stop Stack Formula"
+    ],
+    "usage": "Les power words sont des mots/cluster qui amplifient l'attention. Ils permettent de compresser une phrase entiere en 2-3 mots avec le meme impact."
+  },
+
+  "six_power_words_framework": {
+    "description": "Les 6 mots cles qui composent tout bon hook (Callaway)",
+    "words": {
+      "subject_clarity": {
+        "description": "Le sujet clair de la video",
+        "mots": ["I", "We", "You", "He", "She", "They", "This", "That"],
+        "noms_propres": "Tout nom propre ou entite identifiable",
+        "regle": "Le spectateur doit savoir INSTANTANEMENT de qui/quoi parle la video"
+      },
+      "action_word": {
+        "description": "Le verbe ou adverbe qui decrit l'action",
+        "mots": ["grew", "built", "made", "lost", "found", "created", "destroyed", "transformed", "discovered", "revealed"],
+        "regle": "Tous les bons hooks ont un sujet QUI FAIT une action"
+      },
+      "objective_endstate": {
+        "description": "Le resultat ou l'etat final desire",
+        "mots": ["100K subs", "viral", "million views", "zero to hero", "broke to rich", "nobody to somebody"],
+        "regle": "Plus le resultat est choquant, mieux c'est"
+      },
+      "contrast_word": {
+        "description": "Comparaison entre l'ancien et le nouveau etat",
+        "mots": ["before/after", "from X to Y", "used to vs now", "0 to 100K", "nobody to viral"],
+        "regle": "Intensifie la curiosite en montrant le changement"
+      },
+      "proof_word": {
+        "description": "Preuve que le sujet a deja reussi",
+        "mots": ["again", "proven", "tested", "26 billion views", "million followers"],
+        "regle": "Optionnel mais tres puissant pour l'education content"
+      },
+      "time_word": {
+        "description": "Contrainte de temps qui ajoute l'urgence",
+        "mots": ["in 5 months", "in 90 days", "in 24 hours", "in 30 seconds", "right now", "today"],
+        "regle": "Optionnel mais augmente l'intensite et la curiosite"
+      }
+    }
+  },
+
+  "categories": {
+    "shock": {
+      "description": "Mots qui declenchent un reaction de choc ou surprise",
+      "mots_fr": [
+        "Explosif", "Impossible", "Incroyable", "Choquant", "Scandaleux",
+        "Interdit", "Secret", "Cache", "Oublie", "Detruit",
+        "Annonce", "Urgent", "Alerte", "Breaking", "Exclusif"
+      ],
+      "mots_en": [
+        "Explosive", "Impossible", "Insane", "Shocking", "Scandalous",
+        "Forbidden", "Secret", "Hidden", "Forgotten", "Destroyed",
+        "Announced", "Urgent", "Alert", "Breaking", "Exclusive"
+      ],
+      "usage": "Pour les hooks qui veulent provoquer un reaction immediate"
+    },
+    "curiosity": {
+      "description": "Mots qui creent un gap de connaissance",
+      "mots_fr": [
+        "Pourquoi", "Comment", "Le secret de", "Personne ne sait",
+        "La verite sur", "Ce qu'ils ne disent pas", "Le vrai",
+        "Tu ne devineras jamais", "Ce que personne ne te dit",
+        "La raison cachee", "Le motif"
+      ],
+      "mots_en": [
+        "Why", "How", "The secret of", "Nobody knows",
+        "The truth about", "What they don't tell you", "The real",
+        "You'll never guess", "What no one tells you",
+        "The hidden reason", "The motive"
+      ],
+      "usage": "Pour les hooks curiosite gap"
+    },
+    "urgency": {
+      "description": "Mots qui creent un sentiment d'urgence",
+      "mots_fr": [
+        "Maintenant", "Aujourd'hui", "Avant qu'il ne soit trop tard",
+        "Derniere chance", "Ne rate pas", "Regarde avant",
+        "Il est temps", "C'est maintenant ou jamais",
+        "Attention", "Ne fais pas cette erreur"
+      ],
+      "mots_en": [
+        "Now", "Today", "Before it's too late",
+        "Last chance", "Don't miss", "Watch before",
+        "It's time", "Now or never",
+        "Warning", "Don't make this mistake"
+      ],
+      "usage": "Pour les hooks qui veulent action immediate"
+    },
+    "proof": {
+      "description": "Mots qui etablissent la credibilite",
+      "mots_fr": [
+        "Prouve", "Teste", "26 milliards de vues", "Million de followers",
+        "Resultat garanti", "Methode certifiee", "Expert",
+        "Apres 10 ans", "Depuis 5 ans", "Chiffres"
+      ],
+      "mots_en": [
+        "Proven", "Tested", "26 billion views", "Million followers",
+        "Guaranteed results", "Certified method", "Expert",
+        "After 10 years", "For 5 years", "Data-backed"
+      ],
+      "usage": "Pour les hooks education qui ont besoin de credibilite"
+    },
+    "emotion": {
+      "description": "Mots qui declenchent une emotion forte",
+      "mots_fr": [
+        "Deteste", "Aime", "Obsede", "Effraye", "Fier",
+        "Honte", "Regrette", "Reve", "Cauchemar", "Paradis",
+        "Enfer", "Libere", "Piege", "Sauve", "Detruit"
+      ],
+      "mots_en": [
+        "Hate", "Love", "Obsessed", "Terrified", "Proud",
+        "Ashamed", "Regret", "Dream", "Nightmare", "Paradise",
+        "Hell", "Freed", "Trapped", "Saved", "Destroyed"
+      ],
+      "usage": "Pour les hooks qui veulent connecter emotionnellement"
+    },
+    "power_phrases": {
+      "description": "Cluster de 2-3 mots qui ont un impact disproportionne",
+      "phrases_fr": [
+        "Regarde bien", "Tu vas pas y croire", "C'est pas possible",
+        "Le pire c'est que", "Spoiler alert", "Niveau suivant",
+        "Tout a change", "Plus jamais", "Le seul truc",
+        "Ce qu'on ne te dit pas", "La fin choque"
+      ],
+      "phrases_en": [
+        "Check this out", "You won't believe", "This is insane",
+        "The worst part is", "Spoiler alert", "Level up",
+        "Everything changed", "Never again", "The only thing",
+        "What they don't tell you", "The ending shocks"
+      ],
+      "usage": "Les power phrases sont des 'heat-seeking missiles' pour l'attention. Elles permettent de compresser une phrase entiere en 2-3 mots."
+    }
+  },
+
+  "application_rules": {
+    "text_hook": {
+      "regle": "Utilise 1-2 power words par ligne de texte",
+      "exemple": "CHATGPT → will sell things for you",
+      "interdit": "En mettre trop - ca perd son impact"
+    },
+    "spoken_hook": {
+      "regle": "Integre les power words naturellement dans la phrase",
+      "exemple": "If I had to grow from 0 to 100K subs on YouTube again",
+      "interdit": "Forcer les power words - ca sonne artificiel"
+    },
+    "label_clip": {
+      "regle": "1 power word qui resume le moment",
+      "exemple": "Salto rate, Explosion, Dragueur",
+      "interdit": "Mots longs ou descriptifs"
+    }
+  }
+}

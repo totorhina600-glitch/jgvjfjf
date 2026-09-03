@@ -1,0 +1,216 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Templates et regles de hook pour chaque mode PUR",
+    "sources": [
+      "GUIDE_UTILISATION_PUR/11_MODE_PUR.md",
+      "hooks_psychology.json",
+      "Transcripts YouTube (14 sources)"
+    ]
+  },
+
+  "ranking": {
+    "description": "Mode countdown - les clips sont classes du #1 au #N",
+    "titre_principal": {
+      "regle": "MAX 4 MOTS",
+      "format": "TOP [N] [SUJET]",
+      "exemples": [
+        "TOP 5 MOMENTS",
+        "LES 3 ERREURS",
+        "BEST REACTIONS",
+        "WORST FAILS",
+        "TOP PLAYS"
+      ]
+    },
+    "label_clip": {
+      "regle": "1 MOT (2 si article)",
+      "exemples": [
+        "Salto rate",
+        "Dragueur",
+        "Faux date",
+        "Explosion",
+        "Fail"
+      ]
+    },
+    "countdown_logic": {
+      "description": "L'ordre du countdown suit une courbe de tension",
+      "regles": [
+        "#1 = le plus captivant (accroche immediate) → sert de hook principal",
+        "Milieu = montee en puissance progressive",
+        "Dernier = meilleur moment (crescendo) → le spectateur reste jusqu'a la fin"
+      ],
+      "principe": "Garde le meilleur pour la fin → le spectateur reste pour le #1"
+    },
+    "hook_text": {
+      "obligatoire": true,
+      "type": "Phrase choc du podcast qui resume le clip",
+      "regles": [
+        "Max 4 mots pour le titre principal",
+        "Label du clip = 1 mot qui reframe le moment",
+        "Captions = transcript du speech (pas de texte ecrit)",
+        "Pas de CTA (contenu organique)"
+      ],
+      "exemple": {
+        "titre": "TOP 5 MOMENTS KAI",
+        "clips": [
+          {"rank": "#5", "label": "Salto rate", "hook_text": "Il a voulu faire un salto..."},
+          {"rank": "#4", "label": "Dragueur", "hook_text": "Il essaie de draguer..."},
+          {"rank": "#3", "label": "Faux date", "hook_text": "Le faux rendez-vous..."},
+          {"rank": "#2", "label": "Explosion", "hook_text": "Ca a explose..."},
+          {"rank": "#1", "label": "Plage", "hook_text": "Le moment le plus nul..."}
+        ]
+      }
+    },
+    "anti_detection": {
+      "zoom": "Punch (110-115%)",
+      "mirror": "Obligatoire",
+      "speed": "1.05x",
+      "sfx": "5-6 par clip",
+      "crop": "2-3%"
+    }
+  },
+
+  "blur": {
+    "description": "Mode flou - le clip podcast est en haut, contenu variable en bas",
+    "titre_principal": {
+      "regle": "~2 LIGNES (pas de limite de mots stricte)",
+      "position": "Au milieu ou en haut",
+      "exemples": [
+        "Quand ton pote raconte\nson pire moment",
+        "Le moment ou\ntout s'est effondre",
+        "Elle savait pas\nque c'etait filme"
+      ]
+    },
+    "label_clip": {
+      "regle": "AUCUN label - le titre suffit",
+      "raison": "Le blur mode est plus narratif, pas de compteur"
+    },
+    "hook_text": {
+      "obligatoire": true,
+      "type": "Phrase qui cree la tension ou la curiosite",
+      "regles": [
+        "Pas de limite de mots (2 lignes max)",
+        "Le titre TRANSFORME le sens du contenu",
+        "Captions = transcript du speech",
+        "Peut etre en FR ou EN (choisi par l'operateur)"
+      ]
+    },
+    "anti_detection": {
+      "zoom": "Breathing (105-110%)",
+      "mirror": "Optionnel",
+      "speed": "1.05x",
+      "sfx": "1-2 par clip",
+      "crop": "Pas necessaire"
+    }
+  },
+
+  "split_scene": {
+    "description": "Mode compose - clip podcast en haut, titre au centre, contenu variable en bas",
+    "titre_principal": {
+      "regle": "~2 LIGNES (pas de limite de mots stricte)",
+      "position": "AU CENTRE (entre haut et bas)",
+      "exemples": [
+        "Le moment ou\ntout a change",
+        "Il savait pas\nqu'on filmait"
+      ]
+    },
+    "label_clip": {
+      "regle": "AUCUN label"
+    },
+    "sous_layouts": {
+      "A_image_ia": {
+        "bas": "Image IA generee",
+        "usage": "Pour amplifier l'histoire"
+      },
+      "B_video_broll": {
+        "bas": "Clip video / B-roll",
+        "usage": "Preuve visuelle, autre partie du podcast"
+      },
+      "C_2_speakers": {
+        "bas": "Reaction 2e personne",
+        "usage": "Conversations, interviews"
+      },
+      "D_preuve": {
+        "bas": "Tweet, screenshot, stats",
+        "usage": "Social proof"
+      }
+    },
+    "regles_specifiques": [
+      "Haut = TOUJOURS le clip podcast (fixe)",
+      "Centre = Titre hook (suit hooks_psychology.json)",
+      "Bas = Variable selon le sous-layout",
+      "B-roll en split = couvre TOUT l'ecran temporairement",
+      "GIF = boucle si un seul, un par numero en ranking",
+      "Composable = peut intervenir DANS le ranking"
+    ],
+    "anti_detection": {
+      "zoom": "Punch (110-115%)",
+      "mirror": "Obligatoire",
+      "speed": "1.05x",
+      "sfx": "5-6 par clip",
+      "crop": "2-3%"
+    }
+  },
+
+  "reframing": {
+    "description": "Mode reframing - transformer le sens du contenu original",
+    "titre_principal": {
+      "regle": "~2 LIGNES (pas de limite de mots stricte)",
+      "position": "Au milieu ou en haut",
+      "principe": "Le titre TRANSFORME le sens du contenu (pas une description)",
+      "exemples": [
+        "Quand il dit la verite\nsur les femmes",
+        "Le moment ou\ntout est devenu serieux",
+        "Personne s'attendait\na ca"
+      ]
+    },
+    "label_clip": {
+      "regle": "AUCUN label"
+    },
+    "regles_reframing": [
+      "Le titre ne decrit PAS le clip, il le TRANSFORME",
+      "Exemple: clip serieux → titre qui le rend drole, ou l'inverse",
+      "Le reframing cree un nouveau angle de lecture",
+      "Le label EST le reframing titre de chaque clip",
+      "Captions = transcript du speech, pas de texte ecrit",
+      "Pas de CTA (contenu organique)",
+      "Langue choisie par l'operateur (FR ou EN)"
+    ],
+    "anti_detection": {
+      "zoom": "Slow push (102-108%)",
+      "mirror": "Optionnel",
+      "speed": "1.05x",
+      "sfx": "1-2 par clip",
+      "crop": "2-3%"
+    }
+  },
+
+  "regles_transversales": {
+    "hook_0_3_secondes": {
+      "regle": "Le hook dure 0-3 secondes MAX",
+      "contentu": "Visage du speaker, PAS de B-roll",
+      "son": "Pas de musique au debut - voix claire"
+    },
+    "captions": {
+      "regle": "Captions = transcript du speech (pas de texte ecrit)",
+      "format": "Word-by-word ou ligne par ligne",
+      "style": "Selon la plateforme (YouTube/TikTok/Instagram)"
+    },
+    "langue": {
+      "regle": "Choisie par l'operateur (FR ou EN)",
+      "defaut": "EN (plus large audience)",
+      "exception": "Si le podcast est en FR → captions en FR"
+    },
+    "b_roll": {
+      "hook": "PAS de B-roll sur le hook (0-3s)",
+      "apres": "1 B-roll toutes les 7-10 secondes",
+      "max": "3 B-roll pour 30s, 5 pour 60s",
+      "jamais": "Sur le moment emotionnel le plus intense"
+    },
+    "duree_clip": {
+      "min": 15,
+      "max": 60,
+      "optimal": "30-45 secondes"
+    }
+  }
+}

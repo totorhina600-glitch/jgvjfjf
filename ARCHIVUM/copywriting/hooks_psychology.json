@@ -1,0 +1,225 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Framework psychologique des hooks - base sur 14 transcripts YouTube",
+    "sources": [
+      "pNIYikmYsyw - Interrupt Theory & 4 S's (Callaway)",
+      "S9FlxFv9dxg - 6 Power Words (Callaway)",
+      "bcjDAb7BheI - Anti-hooks & Swipe Ratio",
+      "BMJAU2n7o2A - Hooks FR (Antoine Bogan)",
+      "5A6XVQUopYA - Stop Stack Formula",
+      "g99k86QzyDk - Visual/Audio/Text hooks",
+      "_1FOJwqpZk8 - 6 Types de Hooks (Hindi)",
+      "SVikuuB2vkU - Hook & Copywriting Avance"
+    ]
+  },
+
+  "interrupt_theory": {
+    "description": "La formule pour interrompre le scroll et forcer le freeze",
+    "principe": "Le cerveau du spectateur scroll en mode autopilot. Il faut declencher un 'orienting response' - une reaction involontaire a un nouveau stimulus",
+    "freeze_point": "Le moment ou le pouce s'arrete sur l'ecran. C'est l'objectif du hook.",
+    " deux_questions_obligatoires": [
+      "Qu'est-ce que la video parle ? (Subject)",
+      "Qu'est-ce que je vais gagner en regardant ? (Outcome)"
+    ],
+    "condition": "Un reponse claire a ces deux questions est suffisante pour hooker quelqu'un"
+  },
+
+  "four_s_of_hooks": {
+    "description": "Les 4 ingredients indispensable de tout bon hook",
+    "ingredients": {
+      "subject": {
+        "description": "Le sujet clair de la video",
+        "regles": [
+          "Peut etre: je, tu, il, nous, vous, ou un nom propre/objet",
+          "Le spectateur doit savoir INSTANTANEMENT de qui/quoi parle la video",
+          "Exemples: 'I', 'You', 'ChatGPT', 'This phone', 'Business Class'"
+        ],
+        "interdit": ["Sujet vague ou ambigu", "Commencer par 'Hey guys'"]
+      },
+      "stakes": {
+        "description": "La raison pour laquelle le spectateur doit s'interesser",
+        "regles": [
+          "Pour l'entertainment: scenario qui suscite la curiosite",
+          "Pour l'education: l'outcome que le spectateur veut",
+          "Doit creer un gap entre l'etat actuel et l'etat desire"
+        ],
+        "exemples": [
+          "More views, more skills, more money",
+          "What will happen to that character?",
+          "Will MrBeast outshoot Ronaldo?"
+        ]
+      },
+      "speed": {
+        "description": "Livrer le sujet et les enjeux en un minimum de mots",
+        "regles": [
+          "Compresser, pas parler vite",
+          "8 mots vs 28 mots = beaucoup plus facile a retenir",
+          "Le cerveau ne peut garder qu'un certain nombre de mots"
+        ],
+        "analogie": "Comme Pac-Man qui mange des points - il ne peut pas en manger trop d'un coup"
+      },
+      "super_clear": {
+        "description": "Le message ne doit pouvoir etre interprete QUE d'une seule facon",
+        "regles": [
+          "Mots simples, pas de jeux de mots",
+          "Pas de setups vagues",
+          "Si le spectateur doit reflechir 0.5 seconde, il scrolle"
+        ],
+        "principe": "La confusion temporaire ne vaut pas le coup dans un ocean de stimulation"
+      }
+    }
+  },
+
+  "orienting_response": {
+    "description": "Reaction involontaire du cerveau a un stimulus nouveau",
+    "mecanisme": "C'est le 'wait, what was that?' interne. C'est comme voir un loup dans ton jardin.",
+    "application": "Le hook doit declencher cette reponse pour que le spectateur s'arrete et paie attention",
+    "condition_victoire": "Le spectateur freeze, pause, et commence a analyser la video"
+  },
+
+  "curiosity_gap": {
+    "description": "L'espace entre ce qu'on sait et ce qu'on veut savoir",
+    "mecanisme": "Quand on donne une information incomplete, le cerveau veut COMPLETER l'information. C'est de la nature humaine de base.",
+    "application": [
+      "Montrer un resultat sans expliquer le comment",
+      "Poser une question a laquelle le spectateur ne connait pas la reponse",
+      "Affirmer quelque chose de contradictoire ou surprenant"
+    ],
+    "exemple": "La Business Class c'est la pire chose du monde → curiosite immédiate car contradictoire"
+  },
+
+  "triple_hook_method": {
+    "description": "Les 3 composantes d'un hook qui doivent etre ALIGNEES",
+    "composantes": {
+      "text_hook": {
+        "description": "Le texte a l'ecran (pas les sous-titres)",
+        "importance": "LE PLUS IMPORTANT - les yeux cherchent le texte en premier",
+        "regles": [
+          "Placement: top 1/3 de l'ecran",
+          "Pas de ponctuation sauf guillemets/parentheses",
+          "Max 2 lignes (system font) ou 3 lignes (premium typography)",
+          "Pas de mots composes (and, or, but, therefore)",
+          "Laisser le texte a l'ecran 3 secondes minimum"
+        ],
+        "strategie": "Subject Repeater + (Pain Point Reminder | Dream Outcome | Future State Change)"
+      },
+      "visual_hook": {
+        "description": "Tout ce qui est visible a l'ecran (pas le texte)",
+        "types": [
+          "Mouvement inattendu (zoom, crop, rotation)",
+          "Angle de camera inhabituel",
+          "Prop ou objet qui apparait",
+          "Changement d'environnement",
+          "Partage d'ecran",
+          "Foreshadowing (montrer le resultat au debut)"
+        ],
+        "regle": "Si on enleve le texte et le son, on doit pouvoir DEVINER le contenu"
+      },
+      "spoken_hook": {
+        "description": "Ce qui est dit a voix haute",
+        "types": [
+          "Question hook",
+          "Tutorial hook",
+          "Problem-solution hook",
+          "Secret reveal hook",
+          "Statement hook"
+        ],
+        "regle": "Les 3 hooks (text, visual, spoken) doivent etre ALIGNES. Sinon = confusion = scroll."
+      }
+    },
+    "regle_doree": "Les 3 hooks doivent etre ALIGNES. Si le visuel ne correspond pas au texte, le spectateur est confus et scrolle."
+  },
+
+  "six_hook_types": {
+    "description": "Les 6 types de hooks identifies dans les transcripts",
+    "types": {
+      "visual": {
+        "description": "Montrer quelque chose de visuellement different/inattendu",
+        "elements": ["Motion", "Curiosite", "Clarity"],
+        "exemple": "Telephone dans l'eau (40M vues)"
+      },
+      "unbelievable": {
+        "description": "Montrer quelque chose d'impossible ou de choquant",
+        "exemple": "Lord Puneet se couche dans la boue",
+        "regle": "Creer un pattern break visuel"
+      },
+      "pain_point": {
+        "description": "Probleme specifique que l'audience vit quotidiennement",
+        "regles": [
+          "DOIT etre niche et targete (pas generique)",
+          "'Ta salaire disparait le 15' > 'Tu as des problemes d'argent'",
+          "Le cerveau se reveille quand il detecte un probleme personnel"
+        ]
+      },
+      "curiosity_gap": {
+        "description": "Information incomplete qui force a regarder jusqu'a la fin",
+        "mecanisme": "Le cerveau humain veut completer l'information incomplete",
+        "exemple": "Tu n'as plus besoin de PC pour editer → comment?"
+      },
+      "relatability": {
+        "description": "Situation commune que tout le monde vit",
+        "exemple": "Making Cinema in My Bedroom (tout le monde a une chambre)",
+        "pouvoir": "Connexion instantanee avec l'audience"
+      },
+      "transformation": {
+        "description": "Before/After pour prouver le resultat",
+        "exemple": "Fat to Fit, Cooking transformation",
+        "role": "Sert de visual proof que le contenu fonctionne"
+      }
+    }
+  },
+
+  "stop_stack_formula": {
+    "description": "La sequence: Stop d'abord, puis Stack la tension",
+    "etapes": [
+      {
+        "step": "STOP",
+        "description": "Interrompre le pattern du scroll (visual, audio, ou les deux)"
+      },
+      {
+        "step": "STACK",
+        "description": "Ajouter du sens et de la tension (statement, text, meaning)"
+      }
+    ],
+    "regle": "On interrompt d'abord, puis on ajoute du sens. C'est l'ordre qui compte.",
+    "exemples_de_stack": [
+      "Visual + Text : le visuel interrompt, le texte revele le message",
+      "Visual + Statement : le visuel grab, la phrase injecte la tension",
+      "Visual + Sound : les yeux ET les oreilles sont touches en meme temps",
+      "Sound + Text : la musique signale quelque chose, le texte ancre la comprehension"
+    ]
+  },
+
+  "anti_hook": {
+    "description": "Ne PAS donner de contexte au spectateur",
+    "principe": "L'anti-hook est plus puissant que le hook classique car il force le spectateur a CHERCHER l'information",
+    "mecanisme": "Si tu ne donnes pas de contexte, les gens se sentent exclus → ils veulent comprendre → ils restent",
+    "exemple": "Au lieu de 'You won't believe what happened', on dit directement 'He strapped the shock collar around her neck'",
+    "utilisation": "MrBeast, Zach D Films, chains a fort swipe ratio l'utilisent massivement",
+    "condition": "Le clip doit etre suffisamment intrigant pour compenser le manque de contexte"
+  },
+
+  "psychologie_avancee": {
+    "identification": {
+      "description": "Creer des situations que tout le monde a vecues",
+      "mecanisme": "Le spectateur s'imagine dans la situation raconter → connexion immediate",
+      "exemple": "Imagine tu es a la salle de sport, tu rencontres un mec dans les vestiaires...",
+      "application": "Fonctionne particulerement bien pour les monologues et les anecdotes"
+    },
+    "illustration": {
+      "description": "Mettre une image/video qui illustre ce qu'on dit dans les 5 premieres secondes",
+      "regle": "PAS a la 12eme seconde, PAS a la 8eme. Dans les 5 premieres secondes.",
+      "exemple": "Photo d'un dos avec zone rouge pileepoil ou les gens ont mal"
+    },
+    "intention_intrigante": {
+      "description": "Forcer le spectateur a rester pour savoir si c'est vrai ou pas",
+      "mecanisme": "Phrase contradictoire ou surprenante qui cree un gap de comprehension",
+      "exemple": "La Business Class c'est la pire chose du monde"
+    },
+    "reutilisation": {
+      "description": "Reprendre les bons commentaires et moments forts des videos passees",
+      "regle": "Les reponses dans tes commentaires = indicateurs de ce qui fonctionne → reutilise-les dans les futurs hooks"
+    }
+  }
+}

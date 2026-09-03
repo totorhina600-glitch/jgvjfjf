@@ -1,0 +1,155 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Regles de copywriting et reframing pour le mode PUR",
+    "sources": [
+      "GUIDE_UTILISATION_PUR/11_MODE_PUR.md",
+      "hooks_psychology.json",
+      "BMJAU2n7o2A - Hooks FR (Antoine Bogan)",
+      "SVikuuB2vkU - Hook & Copywriting Avance"
+    ]
+  },
+
+  "reframing_principles": {
+    "description": "Le reframing transforme le sens du contenu original",
+    "regle_doree": "Le titre ne DECRIE pas le clip, il le TRANSFORME",
+    "exemples": [
+      {
+        "clip_original": "Un gars rate un salto a la plage",
+        "reframing_drole": "Le pire acrobate du monde",
+        "reframing_shock": "Il aurait pu mourir",
+        "reframing_relatable": "Quand tu te prends pour un pro"
+      },
+      {
+        "clip_original": "Quelqu'un parle de business",
+        "reframing_edu": "La seule erreur qui t'empeche de gagner",
+        "reframing_motivation": "Le secret qu'ils ne veulent pas que tu saches",
+        "reframing_humour": "Quand ton pote devient entrepreneur"
+      }
+    ]
+  },
+
+  "title_rules": {
+    "ranking": {
+      "max_mots": 4,
+      "format": "TOP [N] [SUJET] ou [ADJECTIF] [SUJET]",
+      "exemples": [
+        "TOP 5 MOMENTS",
+        "LES 3 ERREURS",
+        "BEST REACTIONS",
+        "WORST FAILS"
+      ],
+      "interdit": [
+        "Phrases longues",
+        "Descriptions litterales",
+        "Mots composes (and, or, but)"
+      ]
+    },
+    "blur": {
+      "max_lignes": 2,
+      "pas_limite_mots": true,
+      "position": "Milieu ou haut",
+      "style": "Narratif, emotionnel",
+      "exemples": [
+        "Quand ton pote raconte\nson pire moment",
+        "Le moment ou\ntout s'est effondre"
+      ]
+    },
+    "split_scene": {
+      "max_lignes": 2,
+      "position": "AU CENTRE",
+      "style": "Direct, percutant",
+      "exemples": [
+        "Le moment ou\ntout a change",
+        "Il savait pas\nqu'on filmait"
+      ]
+    },
+    "reframing": {
+      "max_lignes": 2,
+      "position": "Milieu ou haut",
+      "style": "Transformateur (change le sens)",
+      "exemples": [
+        "Quand il dit la verite\nsur les femmes",
+        "Personne s'attendait\na ca"
+      ]
+    }
+  },
+
+  "clip_label_rules": {
+    "ranking": {
+      "regle": "1 MOT (2 si article)",
+      "exemples": ["Salto rate", "Dragueur", "Faux date", "Explosion", "Fail"],
+      "role": "Identifie le clip dans le countdown"
+    },
+    "blur": {
+      "regle": "AUCUN label",
+      "raison": "Le titre suffit pour identifier le clip"
+    },
+    "split_scene": {
+      "regle": "AUCUN label"
+    },
+    "reframing": {
+      "regle": "AUCUN label"
+    }
+  },
+
+  "countdown_logic": {
+    "description": "Comment ordonner les clips dans un ranking",
+    "regles": [
+      "#1 = le plus captivant (accroche immediate)",
+      "Milieu = montee en puissance progressive",
+      "Dernier = meilleur moment (crescendo)"
+    ],
+    "principe": "Garde le meilleur pour la fin → le spectateur reste jusqu'au #1",
+    "exemple_ranking": [
+      {"rank": "#5", "label": "Salto rate", "niveau": "drole"},
+      {"rank": "#4", "label": "Dragueur", "niveau": "gênant"},
+      {"rank": "#3", "label": "Faux date", "niveau": "choquant"},
+      {"rank": "#2", "label": "Explosion", "niveau": "shocking"},
+      {"rank": "#1", "label": "Plage", "niveau": "peak moment"}
+    ]
+  },
+
+  "copywriting_formulas": {
+    "pas": {
+      "nom": "Problem-Agitate-Solution",
+      "description": "Identifier le probleme, l'agiter, puis proposer la solution",
+      "exemple": "Tu perds des vues (P) → C'est a cause de ton hook (A) → Voici la formule (S)"
+    },
+    "aida": {
+      "nom": "Attention-Interest-Desire-Action",
+      "description": "Capturer l'attention, creer l'interet, le desire, puis l'action",
+      "exemple": "100K vues (A) → Voici comment (I) → Tu peux le faire aussi (D) → Regarde jusqu'a la fin (A)"
+    },
+    "before_after_bridge": {
+      "nom": "Before-After-Bridge",
+      "description": "Montrer l'etat avant, l'etat apres, et le pont entre les deux",
+      "exemple": "Avant: 0 vues (B) → Apres: 1M vues (A) → Voici comment (B)"
+    }
+  },
+
+  "transcript_rules": {
+    "description": "Comment manipuler le transcript pour le hook",
+    "regles": [
+      "Captions = transcript du speech (pas de texte ecrit)",
+      "Peut etre tronque pour coller au timing du clip",
+      "Les mots cles du hook doivent etre dans les 3 premieres secondes du speech",
+      "Pas de CTA dans le transcript (contenu organique)"
+    ]
+  },
+
+  "metadata_rules": {
+    "titre_youtube": {
+      "regle": "Doit contenir le titre principal du mode",
+      "exemple_ranking": "TOP 5 MOMENTS - Les pires fails de Kai Cenat"
+    },
+    "description": {
+      "regle": "Description courte avec hashtags",
+      "hashtags": ["#shorts", "#viral", "#clipping"]
+    },
+    "tags": {
+      "regle": "Tags lies au sujet du clip",
+      "exemple": ["kai cenat", "funny moments", "fail compilation"]
+    }
+  }
+}
