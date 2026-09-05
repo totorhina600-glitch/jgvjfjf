@@ -7,8 +7,8 @@
 
 ## 📅 DERNIÈRE MISE À JOUR
 
-**Date** : 2026-09-01
-**Ajout** : F06_DIRECTOR + Mode PUR
+**Date** : 2026-09-05
+**Ajout** : F00B_VOX (sous-frégate VOX, l'Oreille Absolue)
 
 ---
 
@@ -18,19 +18,24 @@
 
 - **CLIPPING** est opérationnel avec les modes : informatif, humour, meme
 - **3 sièges terminés** : NBA_WESTBROOK, STUDENT_DEBT, MARVEL_DOOMSDAY
-- **6 frégates actives** : F00 → F05
-- **ARCHIVUM** enrichi avec channels, campagnes, learnings
+- **7 frégates actives** : F00A, F00B, F01 → F06
+- **ARCHIVUM** enrichi avec channels, campagnes, montage, copywriting, transcripts
 
 ### 🆕 Ajouté aujourd'hui
 
+- **F00B_VOX** — L'Oreille Absolue (sous-frégate de F00_CAPTEURS)
+  - `F00B_VOX/CODEBASE/f00b_vox.py` — Pipeline complet : ingest → detect → score → gate → trail
+  - Ingest VOD partielle (yt-dlp segments HLS, stream copy, jamais de VOD complète)
+  - Scoring viral multicritère (6 critères pondérés + bonus/malus)
+  - Gate Warsmith (validation manuelle avant trail)
+  - Trail prêt pour F03_SOURCE_HUNTER
+
 - **F06_DIRECTOR** — Le Directeur de Montage
   - `F06_DIRECTOR/CODEBASE/director.py` — Génération instructions montage
-  - `F06_DIRECTOR/CODEBASE/pattern_extractor.py` — Extraction patterns
-  - `ARCHIVUM/montage/` — Bibliothèque de montage
+  - `ARCHIVUM/montage/` — Bibliothèque de montage complète
 
 - **Mode PUR** — Clipping pur (podcast → clip viral)
-  - Workflow complet : F00 → F06
-  - Le streamer Whop fournit le podcast + clip ref
+  - Workflow complet avec F00B_VOX en amont
 
 ---
 
@@ -38,29 +43,33 @@
 
 | Code | Nom | Rôle | Statut |
 |------|-----|------|--------|
-| F00 | CAPTEURS | Scan viral + assimilation source streamer | ✅ Opérationnel |
+| **F00A** | **CAPTEURS** | **Scan viral YouTube/RSS/Trends** | ✅ Opérationnel |
+| **F00B** | **VOX (l'Oreille Absolue)** | **Ingest VOD Twitch partielle + scoring + gate + trail** | 🆕 **Nouveau** |
 | F01 | SCOUT | Transcription vidéo | ✅ Opérationnel |
 | F02 | TYRANT_CAMP | Verdict GO/NO-GO + océan bleu | ✅ Opérationnel |
 | F03 | SOURCE_HUNTER | Sélection segment parfait | ✅ Opérationnel |
 | F04 | COPYWRITER | Forger texte viral (frégate lourde) | ✅ Opérationnel |
 | F05 | PACKAGER | Emballer production pack | ✅ Opérationnel |
-| **F06** | **DIRECTOR** | **Instructions de montage** | 🆕 **Nouveau** |
+| F06 | DIRECTOR | Instructions de montage | ✅ Opérationnel |
+
+> F00 = F00A (scan viral) + F00B (VOX). La position d'une frégate dépend de SA PLACE dans le workflow, pas d'un numéro figé.
 
 ---
 
 ## 3. Le Mode PUR — Workflow détaillé
 
 ### Inputs du Warsmith
-1. Podcast source (fourni par le streamer Whop)
+1. URLs VODs Twitch (1 ou plusieurs)
 2. Clip viral de référence (optionnel)
 3. Plateforme cible (YouTube Shorts / TikTok / Instagram Reels)
 4. Marché cible (ex : US / Anglais / Jeune)
+5. Nombre de clips demandés
 
 ### Workflow
 ```
-F00_CAPTEURS → Assimile source streamer (podcast + clip ref)
-    ↓
-F01_SCOUT → Transcription complète du podcast
+F00B_VOX → Ingest VOD partielle + détection candidats + scoring + gate + trail
+    ↓ (trail.json)
+F01_SCOUT → Transcription complète du segment
     ↓
 F02_TYRANT_CAMP → Identifie règles viralité + consulte ARCHIVUM
     ↓
@@ -68,7 +77,7 @@ F03_SOURCE_HUNTER → Sélectionne le segment parfait (timestamp précis)
     ↓
 F04_COPYWRITER → Forge hook visuel (titres, overlays) + métadonnées
     ↓
-F05_PACKAGER → Emballe le production pack
+F05_PACKAGER → Emballe le production pack (watermark PNG inclus)
     ↓
 F06_DIRECTOR → Génère instructions de montage détaillées
     ↓
@@ -77,64 +86,78 @@ OMNIS_WATCH → Exécute le montage
 Opérateur → Poster + soumettre Whop < 1h
 ```
 
+### Étapes VOX en détail
+```
+1. IN/vox_input.json → URLs VOD + segments + nb clips demandés
+2. python f00b_vox.py ingest → OUT/vox_manifest.json (commandes yt-dlp)
+3. IN/signals.json → Signaux (chat spikes, punchlines, trigger words)
+4. python f00b_vox.py detect → OUT/candidats.json (fenêtres 20-40s)
+5. python f00b_vox.py score → OUT/scoring.json (6 critères pondérés)
+6. python f00b_vox.py gate → OUT/gate_verdict.json (skeleton Warsmith)
+7. Éditez gate_verdict.json → changez status: pending → approved/rejected
+8. python f00b_vox.py gate_apply → Applique les décisions
+9. python f00b_vox.py trail → OUT/trail.json (prêt pour F03)
+```
+
 ### Outputs
-- `segment.json` — Segment précis (timestamp)
-- `text_payload.json` — Titres, overlays, hashtags
-- `production_pack.json` — Pack complet
-- `montage_instructions.json` — Instructions de montage
+- `vox_manifest.json` — Commandes ingest (yt-dlp)
+- `candidats.json` — Fenêtres détectées
+- `scoring.json` — Scores multicritère
+- `gate_verdict.json` — Décisions Warsmith
+- `trail.json` — Segments finaux prêts pour F03
 
 ---
 
-## 4. F06_DIRECTOR — Détails techniques
+## 4. F00B_VOX — Détails techniques
 
 ### Architecture
 ```
-F06_DIRECTOR/
+F00B_VOX/
 ├── CODEBASE/
-│   ├── director.py          ← Script principal
-│   ├── pattern_extractor.py ← Extraction patterns
-│   └── requirements_f06.txt ← Dépendances
-├── IN/                      ← Reçoit de F03/F04
-├── OUT/                     ← Produit montage_instructions.json
+│   ├── f00b_vox.py          ← Script principal (CLI)
+│   ├── requirements_f00b.txt ← Dépendances (yt-dlp)
+│   └── ...
+├── IN/                      ← Inputs
+│   ├── vox_input.json       ← URLs VOD + segments
+│   ├── signals.json         ← Signaux détection
+│   └── gate_decisions.json  ← Décisions Warsmith
+├── OUT/                     ← Outputs
+│   ├── vox_manifest.json
+│   ├── candidats.json
+│   ├── scoring.json
+│   ├── gate_verdict.json
+│   └── trail.json
 └── TRACKING/
-    └── F06_LOG.md           ← Journal
+    └── F00B_LOG.md          ← Journal
 ```
 
-### ARCHIVUM/montage/
+### Scoring Multicritère
 ```
-ARCHIVUM/montage/
-├── transcripts/     ← Vidéos tutos montage YouTube
-├── patterns/        ← Patterns extraits (hooks, zooms, cuts)
-├── rules/           ← Règles par plateforme
-│   ├── youtube_shorts.md
-│   ├── tiktok.md
-│   └── instagram_reels.md
-└── examples/        ← Exemples de clips réussis
+score = 0.30 × hook_force + 0.25 × emotion + 0.15 × clarity
+      + 0.15 × quotability + 0.10 × timing + 0.05 × format_fit
+      + bonus - malus
 ```
 
-### Contenu de montage_instructions.json
-- `hook` : durée, type, template, zoom, son
-- `body` : cuts, zooms, text overlays, transitions
-- `outro` : fade, texte, sound
-- `style` : pacing, energy curve, color palette
-- `compliance` : disclosure, platform
+### Règles d'or
+- ❌ Jamais de VOD complète (segments HLS uniquement)
+- ❌ Jamais de recompression (stream copy)
+- ❌ Jamais de trail sans verdict gate
+- ❌ Budget max 20 min par session
 
 ---
 
-## 5. APIs nécessaires
+## 5. Commandes utiles
 
-| API | Frégate | Usage |
-|-----|---------|-------|
-| YouTube Data API v3 | F00 | Stats, search, trending |
-| youtube-transcript-api | F01 | Transcription vidéo |
-| OpenAI GPT-4o | F02, F04, F06 | Analyse, génération, instructions |
-| GLM 5.2 (NVIDIA) | F04, F06 | Génération premium |
-
-### Clés API
-```
-YOUTUBE_API_KEY          → YouTube Data API v3
-OPENAI_API_KEY           → GPT-4o
-CLIPPING_PREMIUM_API_KEY → GLM 5.2 via NVIDIA
+```bash
+# Pipeline complet (ordre)
+python F00B_VOX/CODEBASE/f00b_vox.py ingest        # Génère commandes yt-dlp
+python F00B_VOX/CODEBASE/f00b_vox.py ingest --execute  # Exécute les commandes
+python F00B_VOX/CODEBASE/f00b_vox.py detect          # Détecte candidats
+python F00B_VOX/CODEBASE/f00b_vox.py score           # Score les candidats
+python F00B_VOX/CODEBASE/f00b_vox.py gate            # Génère skeleton gate
+python F00B_VOX/CODEBASE/f00b_vox.py gate_apply      # Applique décisions
+python F00B_VOX/CODEBASE/f00b_vox.py trail           # Génère trails F03
+python F00B_VOX/CODEBASE/f00b_vox.py status          # État du pipeline
 ```
 
 ---
@@ -142,32 +165,17 @@ CLIPPING_PREMIUM_API_KEY → GLM 5.2 via NVIDIA
 ## 6. Prochaines étapes
 
 ### Court terme
-1. ✅ F06_DIRECTOR créé
-2. ⏳ Collecter des transcripts de tutos montage YouTube
-3. ⏳ Tester F06 avec un vrai segment
-4. ⏳ Intégrer F06 dans le workflow complet
+1. ✅ F00B_VOX créé (code + specs + examples)
+2. ⏳ Tester avec une vraie VOD Twitch
+3. ⏳ Intégrer F00B dans le workflow PUR complet
+4. ⏳ Plan 2 : Support campagnes Clipify (watermarks, directives)
+5. ⏳ Plan 3 : Mise à jour documentation
 
 ### Moyen terme
 1. Enrichir ARCHIVUM/montage/ avec plus de patterns
-2. Ajouter l'IA (OpenAI/GLM) pour génération avancée
+2. Optimiser scoring (IA GPT-4o pour critères subjectifs)
 3. Tester le workflow PUR complet de bout en bout
-4. Optimiser les instructions selon les learnings
 
 ---
 
-## 7. Commandes utiles
-
-```bash
-# Lancer F06_DIRECTOR
-python F06_DIRECTOR/CODEBASE/director.py F03_OUT/segment.json F04_OUT/text_payload.json context.json
-
-# Extraire les patterns
-python F06_DIRECTOR/CODEBASE/pattern_extractor.py
-
-# Vérifier l'état de la flotte
-python IW_CUSTOS.py --mode status
-```
-
----
-
-*"Fer au-dedans, Fer au-dehors. Le siège continue."* 🔩
+*« La VOD est un océan. VOX ne boit que les gouttes d'or. »* 🔩
