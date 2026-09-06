@@ -16,6 +16,7 @@ ne lève jamais. Le scoring se replie sur les signaux présents.
 """
 
 import math
+import re
 
 # références émotionnelles (alignées sur auto_detector._EMOTION_EMOTES)
 EMOTE_MAP = {
