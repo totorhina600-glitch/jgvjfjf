@@ -39,6 +39,7 @@
 | `../CONTRACTS/whop_rules.md` | Mécanique Content Rewards |
 | `../CONTRACTS/clipping_rules.md` | Warmup, volume, FTC, transformative |
 | `../CONTRACTS/production_pack_schema.json` | Schéma JSON du production pack (contrat interface OMNIS_WATCH) |
+| `../F00_IRON_SENTINEL/F00B_VOX/MODAL/DEPLOYER.md` | Guide déploiement transcription GPU Modal (F00B_VOX) |
 
 ## ARCHIVUM — index des zones
 
