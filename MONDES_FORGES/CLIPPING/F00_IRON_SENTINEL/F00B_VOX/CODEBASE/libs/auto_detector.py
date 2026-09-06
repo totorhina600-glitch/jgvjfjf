@@ -948,7 +948,10 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
         try:
             _vm = re.search(r"videos/(\d+)", vod_url)
             _video_id = _vm.group(1) if _vm else None
-            _login = metadata.get("channel") or metadata.get("uploader") or None
+            _login = (metadata.get("uploader_id")
+                       or metadata.get("channel_id")
+                       or metadata.get("channel")
+                       or metadata.get("uploader"))
             if not _login and _video_id:
                 _login = None
             if _video_id and _login:
