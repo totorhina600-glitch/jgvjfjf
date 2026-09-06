@@ -23,8 +23,11 @@ Analyse sémantique (reframing hooks_pur) + arbitrage final. PAS l'extraction br
 visuel/audio (ffmpeg + modèles dédiés).
 
 ## Phases
-P1 schéma + campagne · P2 capteurs gratuits · P3 lexical · P4 audio/visuel ·
+**P1 ✅ FAITE** · P2 capteurs gratuits · P3 lexical · P4 audio/visuel ·
 P5 premium · P6 scoring/docs.
+
+P1 = `libs/campaign_veto.py` (veto directive campagne complète) branché dans
+`run_auto_detect` entre scoring et calcul accepted/rejected.
 
 ## Figé
 La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touche plus.
