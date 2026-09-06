@@ -195,3 +195,30 @@ python F00B_VOX/CODEBASE/f00b_vox.py auto_detect --market us_young_english --pla
 ---
 
 *« La VOD est un océan. VOX ne boit que les gouttes d'or. »* 🔩
+
+
+---
+
+## 🆕 TRANSCRIPTION GPU PAR MODAL (ajout 2026-09-06)
+
+**Contexte** : la transcription locale en CPU de F00B_VOX est fonctionnelle mais
+lente (~1h45 pour la 2e moitié d'une VOD de 3h30). On route désormais la
+transcription vers un service **faster-whisper sur GPU Modal**.
+
+**Ce qui est en place** :
+- `MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/MODAL/` (transcribe.py + DEPLOYER.md)
+  → versionné sur GitHub, **aucun secret**.
+- `f00b_vox.py` et `auto_detector.py` **inchangés** : `PremiumTranscriber` pointe
+  déjà vers `{base_url}/audio/transcriptions`, il suffit de re-pointer la config.
+
+**Ce que doit faire l'opérateur** (cf. `MODAL/DEPLOYER.md` et
+`GUIDE_UTILISATION/15_TRANSCRIPTION_MODAL.md`) :
+1. `pip install modal` + `modal setup` (ou `modal token set ...`)
+2. `modal deploy MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/MODAL/transcribe.py`
+3. Reporter l'URL dans `f00b_secrets.json` -> `base_url`, puis `export MODAL_TOKEN=...`
+
+**Référence de clé premium (rappel)** : la clé premium NVIDIA (`NVIDIA_NIM_API_KEY`)
+sert au **copywriting/Oracle** (analyse des transcripts déjà sortis), PAS à la
+transcription. La transcription passe par Modal (Whisper).
+
+**Modèle par défaut** : `medium` (équilibre vitesse/qualité), GPU T4.
