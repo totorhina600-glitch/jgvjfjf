@@ -55,3 +55,13 @@ La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touc
   pagination par offset Int). C'est la même source que le capteur clips.
 - Ordre impératif dans `run_auto_detect` : capteurs (8a) → scoring (8) → veto (8b) → premium (8c).
   Le scoring consomme l'intensité réelle, il doit donc être APRÈS build_raw_table.
+
+
+## Statut final (GO Warsmith 2026-09-06)
+
+✅ Refonte VOX **validée**. Pondération intensité : emo .30 · vel .15 · spike .15 · evt .20 · hook .20.
+
+Notes de calibration :
+- `chat_velocity` = courbe douce (discriminante), PAS de saturation.
+- `chat_spike` = burstiness (concentration temporelle), distinct de la vélocité.
+- Prochain run de production = nouvelle VOD (sélection fraîche des fenêtres).
