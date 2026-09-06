@@ -31,13 +31,33 @@ from fastapi.responses import JSONResponse
 MODEL_NAME = os.environ.get("WHISPER_MODEL", "medium")
 GPU = os.environ.get("WHISPER_GPU", "T4")
 
+def _device():
+    # GPU toujours present via @app.function(gpu=GPU) ; fallback CPU par securite.
+    try:
+        import ctranslate2
+        if ctranslate2.get_cuda_device_count() > 0:
+            return "cuda", "float16"
+    except Exception:
+        pass
+    return "cpu", "int8"
+
+
+def _download_model():
+    # Telecharge le modele au BUILD de l'image (cache, pas au cold start).
+    from faster_whisper import WhisperModel
+    WhisperModel(MODEL_NAME, device="cpu", compute_type="int8")
+
+
 image = (
-    modal.Image.debian_slim(python_version="3.11").pip_install(
+    modal.Image.debian_slim(python_version="3.11")
+    .pip_install(
         "faster-whisper==1.1.1",
         "fastapi==0.115.0",
         "uvicorn[standard]==0.30.6",
         "python-multipart==0.0.20",
+        "requests==2.32.3",
     )
+    .run_function(_download_model, timeout=900)
 )
 
 app = modal.App("perturabo-whisper")
@@ -52,7 +72,8 @@ def _get_model():
     if _model is None:
         from faster_whisper import WhisperModel
 
-        _model = WhisperModel(MODEL_NAME, device="cuda", compute_type="float16")
+        _device_name, _compute = _device()
+        _model = WhisperModel(MODEL_NAME, device=_device_name, compute_type=_compute)
     return _model
 
 
