@@ -49,7 +49,7 @@ def _download_model():
 
 
 image = (
-    modal.Image.debian_slim(python_version="3.11")
+    modal.Image.from_registry("nvidia/cuda:12.4.0-cudnn-runtime-ubuntu22.04", add_python="3.11")
     .pip_install(
         "faster-whisper==1.1.1",
         "fastapi==0.115.0",
@@ -128,6 +128,12 @@ async def transcribe(request: Request):
             "text": text,
             "language": getattr(info, "language", language),
         }
+    except Exception as e:
+        import traceback
+        return JSONResponse(
+            {"error": str(e), "trace": traceback.format_exc()},
+            status_code=500,
+        )
     finally:
         if tmp_path:
             try:
