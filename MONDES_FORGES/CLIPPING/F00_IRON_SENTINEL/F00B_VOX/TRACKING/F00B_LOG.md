@@ -128,3 +128,19 @@ Partie Modal figée (succès).
 ### Point d'attention
 La VOD de test (2026-09-04) est HORS cycle campagne Aishah Sofey (7/20→7/31) :
 warning, pas rejet. À confirmer côté Warsmith.
+
+
+## 2026-09-06 — P2→P6 refonte VOX : capteurs + intensité réelle + premium
+
+**Statut** : ✅ FAIT + poussé (test local validé). Run réel à confirmer.
+
+### Livré
+- `libs/vox_refonte.py` : capteurs émotes/vélocité/événements/lexical + `real_intensity()` + `build_raw_table()`.
+- `libs/vox_premium.py` : arbitrage kimi-k3 (reframing + verdict).
+- Patch `run_auto_detect` : intensité réelle → veto → premium ; produit `OUT/raw_table.json`.
+- Workflow : injecte NVIDIA (clé + modèle kimi-k3).
+
+### Point décisif
+`signal_intensity` n'est plus la constante 0.9 (auto_detector l.380) : elle est calculée
+par convergence de 4 signaux (emo 0.35 / vel 0.25 / evt 0.20 / hook 0.20). Fumée :
+fenêtre riche=0.9, vide=0.1.
