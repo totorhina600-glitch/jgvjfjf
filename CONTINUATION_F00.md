@@ -357,3 +357,19 @@ pour valider le nouveau code — PAS de run complet (gaspillage de 240 Mo + 3h30
 Intensité réelle différenciée : 7 valeurs distinctes sur 9 candidats (vs 0.9 constant avant).
 
 ### Rappel : run workflow annulé (évitait re-transcription inutile). Prochain run réel = nouvelle VOD.
+
+
+---
+
+## Session 2026-09-06 (GO Warsmith — refonte VOX validée)
+
+### Décision
+Gate Warsmith : **GO** sur la refonte VOX (intensité réelle multi-capteurs + veto + premium).
+
+### Calibrage finale (post-GO)
+- vélocité : saturation corrigée (soft saturation discriminante, plus de 1.0 uniforme).
+- `spike_signal` ajouté (burstiness) pour distinguer débit régulier vs pic soudain.
+- pondération finale : emo .30 · vel .15 · spike .15 · evt .20 · hook .20.
+
+### Reste (production)
+Run complet sur NOUVELLE VOD (les capteurs doivent SÉLECTIONNER les fenêtres, pas re-scorer les anciennes).
