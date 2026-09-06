@@ -55,7 +55,11 @@ def emote_signal(msgs_window):
     for m in msgs_window:
         body = str(m.get("body", "")).upper()
         emotes = [str(e).upper() for e in m.get("emotes", [])]
-        if any(e in body or e in emotes for e in ALL_EMOTES):
+        # Un emote peut arriver en nom ("KEKW") ou en id ("191764;0;5").
+        # Tout emote présent = signal émotionnel ; un mot émotif dans le texte compte aussi.
+        has_known = any(e in body for e in ALL_EMOTES)
+        has_emote = bool(emotes)
+        if has_known or has_emote:
             hits += 1
     ratio = hits / len(msgs_window)
     # >30% de messages émotifs = intensité maximale émotionnelle
