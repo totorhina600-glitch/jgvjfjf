@@ -40,6 +40,8 @@
 | `../CONTRACTS/clipping_rules.md` | Warmup, volume, FTC, transformative |
 | `../CONTRACTS/production_pack_schema.json` | Schéma JSON du production pack (contrat interface OMNIS_WATCH) |
 | `../F00_IRON_SENTINEL/F00B_VOX/MODAL/DEPLOYER.md` | Guide déploiement transcription GPU Modal (F00B_VOX) |
+| `../F00_IRON_SENTINEL/F00B_VOX/PLAN_REFONTE_VOX.md` | **Plan de refonte VOX** (architecture multi-capteurs, validé) |
+| `../GUIDE_UTILISATION/17_PLAN_REFONTE_VOX.md` | Guide du plan de refonte VOX |
 | `../GUIDE_UTILISATION/15_TRANSCRIPTION_MODAL.md` | Transcription GPU Modal — principe, correctifs, rotation de compte |
 | `../GUIDE_UTILISATION/16_ORCHESTRATION_GITHUB_ACTIONS.md` | Orchestration Oracle via GH Actions (rôles, flux, secrets) |
 
