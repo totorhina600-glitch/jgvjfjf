@@ -110,3 +110,21 @@ Tableau brut multi-capteurs → scoring → arbitrage premium (kimi-k3). Entonno
 ### Décisions
 Directive campagne complète · clé premium = sémantique + arbitrage · full capteurs en entonnoir.
 Partie Modal figée (succès).
+
+
+## 2026-09-06 — P1 refonte VOX : filtre veto directive campagne
+
+**Statut** : ✅ FAIT + poussé.
+
+### Fichiers
+- `CODEBASE/libs/campaign_veto.py` (nouveau) — contrat tableau brut + parse directive + veto.
+- `CODEBASE/libs/auto_detector.py` — branchement veto dans `run_auto_detect` (étape 8b).
+
+### Ce que fait P1
+- plateforme non autorisée → `auto_rejected` (veto dur)
+- exclusions (of_creator, onlyfans, bait/misinfo, negative_pr) → veto dur
+- VOD hors cycle → warning (prolongation possible via annonce)
+
+### Point d'attention
+La VOD de test (2026-09-04) est HORS cycle campagne Aishah Sofey (7/20→7/31) :
+warning, pas rejet. À confirmer côté Warsmith.
