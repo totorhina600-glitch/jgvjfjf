@@ -159,3 +159,22 @@ fenêtre riche=0.9, vide=0.1.
 
 ### Reste → FAIT
 Capteur clips communautaires = `libs/clips_heatmap.py` via **GraphQL public Twitch** (Client-ID web anonyme, zéro clé). Heatmap densité × vues + titres. Branché dans `build_raw_table` + `run_auto_detect`.
+
+
+## 2026-09-06 — Test réel : découvertes + fixes (chat mort + ordre scoring)
+
+**Statut** : ✅ Fix complété. Validation réelle sur données déjà transcrites (pas de re-transcription).
+
+### Découvertes (le test réel a révélé)
+1. **API v5 du chat Twitch = morte** (0 message) → le `intensity:0.9` d'origine était fictif.
+   → `fetch_chat_replay` réécrit en **GraphQL public** (successeur, pagination par offset Int).
+   → Validation : 2641 messages réels récupérés.
+2. **Bug d'ordre** : `score_candidates` tournait AVANT `build_raw_table` → intensité réelle jamais consommée.
+   → Réordonnancement : capteurs (8a) → scoring (8) → veto (8b) → premium (8c).
+3. **campaign_veto** ne posait pas `status` sans veto (KeyError) → corrigé (toujours posé).
+
+### Preuve
+Intensité sur 9 candidats réels : **7 valeurs distinctes** (0.25→0.58) au lieu de 1 seule (0.9).
+
+### Fix commits
+fetch_chat GraphQL · réordonnancement · campaign_veto status · emote_signal (tout emote).
