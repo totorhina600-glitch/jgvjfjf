@@ -8,7 +8,7 @@
 ## 📅 DERNIÈRE MISE À JOUR
 
 **Date** : 2026-09-06
-**Ajout** : Modal GPU + orchestration GH Actions + 1er test de production réussi
+**Ajout** : Modal GPU + orchestration GH Actions + 1er test réussi + PLAN refonte VOX validé
 
 ---
 
@@ -261,3 +261,27 @@ puis suivi du run et remontée des Portes à l'opérateur.
 1. `requests` manquant dans l'image Modal → 500 (faster-whisper l'importe)
 2. Image de base `debian_slim` sans CUDA → `libcublas.so.12 not found` ; utiliser `nvidia/cuda:12.4.0-runtime-ubuntu22.04`
 3. Précharger le modèle au build + fallback CPU
+
+
+---
+
+## Session 2026-09-06 (suite) — PLAN refonte VOX (validé, NON implémenté)
+
+### Objectif
+Faire de VOX un **garde-barrière multi-capteurs** : tableau brut (emotes, clips commu,
+événements, audio, visuel, lexical) → scoring → arbitrage premium (kimi-k3). Éliminer le
+garbage avant l'aval (règle « garbage in = garbage out ») et corriger le `signal_intensity:0.9`
+constant (auto_detector.py l.380).
+
+### Décisions verrouillées
+- Directive campagne **complète** en veto (source / plateforme / marché / cycle / exclusions).
+- Clé premium = **analyse sémantique + arbitrage final** (jamais sur le flot brut).
+- Full capteurs, dans un entonnoir (les lourds ne tournent que sur les fenêtres chaudes).
+- Partie Modal **figée** (succès).
+
+### Prochaines étapes (phases, dans l'ordre)
+P1 schéma tableau + campagne complète → P2 capteurs gratuits → P3 lexical →
+P4 audio/visuel → P5 premium → P6 scoring/docs.
+
+### Doc
+`F00_IRON_SENTINEL/F00B_VOX/PLAN_REFONTE_VOX.md` + `GUIDE_UTILISATION/17_PLAN_REFONTE_VOX.md`.
