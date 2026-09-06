@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-09-06T14:30:11Z",
+  "source": "https://www.twitch.tv/videos/2864600351",
+  "engine": "auto_detect",
+  "total_words_analyzed": 15118,
+  "total_candidates_raw": 10,
+  "total_accepted": 9,
+  "total_auto_rejected": 1,
+  "candidates": [
+    {
+      "candidate_id": "9a50028540",
+      "start_sec": 737.48,
+      "end_sec": 767.48,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:12:17.480"
+    },
+    {
+      "candidate_id": "5739554e54",
+      "start_sec": 819.23,
+      "end_sec": 849.23,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:13:39.230"
+    },
+    {
+      "candidate_id": "f6adeaa996",
+      "start_sec": 330.67,
+      "end_sec": 360.67,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:05:30.670"
+    },
+    {
+      "candidate_id": "713ac052ab",
+      "start_sec": 711.69,
+      "end_sec": 741.69,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:11:51.690"
+    },
+    {
+      "candidate_id": "217891d7cd",
+      "start_sec": 642.14,
+      "end_sec": 672.14,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:10:42.140"
+    },
+    {
+      "candidate_id": "29ce4425d0",
+      "start_sec": 687.45,
+      "end_sec": 717.45,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:11:27.450"
+    },
+    {
+      "candidate_id": "10c4ec8f7f",
+      "start_sec": 665.42,
+      "end_sec": 695.42,
+      "duration_sec": 30.0,
+      "signal_type": "trigger_word",
+      "signal_intensity": 0.85,
+      "signal_start": "00:11:05.420"
+    },
+    {
+      "candidate_id": "713dc95e2b",
+      "start_sec": 879.15,
+      "end_sec": 909.15,
+      "duration_sec": 30.0,
+      "signal_type": "punchline",
+      "signal_intensity": 0.9,
+      "signal_start": "00:14:39.150"
+    },
+    {
+      "candidate_id": "08c55e11c6",
+      "start_sec": 1140.8,
+      "end_sec": 1170.8,
+      "duration_sec": 30.0,
+      "signal_type": "trigger_word",
+      "signal_intensity": 0.85,
+      "signal_start": "00:19:00.800"
+    }
+  ]
+}
