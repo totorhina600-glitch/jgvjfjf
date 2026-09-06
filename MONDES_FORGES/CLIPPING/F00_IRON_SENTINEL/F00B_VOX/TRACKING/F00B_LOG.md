@@ -178,3 +178,14 @@ Intensité sur 9 candidats réels : **7 valeurs distinctes** (0.25→0.58) au li
 
 ### Fix commits
 fetch_chat GraphQL · réordonnancement · campaign_veto status · emote_signal (tout emote).
+
+
+## 2026-09-06 — GO Warsmith + dé-saturation vélocité
+
+**Statut** : ✅ Refonte VOX validée (GO) + calibrage vélocité corrigé.
+
+### Fix post-GO
+- `velocity_signal` : saturation à 1.0 partout → courbe douce `1 - exp(-ratio/4)` (discriminante).
+- Nouveau `spike_signal` : burstiness (concentration temporelle 5s) — distinct de la vélocité.
+- Pondération intensité : emo 0.30 · vel 0.15 · **spike 0.15** · evt 0.20 · hook 0.20.
+- `chat_spike` dans le tableau brut = vrai spike (plus un doublon de vélocité).
