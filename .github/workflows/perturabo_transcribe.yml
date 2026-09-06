@@ -90,6 +90,8 @@ jobs:
         working-directory: MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE
         env:
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          NVIDIA_NIM_API_KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
+          NVIDIA_NIM_MODEL: moonshotai/kimi-k3
         run: |
           python f00b_vox.py auto_detect \
             --nb-clips "${{ inputs.nb_clips }}" \
