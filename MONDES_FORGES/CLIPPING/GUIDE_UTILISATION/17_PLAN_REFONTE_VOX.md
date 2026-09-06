@@ -23,11 +23,20 @@ Analyse sémantique (reframing hooks_pur) + arbitrage final. PAS l'extraction br
 visuel/audio (ffmpeg + modèles dédiés).
 
 ## Phases
-**P1 ✅ FAITE** · P2 capteurs gratuits · P3 lexical · P4 audio/visuel ·
-P5 premium · P6 scoring/docs.
+**P1→P6 ✅ FAITES** — voir détails ci-dessous.
 
 P1 = `libs/campaign_veto.py` (veto directive campagne complète) branché dans
 `run_auto_detect` entre scoring et calcul accepted/rejected.
 
 ## Figé
 La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touche plus.
+
+
+## État d'implémentation
+- **P1** ✅ `libs/campaign_veto.py` — veto directive campagne complète dans `run_auto_detect`.
+- **P2-P4** ✅ `libs/vox_refonte.py` — capteurs (emotes+vélocité+événements+lexical), dégradation gracieuse sur clips/audio/visuel.
+- **P6** ✅ `vox_refonte.real_intensity()` + `build_raw_table()` — intensité RÉELLE (plus la constante 0.9), tableau brut `raw_table.json`.
+- **P5** ✅ `libs/vox_premium.py` — arbitrage kimi-k3 (score reframing + verdict) sur les survivants.
+
+### Fichiers
+`libs/campaign_veto.py` · `libs/vox_refonte.py` · `libs/vox_premium.py` · patch `auto_detector.py` · workflow (injecte NVIDIA_NIM_API_KEY/MODEL).
