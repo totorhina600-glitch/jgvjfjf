@@ -1,6 +1,6 @@
 # PLAN_REFONTE_VOX — Refonte de l'architecture F00B_VOX
 
-> **Statut : PLAN VALIDÉ (non implémenté).** Document de référence avant toute ligne de code.
+> **Statut : IMPLÉMENTATION EN COURS.** P1 faite, P2→P6 à faire. Document de référence avant toute ligne de code.
 > Ne rien modifier ici sans revalidation du Warsmith.
 >
 > Figé : la partie **Modal** (transcribe.py, workflow GH Actions, secrets) est un succès acté.
@@ -80,7 +80,7 @@ analyse transcript/chat/titres de clips + arbitrage final sur le tableau.
 
 ## 6. Ordre de build (phases)
 
-- **P1** — Schéma tableau brut + directive campagne complète (fondation, veto).
+- **P1** — ✅ **FAIT** — Schéma tableau brut + directive campagne complète en veto (`libs/campaign_veto.py`, branché dans `run_auto_detect`).
 - **P2** — Capteurs gratuits (étage 0) → remplace `intensity:0.9`.
 - **P3** — Filtres lexicaux (étage 1), alignés pur_directive + hooks_psychology.
 - **P4** — Capteurs lourds ciblés (étage 2), audio puis visuel.
