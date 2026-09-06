@@ -61,3 +61,18 @@ python f00b_vox.py auto_detect --nb-clips 5 --market us_young_english --platform
 - Clé premium NVIDIA = **analyse/copywriting** (pas transcription).
 - Transcription = **Modal (Whisper medium)** — modèle swappable via config.
 - Rotation de compte Modal possible sans toucher au code (crédits gratuits).
+
+
+## 2026-09-06 — Orchestration Oracle via GitHub Actions
+
+**Statut** : Workflow déployé + secrets injectés (attente premier déclenchement)
+
+### Fichiers créés/modifiés
+- `.github/workflows/perturabo_transcribe.yml` → pipeline deploy→transcribe→score→commit
+- `GUIDE_UTILISATION/16_ORCHESTRATION_GITHUB_ACTIONS.md` → doctrine des rôles
+- `MODAL/DEPLOYER.md` → corrigé (déploiement via GH Actions, plus machine opérateur)
+
+### Décision clé
+- L'opérateur ne code pas, ne déploie pas, ne clique pas : il valide les Portes.
+- L'Oracle (Cody) déclenche le workflow via l'API et suit les runs.
+- Secrets injectés en aveugle (chiffrés libsodium), jamais commités.
