@@ -937,6 +937,12 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
     # ── 8a. Intensité réelle + tableau brut (P2-P6) ────────────────────
     try:
         from vox_refonte import build_raw_table
+        # P4 : injecter le chemin audio (déjà téléchargé) + une tranche vidéo
+        # basse résolution PAR FENÊTRE (jamais la VOD complète — règle d'or).
+        for _c in candidates:
+            _c["_audio_path"] = audio_path
+            if not keep_audio and not os.path.exists(audio_path):
+                _c["_audio_path"] = None
         candidates, _raw_table = build_raw_table(
             candidates, all_words, chat_messages, TRIGGER_WORDS, vod_duration
         )
