@@ -305,3 +305,22 @@ P4 audio/visuel → P5 premium → P6 scoring/docs.
 ### Prochaine étape
 P2 — capteurs gratuits (emotes+vélocité, clips commu heatmap, événements) remplir
 les colonnes du tableau brut + remplacer `intensity:0.9` (auto_detector l.380).
+
+
+---
+
+## Session 2026-09-06 (P2→P6 implémentées, testées en local)
+
+### Fichiers
+- `libs/vox_refonte.py` (P2-P4 + tableau brut + intensité réelle) — emote/vélocité/événement/lexical, dégradation gracieuse clips/audio/visuel.
+- `libs/vox_premium.py` (P5) — arbitrage kimi-k3 : score reframing + verdict (ok/weak/skip).
+- `auto_detector.py` — branchement intensité réelle → veto campagne → arbitrage premium.
+- workflow — injecte `NVIDIA_NIM_API_KEY` + `NVIDIA_NIM_MODEL=moonshotai/kimi-k3`.
+
+### Validation locale
+- Syntaxe OK (3 fichiers).
+- Fumée : fenêtre riche → intensity 0.9 ; fenêtre vide → 0.1 (le fameux 0.9 constant est MORT).
+- Veto campagne : OF creator → rejet ; plateforme non listée → rejet ; hors cycle → warning.
+
+### Reste à faire (validation réelle)
+1er run workflow sur une VOD pour confirmer le bout-en-bout capteurs+premium (pas de side-effect déjà validé au niveau Modal).
