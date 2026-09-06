@@ -144,3 +144,18 @@ warning, pas rejet. À confirmer côté Warsmith.
 `signal_intensity` n'est plus la constante 0.9 (auto_detector l.380) : elle est calculée
 par convergence de 4 signaux (emo 0.35 / vel 0.25 / evt 0.20 / hook 0.20). Fumée :
 fenêtre riche=0.9, vide=0.1.
+
+
+## 2026-09-06 — Capteurs audio + visuel (P4 phase 2)
+
+**Statut** : ✅ créés + branchés (dégradation gracieuse). En attente clés Twitch pour clips.
+
+### Fichiers
+- `libs/audio_sensor.py` (rire/applaudissement, heuristique RMS+ZCR) — gratuit, fenêtres seulement.
+- `libs/visual_sensor.py` (face OpenCV + cut ffmpeg) — gratuit.
+- `vox_refonte.py` : colonnes `audio_laugh/applause` + `visual_face/cut` branchées.
+- `auto_detector.py` : injecte `_audio_path` dans les candidats avant `build_raw_table`.
+- workflow : `opencv-python-headless` ajouté.
+
+### Reste
+Capteur clips communautaires (Twitch Helix) — Client ID/Secret à fournir (app dev gratuite).
