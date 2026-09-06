@@ -40,9 +40,12 @@ MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/MODAL/
 - Le **token Modal** (`MODAL_TOKEN`) — env var uniquement.
 - `f00b_secrets.json` (gitignored) avec `base_url` pointant vers son deploiement.
 
-## Deployer (etape par etape)
+## Déploiement — AUTOMATISÉ (ne plus faire à la main)
 
-Voir le guide complet : `MODAL/DEPLOYER.md`. En resume :
+> ⚠️ Le déploiement est piloté par **GitHub Actions** déclenché par l'**Oracle**.
+> Voir `16_ORCHESTRATION_GITHUB_ACTIONS.md`. Le mode manuel ci-dessous ne sert qu'au debug.
+
+### Rappel manuel (debug uniquement)
 
 ```bash
 pip install modal
@@ -75,6 +78,15 @@ et exporter : `export MODAL_TOKEN="<token-secret>"`
 | `large-v3` | ~1-2x real-time | excellente | production exigeante |
 
 `medium` sur GPU T4 transcrit ~105 min en quelques minutes (vs ~1h45 en CPU local).
+
+## Correctifs appliqués (leçons du 1er test)
+
+| Problème | Fix |
+|---|---|
+| `ModuleNotFoundError: requests` → 500 | dépendance `requests==2.32.3` dans l'image |
+| `RuntimeError: libcublas.so.12 is not found` → 500 | image de base `nvidia/cuda:12.4.0-runtime-ubuntu22.04` |
+| modèle chargé au 1er appel (froid) | préchargé au build + fallback CPU |
+| 500 muet | le endpoint renvoie le traceback dans le corps |
 
 ## Rotation de compte (credits gratuits)
 
