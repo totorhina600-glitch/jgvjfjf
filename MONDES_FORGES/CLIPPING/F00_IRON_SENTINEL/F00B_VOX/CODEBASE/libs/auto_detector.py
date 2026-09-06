@@ -280,57 +280,71 @@ class PremiumTranscriber:
 # ─── Chat Replay ────────────────────────────────────────────────────────────
 
 def fetch_chat_replay(vod_url):
-    """Récupère le chat replay d'une VOD Twitch publique via l'API v5."""
+    """Récupère le chat replay d'une VOD Twitch publique via le GraphQL public
+    (successeur de l'API v5, désormais fermée). Pagination par offset (Int)."""
     m = re.search(r"videos/(\d+)", vod_url)
     if not m:
         _log("⚠️  Impossible d'extraire le video_id — chat ignoré")
         return []
     video_id = m.group(1)
-    _log(f"💬 Chat replay : video_id={video_id}")
+    _log(f"💬 Chat replay (GraphQL) : video_id={video_id}")
 
+    _GQL = "https://gql.twitch.tv/gql"
+    _QUERY = (
+        "query VidComments($videoID:ID!,$off:Int){video(id:$videoID){"
+        "comments(contentOffsetSeconds:$off){edges{node{"
+        "contentOffsetSeconds message{fragments{text emote{id}}}"
+        "}}}}}"
+    )
     messages = []
-    offset = 0.0
-    max_requests = 500  # garde-fou budget
-    seen_offsets = set()
+    offset = 0
+    max_requests = 400  # garde-fou budget
+    last_off = None
 
     for _ in range(max_requests):
-        url = (f"https://api.twitch.tv/v5/videos/{video_id}/comments"
-               f"?client_id={_TWITCH_CLIENT_ID}"
-               f"&content_offset_seconds={offset}")
+        payload = json.dumps({"operationName": "VidComments",
+                              "variables": {"videoID": video_id, "off": offset},
+                              "query": _QUERY}).encode("utf-8")
+        req = urllib.request.Request(_GQL, data=payload, method="POST", headers={
+            "Client-ID": _TWITCH_CLIENT_ID,
+            "Content-Type": "application/json",
+            "User-Agent": "PERTURABO-F00B-VOX",
+        })
         try:
-            req = urllib.request.Request(url, headers={
-                "User-Agent": "PERTURABO-F00B-VOX",
-            })
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=20) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
         except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError):
             break
 
-        comments = data.get("comments", [])
-        if not comments:
+        edges = (((((data.get("data") or {}).get("video")) or {}).get("comments")) or {}).get("edges") or []
+        if not edges:
             break
 
-        for c in comments:
-            body = c.get("message", {}).get("body", "")
-            emotes = [e.get("text", "") for e in c.get("message", {}).get("emoticons", [])]
-            offset_sec = c.get("content_offset_seconds", 0)
+        for e in edges:
+            node = e.get("node") or {}
+            off_sec = node.get("contentOffsetSeconds", 0)
+            frags = ((node.get("message") or {}).get("fragments")) or []
+            body_parts = []
+            emotes = []
+            for fr in frags:
+                txt = fr.get("text")
+                if txt:
+                    body_parts.append(str(txt))
+                em = fr.get("emote")
+                if em:
+                    emotes.append(str(em.get("id", "")))
             messages.append({
-                "offset_sec": round(offset_sec, 2),
-                "body": body,
+                "offset_sec": round(float(off_sec), 2),
+                "body": " ".join(body_parts).strip(),
                 "emotes": emotes,
             })
 
-        next_offset = data.get("_next")
-        if not next_offset or next_offset in seen_offsets:
+        new_last = edges[-1]["node"].get("contentOffsetSeconds", offset)
+        if last_off is not None and new_last <= last_off:
             break
-        seen_offsets.add(next_offset)
-        # Le paramètre _next est un offset opaque mais on utilise
-        # content_offset_seconds pour la pagination
-        last_offset = comments[-1].get("content_offset_seconds", offset)
-        if last_offset <= offset:
-            break
-        offset = last_offset + 1
-        time.sleep(0.1)  # politesse
+        last_off = new_last
+        offset = int(new_last) + 1
+        time.sleep(0.05)  # politesse
 
     _log(f"💬 {len(messages)} messages chat récupérés")
     return messages
