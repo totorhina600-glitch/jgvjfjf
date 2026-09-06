@@ -92,3 +92,21 @@ python f00b_vox.py auto_detect --nb-clips 5 --market us_young_english --platform
 2. Image de base : `debian_slim` → `nvidia/cuda:12.4.0-runtime-ubuntu22.04` (libcublas.so.12 manquant → 500)
 3. Préchargement du modèle au build (`.run_function`) + fallback CPU si CUDA absente
 4. Endpoint durci : renvoie le traceback dans le corps du 500 (plus jamais aveugle)
+
+
+## 2026-09-06 — Plan refonte VOX validé (architecture multi-capteurs)
+
+**Statut** : PLAN VALIDÉ — non implémenté. Documenté dans `PLAN_REFONTE_VOX.md`.
+
+### Diagnostic ayant motivé la refonte
+- `score_candidates()` ne reçoit pas ARCHIVUM (4 params) : scoring syntaxique en dur.
+- `intensity:0.9` constant (auto_detector l.380), jamais mesuré.
+- Directive campagne absente du scoring ; F00B_VOX n'a AUCUN capteur dédié (vs F00A ~14).
+
+### Cible
+Tableau brut multi-capteurs → scoring → arbitrage premium (kimi-k3). Entonnoir 4 étages
+(le premium ne voit que les survivants). Clause campagne complète en veto.
+
+### Décisions
+Directive campagne complète · clé premium = sémantique + arbitrage · full capteurs en entonnoir.
+Partie Modal figée (succès).
