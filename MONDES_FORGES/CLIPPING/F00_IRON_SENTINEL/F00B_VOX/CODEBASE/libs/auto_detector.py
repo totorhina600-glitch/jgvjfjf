@@ -772,7 +772,7 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
         vod_url,
     ]
     try:
-        subprocess.run(dl_cmd, capture_output=True, text=True, timeout=300, check=True)
+        subprocess.run(dl_cmd, capture_output=True, text=True, timeout=1800, check=True)
         if os.path.exists(audio_path):
             audio_size_mb = os.path.getsize(audio_path) / (1024 * 1024)
             _log(f"  Audio: {audio_size_mb:.1f} Mo")
