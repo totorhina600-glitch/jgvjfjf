@@ -47,4 +47,4 @@ La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touc
 - **`libs/audio_sensor.py`** — rire/applaudissement (heuristique RMS+ZCR+burets) + silence, gratuit (numpy+ffmpeg), sur fenêtres survivantes uniquement.
 - **`libs/visual_sensor.py`** — visage (OpenCV Haar) + cut (ffmpeg scene detect), gratuit, dégradation gracieuse.
 - Branchés dans `vox_refonte.build_raw_table()` (colonnes `audio_laugh`, `audio_applause`, `visual_face`, `visual_cut`).
-- **Reste capteur clips communautaires (Twitch Helix, gratuit)** — en attente Client ID/Secret Twitch (app dev gratuite).
+- ✅ **Capteur clips communautaires** — `libs/clips_heatmap.py` via GraphQL public Twitch (Client-ID web anonyme, ZÉRO clé). Heatmap densité × vues + moisson des titres. Dégradation gracieuse (endpoint interne fragile).
