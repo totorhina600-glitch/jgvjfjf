@@ -1,6 +1,6 @@
 # PLAN_REFONTE_VOX — Refonte de l'architecture F00B_VOX
 
-> **Statut : IMPLÉMENTATION EN COURS.** P1 faite, P2→P6 à faire. Document de référence avant toute ligne de code.
+> **Statut : ✅ IMPLÉMENTÉ (P1→P6).** Code en place, testé en local. Reste validation run réel. Document de référence avant toute ligne de code.
 > Ne rien modifier ici sans revalidation du Warsmith.
 >
 > Figé : la partie **Modal** (transcribe.py, workflow GH Actions, secrets) est un succès acté.
@@ -81,11 +81,11 @@ analyse transcript/chat/titres de clips + arbitrage final sur le tableau.
 ## 6. Ordre de build (phases)
 
 - **P1** — ✅ **FAIT** — Schéma tableau brut + directive campagne complète en veto (`libs/campaign_veto.py`, branché dans `run_auto_detect`).
-- **P2** — Capteurs gratuits (étage 0) → remplace `intensity:0.9`.
-- **P3** — Filtres lexicaux (étage 1), alignés pur_directive + hooks_psychology.
-- **P4** — Capteurs lourds ciblés (étage 2), audio puis visuel.
-- **P5** — Arbitrage premium (étage 3), kimi-k3.
-- **P6** — Scoring/fusion + docs/tracking, Gate Warsmith voit le tableau.
+- **P✅2** — Capteurs gratuits (étage 0) → remplace `intensity:0.9`.
+- **P✅3** — Filtres lexicaux (étage 1), alignés pur_directive + hooks_psychology.
+- **P✅4** — Capteurs lourds ciblés (étage 2), audio puis visuel.
+- **P✅5** — Arbitrage premium (étage 3), kimi-k3.
+- **P✅6** — Scoring/fusion + docs/tracking, Gate Warsmith voit le tableau.
 
 Chaque phase est livrable, testable et commitable indépendamment.
 
