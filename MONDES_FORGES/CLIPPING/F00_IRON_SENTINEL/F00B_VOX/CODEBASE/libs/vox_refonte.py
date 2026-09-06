@@ -76,13 +76,34 @@ def chat_baseline(messages, duration=0.0):
     return max(len(messages) / max(span, 1.0), 1e-6)
 
 def velocity_signal(msgs_window, window_dur, baseline):
-    """Ratio vélocité locale / baseline. 3× la baseline = 1.0."""
+    """Vélocité relative (courbe douce) — discriminante, évite la saturation à 1.0."""
     if window_dur <= 0:
         return 0.0
     rate = len(msgs_window) / window_dur
     if baseline <= 0:
         return 0.0
-    return min(1.0, (rate / baseline) / 3.0)
+    ratio = rate / baseline
+    # 2× baseline ≈ 0.39 · 4× ≈ 0.63 · 8× ≈ 0.86 · 20× ≈ 0.99
+    return round(min(1.0, 1.0 - math.exp(-ratio / 4.0)), 3)
+
+
+def spike_signal(msgs_window, window_dur, bin_sec=5.0):
+    """Burstiness : concentration temporelle des messages dans la fenêtre.
+    1.0 = tout concentré dans un seul sous-segment de 5s (pic brutal).
+    Distinct de la vélocité : un débit régulier ≠ un pic soudain."""
+    if not msgs_window or window_dur <= 0:
+        return 0.0
+    s = min(_num(m.get("offset_sec")) for m in msgs_window)
+    nbins = max(1, int(window_dur / bin_sec))
+    counts = [0] * nbins
+    for m in msgs_window:
+        idx = int((_num(m.get("offset_sec")) - s) / bin_sec)
+        idx = max(0, min(nbins - 1, idx))
+        counts[idx] += 1
+    avg = len(msgs_window) / nbins
+    if avg <= 0:
+        return 0.0
+    return round(min(1.0, max(counts) / (avg * 3.0)), 3)
 
 def event_signal(msgs_window):
     """Binary : au moins un événement majeur (raid/host/sub/gift/follow) ?"""
@@ -173,11 +194,12 @@ def real_intensity(c, words, messages, baseline, trigger_words):
     signals = {}
     signals["emo"] = emote_signal(mw)
     signals["vel"] = velocity_signal(mw, dur, baseline)
+    signals["spike"] = spike_signal(mw, dur)
     signals["evt"] = event_signal(mw)
     lex = lexical_signal(words, s, e, trigger_words)
     signals["hook"] = 1.0 if lex.get("hook") else 0.0
 
-    weights = {"emo": 0.35, "vel": 0.25, "evt": 0.20, "hook": 0.20}
+    weights = {"emo": 0.30, "vel": 0.15, "spike": 0.15, "evt": 0.20, "hook": 0.20}
     present = {k: v for k, v in signals.items() if v is not None}
     total_w = sum(weights.get(k, 0.0) for k in present)
     if total_w <= 0:
@@ -226,7 +248,7 @@ def build_raw_table(candidates, words, messages, trigger_words, duration=0.0, cl
             "duration_sec": round(dur, 2),
             "emote_joy": round(emote_signal(mw), 3),
             "chat_velocity": round(velocity_signal(mw, dur, baseline), 3),
-            "chat_spike": round(velocity_signal(mw, dur, baseline), 3),
+            "chat_spike": round(spike_signal(mw, dur), 3),
             "event": event_signal(mw),
             "clips_density": _cl["density"] if _cl else None,
             "clips_views": _cl["views"] if _cl else None,
