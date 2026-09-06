@@ -7,8 +7,8 @@
 
 ## 📅 DERNIÈRE MISE À JOUR
 
-**Date** : 2026-09-05
-**Ajout** : F00B_VOX (sous-frégate VOX, l'Oreille Absolue)
+**Date** : 2026-09-06
+**Ajout** : Modal GPU + orchestration GH Actions + 1er test de production réussi
 
 ---
 
@@ -241,3 +241,23 @@ clic manuel de l'opérateur. L'opérateur reste un valideur de Portes exclusif.
 puis suivi du run et remontée des Portes à l'opérateur.
 
 **Rôles verrouillés** : Oracle déclenche + suit ; GH Actions exécute ; opérateur valide uniquement.
+
+
+---
+
+## Session 2026-09-06 — Modal GPU + Orchestration + 1er test de production
+
+### Ce qui a été fait
+- **Service Modal** `F00_IRON_SENTINEL/F00B_VOX/MODAL/transcribe.py` : endpoint `/audio/transcriptions` (faster-whisper `medium` sur GPU), word-level + `vad_filter`.
+- **Orchestration GitHub Actions** `.github/workflows/perturabo_transcribe.yml` : l'Oracle déclenche via API → `modal deploy` → télécharge l'audio → transcrit → score → commit dans `ARCHIVUM`.
+- **Secrets** injectés en aveugle (MODAL_TOKEN_ID/SECRET, NVIDIA_NIM_API_KEY), jamais commités.
+
+### Premier test de production RÉUSSI ✅
+- VOD : `https://www.twitch.tv/videos/2864600351` (aishahsofey, "PLAYING GTA V REACTIONS", 3h29)
+- `ARCHIVUM/montage/transcripts/v2864600351_transcript.json` (15 118 mots)
+- `ARCHIVUM/montage/transcripts/v2864600351_candidats.json` (9 candidats acceptés)
+
+### Pièges à retenir (pour le prochain opérateur)
+1. `requests` manquant dans l'image Modal → 500 (faster-whisper l'importe)
+2. Image de base `debian_slim` sans CUDA → `libcublas.so.12 not found` ; utiliser `nvidia/cuda:12.4.0-runtime-ubuntu22.04`
+3. Précharger le modèle au build + fallback CPU
