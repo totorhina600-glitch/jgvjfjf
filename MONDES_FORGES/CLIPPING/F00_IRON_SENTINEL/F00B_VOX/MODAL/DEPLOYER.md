@@ -1,77 +1,52 @@
 # MODAL — DEPLOYER (transcription GPU F00B_VOX)
 
 > L'Oreille Absolue transcrit sur GPU Modal au lieu du CPU local.
-> Ce guide permet a UN NOUVEL OPERATEUR de redployer le service depuis zero,
-> y compris avec un NOUVEAU compte Modal (credits gratuits a rotation).
+>
+> **IMPORTANT (mise à jour) :** le déploiement est désormais piloté par
+> **GitHub Actions**, déclenché par l'**Oracle** — plus par la machine opérateur.
+> Voir `GUIDE_UTILISATION/16_ORCHESTRATION_GITHUB_ACTIONS.md`.
+> Ce fichier reste la référence bas-niveau du service `transcribe.py`.
 
 ---
 
-## 1. Creer / recuperer un compte Modal
+## Ce que fait ce dossier
 
-1. Aller sur https://modal.com et creer un compte (les credits gratuits ~$1 sont credites).
-2. Installer le CLI :
-   ```bash
-   pip install modal
-   ```
-3. S'authentifier :
-   ```bash
-   modal setup
-   # ou, avec un token API cree dans le dashboard (Settings -> API Tokens) :
-   modal token set --token-id <ID> --token-secret <SECRET>
-   ```
+```
+MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/MODAL/
+├── transcribe.py      <- le service (endpoint /audio/transcriptions)
+├── requirements.txt   <- deps (reference)
+└── DEPLOYER.md        <- ce guide
+```
 
-## 2. Deployer le service
+## Déploiement AUTOMATIQUE (recommandé)
 
-Depuis la racine du repo :
+Aucune action manuelle. Le workflow `.github/workflows/perturabo_transcribe.yml`
+exécute `modal deploy transcribe.py` sur le runner, en injectant
+`MODAL_TOKEN_ID` + `MODAL_TOKEN_SECRET` depuis les secrets GitHub.
+
+Déclenchement = l'Oracle (Cody) via l'API GitHub. L'opérateur ne déploie pas.
+
+## Déploiement MANUEL (débug uniquement)
 
 ```bash
+pip install modal
+modal token set --token-id <ID> --token-secret <SECRET>
 cd MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/MODAL
 modal deploy transcribe.py
+# -> URL: https://<workspace>--perturabo-whisper.modal.run
 ```
 
-Modal affiche l'URL du service, du type :
-`https://<workspace>--perturabo-whisper.modal.run`
+## Contrat de l'endpoint
 
-> Le modele est `medium` par defaut. Pour changer : `WHISPER_MODEL=large-v3 modal deploy transcribe.py`
-> (large-v3 = meilleur, plus lent/plus cher ; medium = equilibre, c'est le choix par defaut).
+Le service expose `POST /audio/transcriptions` (multipart/form-data) et renvoie
+du word-level : `{"words": [{"word","start","end"}, ...], "text", "language"}`.
+C'est le format "Case 1" que `auto_detector.py` privilégie pour le scoring.
 
-## 3. Pointer F00B_VOX sur Modal
+## Modèle par défaut
 
-Editer `f00b_secrets.json` (gitignore — ne JAMAIS commiter) :
+`medium` (équilibre vitesse/qualité), GPU T4, `vad_filter=True`.
+Changer via `WHISPER_MODEL=large-v3 modal deploy transcribe.py`.
 
-```json
-{
-  "env_var_name": "MODAL_TOKEN",
-  "model_id": "medium",
-  "provider": "other",
-  "base_url": "https://<workspace>--perturabo-whisper.modal.run",
-  "language": "en",
-  "fallback_env_var": "AI_GATEWAY_API_KEY"
-}
-```
+## Aucun secret dans ce dossier
 
-Puis exporter le token dans l'environnement de la machine du Warsmith :
-
-```bash
-export MODAL_TOKEN="<token-secret>"
-```
-
-> f00b_vox n'a besoin d'AUCUNE modification de code : `PremiumTranscriber`
-> lit cette config et envoie deja le multipart `/audio/transcriptions` attendu.
-
-## 4. Test rapide
-
-```bash
-curl -X POST https://<workspace>--perturabo-whisper.modal.run/audio/transcriptions \
-  -F "file=@/tmp/test.m4a" -F "language=en"
-# -> {'words': [{'word': '...', 'start': ..., 'end': ...}, ...], 'text': '...'}
-```
-
-## 5. Notes operateur
-
-- **Aucun secret dans le repo.** Le token modal (MODAL_TOKEN) est env-only.
-- **Rotation de compte** : quand les credits gratuits sont epuises, refaire les etapes 1 a 3
-  avec un nouveau compte, puis re-pointer `base_url`. Le code ne change pas.
-- **Budget** : 105 min d'audio sur `medium` (T4) ~ quelques centimes, bien sous les $1 gratuits.
-- **VAD** : le service active `vad_filter=True` (ignore silences/musique) — utile pour les
-  VOD Twitch dont l'audio est partiellement mute (segments "index-muted").
+Le token Modal vit dans les secrets GitHub + env. Jamais committé.
