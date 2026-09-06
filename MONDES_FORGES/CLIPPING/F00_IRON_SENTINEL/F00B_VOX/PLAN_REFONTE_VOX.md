@@ -1,6 +1,6 @@
 # PLAN_REFONTE_VOX — Refonte de l'architecture F00B_VOX
 
-> **Statut : ✅ IMPLÉMENTÉ (P1→P6).** Code en place, testé en local. Reste validation run réel. Document de référence avant toute ligne de code.
+> **Statut : ✅ IMPLÉMENTÉ (P1→P6 + tous capteurs).** Clips/audio/visuel/emotes/événements/lexical branchés. Reste validation run réel. Document de référence avant toute ligne de code.
 > Ne rien modifier ici sans revalidation du Warsmith.
 >
 > Figé : la partie **Modal** (transcribe.py, workflow GH Actions, secrets) est un succès acté.
