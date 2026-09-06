@@ -91,9 +91,13 @@ def event_signal(msgs_window):
                 return 1.0
     return 0.0
 
-def clips_signal(vod_url, s, e):
-    """Réservé P2 (heatmap clips communautaires). Non branché → None."""
-    return None
+def clips_signal(clips, s, e):
+    """Route vers le capteur clips communautaires (heatmap). None si indisponible."""
+    try:
+        from clips_heatmap import clips_signal as _cs
+        return _cs(clips, s, e)
+    except Exception:
+        return None
 
 # ─── P3 : lexical ────────────────────────────────────────────────────────
 def lexical_signal(words, s, e, trigger_words):
@@ -188,7 +192,7 @@ RAW_TABLE_COLUMNS = [
     "intensity", "campaign_ok",
 ]
 
-def build_raw_table(candidates, words, messages, trigger_words, duration=0.0):
+def build_raw_table(candidates, words, messages, trigger_words, duration=0.0, clips=None):
     """Enrichit chaque candidat d'une intensité réelle + construit le tableau brut.
     Retourne (candidates_modifiés, raw_table)."""
     baseline = chat_baseline(messages, duration)
@@ -210,6 +214,7 @@ def build_raw_table(candidates, words, messages, trigger_words, duration=0.0):
         c["_laugh"] = _laugh
         c["_applause"] = _appl
         c["_visual"] = _vis
+        _cl = clips_signal(clips, s, e) if clips is not None else None
         table.append({
             "window_id": f"w{i:04d}",
             "start_sec": round(s, 2),
@@ -219,8 +224,8 @@ def build_raw_table(candidates, words, messages, trigger_words, duration=0.0):
             "chat_velocity": round(velocity_signal(mw, dur, baseline), 3),
             "chat_spike": round(velocity_signal(mw, dur, baseline), 3),
             "event": event_signal(mw),
-            "clips_density": None,
-            "clips_views": None,
+            "clips_density": _cl["density"] if _cl else None,
+            "clips_views": _cl["views"] if _cl else None,
             "lex_density": round(lex["density"], 3),
             "lex_gap_max": lex["gap_max"],
             "lex_hook": lex["hook"],
