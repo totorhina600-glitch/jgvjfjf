@@ -943,8 +943,22 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
             _c["_audio_path"] = audio_path
             if not keep_audio and not os.path.exists(audio_path):
                 _c["_audio_path"] = None
+        # P2 : capteur clips communautaires (GraphQL public, zéro clé).
+        _clips = []
+        try:
+            _vm = re.search(r"videos/(\d+)", vod_url)
+            _video_id = _vm.group(1) if _vm else None
+            _login = metadata.get("channel") or metadata.get("uploader") or None
+            if not _login and _video_id:
+                _login = None
+            if _video_id and _login:
+                from clips_heatmap import fetch_channel_clips
+                _clips = fetch_channel_clips(_login, _video_id, limit=100)
+                _log(f"🪤 {len(_clips)} clips communautaires alignés sur la VOD")
+        except Exception as _ce:
+            _log(f"  ⚠️ capteur clips indisponible ({_ce}) — heatmap ignorée")
         candidates, _raw_table = build_raw_table(
-            candidates, all_words, chat_messages, TRIGGER_WORDS, vod_duration
+            candidates, all_words, chat_messages, TRIGGER_WORDS, vod_duration, clips=_clips
         )
         _raw_path = os.path.join(out_dir, "raw_table.json")
         _save_json(_raw_path, _raw_table)
