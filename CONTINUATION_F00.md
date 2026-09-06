@@ -285,3 +285,23 @@ P4 audio/visuel → P5 premium → P6 scoring/docs.
 
 ### Doc
 `F00_IRON_SENTINEL/F00B_VOX/PLAN_REFONTE_VOX.md` + `GUIDE_UTILISATION/17_PLAN_REFONTE_VOX.md`.
+
+
+---
+
+## Session 2026-09-06 (P1 implémentée)
+
+### P1 — Fait ✅
+- `F00_IRON_SENTINEL/F00B_VOX/CODEBASE/libs/campaign_veto.py` (nouveau) :
+  * contrat du tableau brut (`RAW_TABLE_COLUMNS`, colonnes par capteur pour P2-P4)
+  * `find_campaign_directive_md` (découverte directive active dans ARCHIVUM/campaign)
+  * `load_campaign_directive` + `apply_campaign_veto` (plateforme=dur, cycle=warning,
+    exclusions OF/onlyfans/bait/negative PR = dur).
+- `auto_detector.py` : branchement du veto dans `run_auto_detect` (étape 8b),
+  non-bloquant (try/except : si module absent, continue sans veto).
+- Testé : plateforme non autorisée → veto · exclusion "OF creator" → veto ·
+  VOD hors cycle (20260904) → warning (la campagne Aishah Sofey couvre 7/20→7/31).
+
+### Prochaine étape
+P2 — capteurs gratuits (emotes+vélocité, clips commu heatmap, événements) remplir
+les colonnes du tableau brut + remplacer `intensity:0.9` (auto_detector l.380).
