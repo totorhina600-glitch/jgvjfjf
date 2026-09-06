@@ -41,3 +41,23 @@ Nouveau : F00B auto_detect → candidats.json → score → gate Warsmith
 ```bash
 python f00b_vox.py auto_detect --nb-clips 5 --market us_young_english --platform youtube_shorts
 ```
+
+
+## 2026-09-06 — Transcription GPU Modal (moteur swappable)
+
+**Statut** : Service Modal déployable ajouté (pas encore déployé — attend token opérateur)
+
+### Fichiers créés
+- `MODAL/transcribe.py` → service endpoint `/audio/transcriptions` (faster-whisper GPU)
+- `MODAL/requirements.txt` → dépendances (référence)
+- `MODAL/DEPLOYER.md` → guide déploiement/rotation de compte
+
+### Ce qui a changé
+- **Aucun** changement dans `f00b_vox.py` / `auto_detector.py`.
+- La transcription passe par un endpoint OpenAI-compatible sur GPU Modal au lieu du CPU local.
+- La config se fait dans `f00b_secrets.json` (`base_url` = URL Modal), jamais dans le code.
+
+### Décision clé
+- Clé premium NVIDIA = **analyse/copywriting** (pas transcription).
+- Transcription = **Modal (Whisper medium)** — modèle swappable via config.
+- Rotation de compte Modal possible sans toucher au code (crédits gratuits).
