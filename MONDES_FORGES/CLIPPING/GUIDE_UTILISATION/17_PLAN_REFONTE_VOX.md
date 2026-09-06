@@ -48,3 +48,10 @@ La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touc
 - **`libs/visual_sensor.py`** — visage (OpenCV Haar) + cut (ffmpeg scene detect), gratuit, dégradation gracieuse.
 - Branchés dans `vox_refonte.build_raw_table()` (colonnes `audio_laugh`, `audio_applause`, `visual_face`, `visual_cut`).
 - ✅ **Capteur clips communautaires** — `libs/clips_heatmap.py` via GraphQL public Twitch (Client-ID web anonyme, ZÉRO clé). Heatmap densité × vues + moisson des titres. Dégradation gracieuse (endpoint interne fragile).
+
+
+## Note test réel (2026-09-06)
+- Chat replay Twitch : l'API v5 est morte ; remplacé par **GraphQL public** (Client-ID web anonyme,
+  pagination par offset Int). C'est la même source que le capteur clips.
+- Ordre impératif dans `run_auto_detect` : capteurs (8a) → scoring (8) → veto (8b) → premium (8c).
+  Le scoring consomme l'intensité réelle, il doit donc être APRÈS build_raw_table.
