@@ -944,10 +944,6 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
     candidates = fuse_candidates(speech_peaks, chat_peaks, nb_clips)
     _log(f"  {len(candidates)} candidats après fusion + déduplication")
 
-    # ── 8. Scoring ──────────────────────────────────────────────────────
-    _log("📊 Scoring multicritère...")
-    scored = score_candidates(candidates, all_words, chat_messages, vod_url)
-
     # ── 8a. Intensité réelle + tableau brut (P2-P6) ────────────────────
     try:
         from vox_refonte import build_raw_table
@@ -982,6 +978,10 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
         _log(f"🧮 Intensité réelle calculée ({len(_raw_table)} fenêtres) → raw_table.json")
     except Exception as _e:
         _log(f"  ⚠️ refonte capteurs indisponible ({_e}) — intensité legacy conservée")
+
+    # ── 8. Scoring ──────────────────────────────────────────────────────
+    _log("📊 Scoring multicritère...")
+    scored = score_candidates(candidates, all_words, chat_messages, vod_url)
 
     # ── 8b. Veto directive campagne (P1 — refonte VOX) ──────────────────
     try:
