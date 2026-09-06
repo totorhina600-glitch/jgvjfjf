@@ -157,5 +157,5 @@ fenêtre riche=0.9, vide=0.1.
 - `auto_detector.py` : injecte `_audio_path` dans les candidats avant `build_raw_table`.
 - workflow : `opencv-python-headless` ajouté.
 
-### Reste
-Capteur clips communautaires (Twitch Helix) — Client ID/Secret à fournir (app dev gratuite).
+### Reste → FAIT
+Capteur clips communautaires = `libs/clips_heatmap.py` via **GraphQL public Twitch** (Client-ID web anonyme, zéro clé). Heatmap densité × vues + titres. Branché dans `build_raw_table` + `run_auto_detect`.
