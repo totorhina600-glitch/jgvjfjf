@@ -49,7 +49,7 @@ def _download_model():
 
 
 image = (
-    modal.Image.from_registry("nvidia/cuda:12.4.0-cudnn-runtime-ubuntu22.04", add_python="3.11")
+    modal.Image.from_registry("nvidia/cuda:12.4.0-runtime-ubuntu22.04", add_python="3.11")
     .pip_install(
         "faster-whisper==1.1.1",
         "fastapi==0.115.0",
