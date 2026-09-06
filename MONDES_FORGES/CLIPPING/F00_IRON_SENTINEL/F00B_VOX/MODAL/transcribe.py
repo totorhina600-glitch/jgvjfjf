@@ -56,7 +56,7 @@ def _get_model():
     return _model
 
 
-@app.function(image=image, gpu=GPU, scaledown_window=120, allow_concurrent_inputs=4)
+@app.function(image=image, gpu=GPU, scaledown_window=120)
 @modal.asgi_app()
 def fastapi_app():
     return web_app
