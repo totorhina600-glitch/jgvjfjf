@@ -933,6 +933,26 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
     # ── 8. Scoring ──────────────────────────────────────────────────────
     _log("📊 Scoring multicritère...")
     scored = score_candidates(candidates, all_words, chat_messages, vod_url)
+
+    # ── 8b. Veto directive campagne (P1 — refonte VOX) ──────────────────
+    try:
+        from campaign_veto import (
+            find_campaign_directive_md, load_campaign_directive, apply_campaign_veto,
+        )
+        md_path = find_campaign_directive_md(forge_root)
+        if md_path:
+            with open(md_path, "r", encoding="utf-8") as _f:
+                _directive_md = _f.read()
+            _directive = load_campaign_directive(_directive_md)
+            _cid = _directive.get("campaign_id") or "?"
+            _log(f"🛡️  Directive campagne: {_cid} | plateformes={_directive.get('platforms')}")
+            scored, _veto = apply_campaign_veto(scored, _directive, platform, upload_date)
+            _log(f"  {_veto} veto(s) campagne appliqué(s)")
+        else:
+            _log("  (aucune directive campagne — veto ignoré)")
+    except Exception as _e:
+        _log(f"  ⚠️ veto campagne indisponible ({_e}) — continué sans veto")
+
     accepted = [c for c in scored if c["status"] == "scored"]
     rejected = [c for c in scored if c["status"] == "auto_rejected"]
     _log(f"  {len(accepted)} acceptés, {len(rejected)} auto-rejetés")
