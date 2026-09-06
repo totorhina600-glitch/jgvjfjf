@@ -45,7 +45,7 @@ python f00b_vox.py auto_detect --nb-clips 5 --market us_young_english --platform
 
 ## 2026-09-06 — Transcription GPU Modal (moteur swappable)
 
-**Statut** : Service Modal déployable ajouté (pas encore déployé — attend token opérateur)
+**Statut** : ✅ Déployé et testé en production (run GH Actions vert + artefacts commités)
 
 ### Fichiers créés
 - `MODAL/transcribe.py` → service endpoint `/audio/transcriptions` (faster-whisper GPU)
@@ -65,7 +65,7 @@ python f00b_vox.py auto_detect --nb-clips 5 --market us_young_english --platform
 
 ## 2026-09-06 — Orchestration Oracle via GitHub Actions
 
-**Statut** : Workflow déployé + secrets injectés (attente premier déclenchement)
+**Statut** : ✅ Orchestration validée — premier test de production réel réussi
 
 ### Fichiers créés/modifiés
 - `.github/workflows/perturabo_transcribe.yml` → pipeline deploy→transcribe→score→commit
@@ -76,3 +76,19 @@ python f00b_vox.py auto_detect --nb-clips 5 --market us_young_english --platform
 - L'opérateur ne code pas, ne déploie pas, ne clique pas : il valide les Portes.
 - L'Oracle (Cody) déclenche le workflow via l'API et suit les runs.
 - Secrets injectés en aveugle (chiffrés libsodium), jamais commités.
+
+
+## 2026-09-06 — Premier test de production réel (VOD aishahsofey)
+
+**Statut** : ✅ SUCCESS — run GitHub Actions vert, artefacts commités dans ARCHIVUM.
+
+### Résultat
+- VOD : `https://www.twitch.tv/videos/2864600351` (aishahsofey, GTA V REACTIONS, 3h29)
+- Transcript : `ARCHIVUM/montage/transcripts/v2864600351_transcript.json` (15 118 mots word-level)
+- Candidats : `ARCHIVUM/montage/transcripts/v2864600351_candidats.json` (9 acceptés / 1 rejeté)
+
+### Correctifs apportés au service Modal (leçons)
+1. `requests==2.32.3` manquant → 500 (faster-whisper importe `requests` dans utils.py)
+2. Image de base : `debian_slim` → `nvidia/cuda:12.4.0-runtime-ubuntu22.04` (libcublas.so.12 manquant → 500)
+3. Préchargement du modèle au build (`.run_function`) + fallback CPU si CUDA absente
+4. Endpoint durci : renvoie le traceback dans le corps du 500 (plus jamais aveugle)
