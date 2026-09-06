@@ -33,6 +33,7 @@ La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touc
 
 
 ## État d'implémentation
+
 - **P1** ✅ `libs/campaign_veto.py` — veto directive campagne complète dans `run_auto_detect`.
 - **P2-P4** ✅ `libs/vox_refonte.py` — capteurs (emotes+vélocité+événements+lexical), dégradation gracieuse sur clips/audio/visuel.
 - **P6** ✅ `vox_refonte.real_intensity()` + `build_raw_table()` — intensité RÉELLE (plus la constante 0.9), tableau brut `raw_table.json`.
@@ -40,3 +41,10 @@ La partie Modal (transcribe.py + workflow + secrets) est un succès, on n'y touc
 
 ### Fichiers
 `libs/campaign_veto.py` · `libs/vox_refonte.py` · `libs/vox_premium.py` · patch `auto_detector.py` · workflow (injecte NVIDIA_NIM_API_KEY/MODEL).
+
+
+## Capteurs audio + visuel (P4 — phase 2)
+- **`libs/audio_sensor.py`** — rire/applaudissement (heuristique RMS+ZCR+burets) + silence, gratuit (numpy+ffmpeg), sur fenêtres survivantes uniquement.
+- **`libs/visual_sensor.py`** — visage (OpenCV Haar) + cut (ffmpeg scene detect), gratuit, dégradation gracieuse.
+- Branchés dans `vox_refonte.build_raw_table()` (colonnes `audio_laugh`, `audio_applause`, `visual_face`, `visual_cut`).
+- **Reste capteur clips communautaires (Twitch Helix, gratuit)** — en attente Client ID/Secret Twitch (app dev gratuite).
