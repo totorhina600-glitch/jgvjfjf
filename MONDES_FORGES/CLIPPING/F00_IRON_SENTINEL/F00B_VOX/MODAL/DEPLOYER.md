@@ -47,6 +47,13 @@ C'est le format "Case 1" que `auto_detector.py` privilégie pour le scoring.
 `medium` (équilibre vitesse/qualité), GPU T4, `vad_filter=True`.
 Changer via `WHISPER_MODEL=large-v3 modal deploy transcribe.py`.
 
+## Image de base & correctifs (leçons du 1er test)
+
+- Image de base : **`nvidia/cuda:12.4.0-runtime-ubuntu22.04`** (embarque `libcublas.so.12`). Ne PAS repasser sur `debian_slim`.
+- Dépendance obligatoire : **`requests==2.32.3`** (faster-whisper l'importe). Sans elle → 500.
+- Le modèle est **préchargé au build** (`.run_function(_download_model)`) ; fallback CPU si CUDA absente.
+- Endpoint durci : en cas d'erreur, le 500 renvoie le traceback dans le corps (`{"error", "trace"}`).
+
 ## Aucun secret dans ce dossier
 
 Le token Modal vit dans les secrets GitHub + env. Jamais committé.
