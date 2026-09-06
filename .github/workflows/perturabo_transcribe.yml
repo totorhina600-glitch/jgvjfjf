@@ -49,11 +49,16 @@ jobs:
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
         run: |
-          OUT=$(modal deploy transcribe.py 2>&1)
-          echo "$OUT"
-          URL=$(echo "$OUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.modal\.run' | head -1)
+          set +e
+          modal deploy transcribe.py 2>&1 | tee /tmp/modal_deploy.log
+          RC=${PIPESTATUS[0]}
+          if [ $RC -ne 0 ]; then
+            echo "::error::modal deploy failed rc=$RC"
+            exit $RC
+          fi
+          URL=$(grep -oE 'https://[a-zA-Z0-9.-]+\.modal\.run' /tmp/modal_deploy.log | head -1)
           if [ -z "$URL" ]; then
-            echo "::error::Impossible d'extraire l'URL Modal du deploy"
+            echo "::error::Aucune URL .modal.run trouvee dans la sortie du deploy"
             exit 1
           fi
           echo "MODAL_URL=$URL" >> "$GITHUB_ENV"
