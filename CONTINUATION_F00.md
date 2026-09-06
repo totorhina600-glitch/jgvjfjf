@@ -338,3 +338,22 @@ les colonnes du tableau brut + remplacer `intensity:0.9` (auto_detector l.380).
 ### Reste à faire
 Capteur clips communautaires = **FAIT** (GraphQL public Twitch, zéro clé — `libs/clips_heatmap.py`).
 Reste : run réel de validation bout-en-bout (Workflow GitHub Actions déjà câblé Modal+NVIDIA).
+
+
+---
+
+## Session 2026-09-06 (test réel + fixes critiques)
+
+### Validation sans re-transcription
+Utilisé `v2864600351_transcript.json` (déjà commité) + chat GraphQL live + clips live
+pour valider le nouveau code — PAS de run complet (gaspillage de 240 Mo + 3h30 GPU).
+
+### 3 fixes critiques
+1. `fetch_chat_replay` : API v5 morte → GraphQL public (pagination offset Int). 2641 msg réels.
+2. Ordre : capteurs AVANT scoring (l'intensité réelle est désormais consommée par score_candidates).
+3. `campaign_veto` : status toujours posé (robustesse).
+
+### Résultat
+Intensité réelle différenciée : 7 valeurs distinctes sur 9 candidats (vs 0.9 constant avant).
+
+### Rappel : run workflow annulé (évitait re-transcription inutile). Prochain run réel = nouvelle VOD.
