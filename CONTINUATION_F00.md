@@ -336,5 +336,5 @@ les colonnes du tableau brut + remplacer `intensity:0.9` (auto_detector l.380).
 - workflow : `opencv-python-headless` ajouté.
 
 ### Reste à faire
-Capteur clips communautaires (heatmap Twitch Helix) — attend Client ID + Secret (app dev gratuite).
-Puis run réel de validation bout-en-bout.
+Capteur clips communautaires = **FAIT** (GraphQL public Twitch, zéro clé — `libs/clips_heatmap.py`).
+Reste : run réel de validation bout-en-bout (Workflow GitHub Actions déjà câblé Modal+NVIDIA).
