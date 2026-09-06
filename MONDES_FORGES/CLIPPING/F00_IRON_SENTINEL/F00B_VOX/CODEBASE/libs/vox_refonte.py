@@ -128,10 +128,32 @@ def audio_silence_signal(lex):
     return 1.0 if lex.get("silence_gt_3s") else 0.0
 
 def audio_laugh_signal(audio_path, s, e):
-    return None  # modèle audio dédié requis — non branché
+    """Délègue au capteur audio heuristique. None si indisponible."""
+    try:
+        from audio_sensor import laugh_score
+        return laugh_score(audio_path, s, e)
+    except Exception:
+        return None
+
+
+def audio_applause_signal(audio_path, s, e):
+    try:
+        from audio_sensor import applause_score
+        return applause_score(audio_path, s, e)
+    except Exception:
+        return None
+
 
 def visual_signal(video_path, s, e):
-    return None  # modèle vision requis — non branché
+    """Délègue au capteur visuel (face/cut). Retourne dict ou None."""
+    try:
+        from visual_sensor import face_score, cut_score
+        return {
+            "face": face_score(video_path, s, e),
+            "cut": cut_score(video_path, s, e),
+        }
+    except Exception:
+        return None
 
 # ─── intensité réelle (P6) ──────────────────────────────────────────────
 def real_intensity(c, words, messages, baseline, trigger_words):
@@ -161,7 +183,9 @@ RAW_TABLE_COLUMNS = [
     "emote_joy", "chat_velocity", "chat_spike", "event",
     "clips_density", "clips_views",
     "lex_density", "lex_gap_max", "lex_hook", "lex_silence",
-    "audio_silence", "intensity", "campaign_ok",
+    "audio_silence", "audio_laugh", "audio_applause",
+    "visual_face", "visual_cut",
+    "intensity", "campaign_ok",
 ]
 
 def build_raw_table(candidates, words, messages, trigger_words, duration=0.0):
@@ -177,6 +201,15 @@ def build_raw_table(candidates, words, messages, trigger_words, duration=0.0):
         lex = lexical_signal(words, s, e, trigger_words)
         c["intensity"] = real_intensity(c, words, messages, baseline, trigger_words)
         c["_win_words"] = lex
+        # capteurs lourds (P4) — dégradation gracieuse
+        _ap = c.get("_audio_path")
+        _vp = c.get("_video_path")
+        _laugh = audio_laugh_signal(_ap, s, e) if _ap else None
+        _appl = audio_applause_signal(_ap, s, e) if _ap else None
+        _vis = visual_signal(_vp, s, e) if _vp else None
+        c["_laugh"] = _laugh
+        c["_applause"] = _appl
+        c["_visual"] = _vis
         table.append({
             "window_id": f"w{i:04d}",
             "start_sec": round(s, 2),
@@ -193,6 +226,10 @@ def build_raw_table(candidates, words, messages, trigger_words, duration=0.0):
             "lex_hook": lex["hook"],
             "lex_silence": lex["silence_gt_3s"],
             "audio_silence": audio_silence_signal(lex),
+            "audio_laugh": _laugh,
+            "audio_applause": _appl,
+            "visual_face": (_vis or {}).get("face") if _vis else None,
+            "visual_cut": (_vis or {}).get("cut") if _vis else None,
             "intensity": c["intensity"],
             "campaign_ok": None,
         })
