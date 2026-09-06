@@ -183,13 +183,15 @@ def apply_campaign_veto(scored, directive, platform, upload_date=""):
             reasons.append({"axis": "source", "level": "warning",
                             "detail": "no reaction clips — à vérifier manuellement"})
 
+        # toujours poser `status` explicitement (robustesse)
+        c["status"] = "auto_rejected" if hard_veto else c.get("status", "scored")
+
         if hard_veto:
             veto_count += 1
             rr = c.get("rejection_reasons") or []
             if "campaign_veto" not in rr:
                 rr.append("campaign_veto")
             c["rejection_reasons"] = rr
-            c["status"] = "auto_rejected"
 
         c["campaign_check"] = {"status": "veto" if hard_veto else "pass", "reasons": reasons}
 
