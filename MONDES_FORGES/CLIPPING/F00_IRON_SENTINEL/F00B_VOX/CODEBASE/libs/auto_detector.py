@@ -934,6 +934,18 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
     _log("📊 Scoring multicritère...")
     scored = score_candidates(candidates, all_words, chat_messages, vod_url)
 
+    # ── 8a. Intensité réelle + tableau brut (P2-P6) ────────────────────
+    try:
+        from vox_refonte import build_raw_table
+        candidates, _raw_table = build_raw_table(
+            candidates, all_words, chat_messages, TRIGGER_WORDS, vod_duration
+        )
+        _raw_path = os.path.join(out_dir, "raw_table.json")
+        _save_json(_raw_path, _raw_table)
+        _log(f"🧮 Intensité réelle calculée ({len(_raw_table)} fenêtres) → raw_table.json")
+    except Exception as _e:
+        _log(f"  ⚠️ refonte capteurs indisponible ({_e}) — intensité legacy conservée")
+
     # ── 8b. Veto directive campagne (P1 — refonte VOX) ──────────────────
     try:
         from campaign_veto import (
@@ -952,6 +964,16 @@ def run_auto_detect(forge_root, vod_url, nb_clips=5,
             _log("  (aucune directive campagne — veto ignoré)")
     except Exception as _e:
         _log(f"  ⚠️ veto campagne indisponible ({_e}) — continué sans veto")
+
+    # ── 8c. Arbitrage premium sur les survivants (P5) ──────────────────
+    _survivors = [c for c in scored if c["status"] == "scored"]
+    try:
+        from vox_premium import arbitrate
+        _survivors = arbitrate(_survivors)
+        scored = [c for c in scored if c["status"] != "scored"] + _survivors
+        _log(f"  🧠 Arbitrage premium: verdicts {[c.get('verdict') for c in _survivors]}")
+    except Exception as _e:
+        _log(f"  ⚠️ arbitrage premium indisponible ({_e}) — continué sans premium")
 
     accepted = [c for c in scored if c["status"] == "scored"]
     rejected = [c for c in scored if c["status"] == "auto_rejected"]
