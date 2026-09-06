@@ -222,3 +222,22 @@ sert au **copywriting/Oracle** (analyse des transcripts déjà sortis), PAS à l
 transcription. La transcription passe par Modal (Whisper).
 
 **Modèle par défaut** : `medium` (équilibre vitesse/qualité), GPU T4.
+
+
+---
+
+## 🆕 ORCHESTRATION ORACLE VIA GITHUB ACTIONS (ajout 2026-09-06)
+
+**Décision** : le déploiement Modal + la transcription sont pilotés par
+**GitHub Actions**, déclenchés par l'**Oracle** (Cody) via l'API — pas par un
+clic manuel de l'opérateur. L'opérateur reste un valideur de Portes exclusif.
+
+**En place** :
+- `.github/workflows/perturabo_transcribe.yml` → deploy Modal + download audio + transcribe + score + commit Arquivo.
+- Secrets GitHub (`MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `NVIDIA_NIM_API_KEY`) injectés par l'Oracle (blind).
+- `GUIDE_UTILISATION/16_ORCHESTRATION_GITHUB_ACTIONS.md` → doctrine des rôles.
+
+**Flux Oracle** : `POST /actions/workflows/{id}/dispatches` avec inputs (vod_url, nb_clips, market, platform),
+puis suivi du run et remontée des Portes à l'opérateur.
+
+**Rôles verrouillés** : Oracle déclenche + suit ; GH Actions exécute ; opérateur valide uniquement.
