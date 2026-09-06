@@ -324,3 +324,17 @@ les colonnes du tableau brut + remplacer `intensity:0.9` (auto_detector l.380).
 
 ### Reste à faire (validation réelle)
 1er run workflow sur une VOD pour confirmer le bout-en-bout capteurs+premium (pas de side-effect déjà validé au niveau Modal).
+
+
+---
+
+## Session 2026-09-06 (capteurs audio+visuel ajoutés — P4 phase 2)
+
+- `libs/audio_sensor.py` + `libs/visual_sensor.py` créés (gratuits, sans clé).
+- Branchés dans `vox_refonte.build_raw_table` (colonnes audio_laugh/applause/visual_face/cut).
+- `auto_detector.py` : `_audio_path` injecté avant le tableau brut.
+- workflow : `opencv-python-headless` ajouté.
+
+### Reste à faire
+Capteur clips communautaires (heatmap Twitch Helix) — attend Client ID + Secret (app dev gratuite).
+Puis run réel de validation bout-en-bout.
