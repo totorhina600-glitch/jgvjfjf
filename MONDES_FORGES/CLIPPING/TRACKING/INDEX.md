@@ -42,6 +42,8 @@
 | `../F00_IRON_SENTINEL/F00B_VOX/MODAL/DEPLOYER.md` | Guide déploiement transcription GPU Modal (F00B_VOX) |
 | `../F00_IRON_SENTINEL/F00B_VOX/PLAN_REFONTE_VOX.md` | **Plan de refonte VOX** (architecture multi-capteurs, validé) |
 | `../GUIDE_UTILISATION/17_PLAN_REFONTE_VOX.md` | Guide du plan de refonte VOX |
+| `../pur_adapter.py` | Adaptateur PUR (VOX → source_specimen F02, skip F01) |
+| `.github/workflows/perturabo_f02_verdict.yml` | Workflow F02 verdict PUR (skip F01) |
 | `../GUIDE_UTILISATION/15_TRANSCRIPTION_MODAL.md` | Transcription GPU Modal — principe, correctifs, rotation de compte |
 | `../GUIDE_UTILISATION/16_ORCHESTRATION_GITHUB_ACTIONS.md` | Orchestration Oracle via GH Actions (rôles, flux, secrets) |
 
