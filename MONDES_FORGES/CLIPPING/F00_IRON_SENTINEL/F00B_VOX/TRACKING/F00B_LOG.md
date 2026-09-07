@@ -205,3 +205,18 @@ fetch_chat GraphQL · réordonnancement · campaign_veto status · emote_signal 
 - `top_words` renseignés 7/9 (le premium a de quoi analyser).
 - intensité réelle différenciée : 0.11 → 0.42.
 - premium kimi-k3 : HTTP 200 OK (test direct), score réel discriminant (≠ neutre 5.0).
+
+
+## 2026-09-07 — Injection premium finalisée (plomberie)
+
+**Statut** : ✅ Injection `NVIDIA_NIM_API_KEY` faite (HTTP 204, libsodium, aveugle) + vérifiée.
+
+### Détails
+- Workflow `perturabo_transcribe.yml` : étape auto_detect référence bien `NVIDIA_NIM_API_KEY` + `NVIDIA_NIM_MODEL=moonshotai/kimi-k3`.
+- Secret injecté dans GitHub Actions (idempotent PUT) → 204 No Content.
+- Secrets GitHub présents : MODAL_TOKEN_ID, MODAL_TOKEN_SECRET, NVIDIA_NIM_API_KEY.
+- Premium prouvé par test direct (kimi-k3 → HTTP 200, score discriminant).
+
+### Reste (production)
+Run workflow complet sur NOUVELLE VOD = validation finale de production. Le premium est prêt
+(top_words → kimi-k3 → verdict ok/weak/skip).
