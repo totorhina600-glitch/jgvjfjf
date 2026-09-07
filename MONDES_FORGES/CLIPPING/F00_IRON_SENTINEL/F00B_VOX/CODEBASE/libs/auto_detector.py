@@ -635,6 +635,7 @@ def score_candidates(candidates, words, chat_messages, vod_url):
         bonuses = []
         maluses = []
         reasons = []
+        tos_hits = 0
 
         if dur > 60:
             maluses.append({"rule": "duree_gt_60", "delta": -3.0})
