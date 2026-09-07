@@ -43,6 +43,22 @@ jobs:
             --platform "${{ inputs.platform }}" \
             --market "${{ inputs.market }}"
 
+      - name: Write fresh liber (mode whop, overrides stale logo/meme_v2)
+        run: |
+          cat > MONDES_FORGES/CLIPPING/liber_clipping.json <<'EOF'
+          {
+            "mode": "whop",
+            "sub_mode": "pur",
+            "campaign_id": "2026-07-24_AISHAH_SOFEY_MULTI",
+            "campaign_status": "active",
+            "inputs_warsmith": {
+              "platform_target": "${{ inputs.platform }}",
+              "market_target": "${{ inputs.market }}"
+            }
+          }
+          EOF
+          echo "liber_clipping.json -> mode whop (flux PUR direct)"
+
       - name: Write copywriter_secrets.json (NVIDIA, provider other)
         run: |
           mkdir -p MONDES_FORGES/CLIPPING/CONTRACTS
