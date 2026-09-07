@@ -77,3 +77,10 @@ C'est ça qui a révélé le bug `tos_hits` (fenêtre sans mots) et prouvé le p
 En Mode PUR, **F01_SCOUT est court-circuité** : F00B_VOX fait déjà l'acquisition + transcription + scoring.
 Un adaptateur (`pur_adapter.py`) transforme les candidats VOX en `source_specimen.json` pour F02.
 F01 reste intact pour les autres modes (YouTube/MEME/LOGO/WHOP). F02 est utilisé tel quel (auto+finalize).
+
+
+## Chemin PUR direct VOX → F04 (2026-09-07)
+En PUR : F00B_VOX → F04_COPYWRITER **direct**. F01/F02/F03 sont skip (VOX gère la viralité,
+F04 écrit). L'adaptateur `pur_adapter_direct.py` forge les angles (reframing) + specimens
+à partir des candidats VOX. Workflow `perturabo_f04_copywriting.yml`. Premium = kimi-k3
+(via `CLIPPING_PREMIUM_API_KEY` = secret NVIDIA, provider other).
