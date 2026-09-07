@@ -14,7 +14,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:12:17.480"
+      "signal_start": "00:12:17.480",
+      "top_words": "Turn  my  volume  up,  there's  nothing  else  I  can  do  It's  turned  all  the  way  up  Make  it  a  little  louder  How  so?  You're  gonna  get  a  Berserk  tat?  Okay,  anyways,  this  is  it, "
     },
     {
       "candidate_id": "5739554e54",
@@ -23,7 +24,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:13:39.230"
+      "signal_start": "00:13:39.230",
+      "top_words": "Wow,  thank  you  So  much,  I  appreciate  that  anonymous  Really  appreciate  Do  you  know  how,  when  Will  Andres  be  left?  Why  are  you  asking  me  When  Andres  is  gonna  be  left  today"
     },
     {
       "candidate_id": "f6adeaa996",
@@ -32,7 +34,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:05:30.670"
+      "signal_start": "00:05:30.670",
+      "top_words": "song  Gorillazfan252029  I  didn't  know  the  music  was  up  Is  that  okay?  My  bad,  my  bad  I  didn't  know  that  It's  okay?  I'm  so  quiet  My  music,  better  Bro,  how  much  for  the  La"
     },
     {
       "candidate_id": "713ac052ab",
@@ -41,7 +44,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:11:51.690"
+      "signal_start": "00:11:51.690",
+      "top_words": "5  foot  Well  it  works  Amazing,  Berserk  I  have  my  Berserk  pajamas  on  today,  can  you  see?  You  can't  see  anything,  can  you  see?  Amazing,  I  love  it  5  foot  canvas  Yeah,  the  "
     },
     {
       "candidate_id": "217891d7cd",
@@ -50,7 +54,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:10:42.140"
+      "signal_start": "00:10:42.140",
+      "top_words": "you  don't  see  me  Fuck,  damn  Okay,  shit  Sorry,  okay  Perfect,  everyone  can  see  me?  Everyone  can  see  Wiz  Yakuza?  Okay  What  does  he  have  Prince  Last  Supper  Anime,  yes  And  ca"
     },
     {
       "candidate_id": "29ce4425d0",
@@ -59,7 +64,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:11:27.450"
+      "signal_start": "00:11:27.450",
+      "top_words": "I  don't  I  think  that's  gotta  be  like  a  5  foot  canvas,  no?  Wiz  Yakuza,  oh  shit  Jay  Star  Stole  my  lunch  money?  Oh  Man,  that's  why,  he  he  he  he  Wiz  Yakuza  5  foot  Well  "
     },
     {
       "candidate_id": "10c4ec8f7f",
@@ -68,7 +74,8 @@
       "duration_sec": 30.0,
       "signal_type": "trigger_word",
       "signal_intensity": 0.85,
-      "signal_start": "00:11:05.420"
+      "signal_start": "00:11:05.420",
+      "top_words": "size  Sold  out,  it's  $200,  that's  not  bad  That's  not  too  bad  Look,  this  is  like  how  he  was  sketching  it  And  then,  wow,  it's  so  beautiful  And  huge  and  ginormous  Um,  oh  w"
     },
     {
       "candidate_id": "713dc95e2b",
@@ -77,7 +84,8 @@
       "duration_sec": 30.0,
       "signal_type": "punchline",
       "signal_intensity": 0.9,
-      "signal_start": "00:14:39.150"
+      "signal_start": "00:14:39.150",
+      "top_words": "Can  you  guys  hear?  Yes  or  no?"
     },
     {
       "candidate_id": "08c55e11c6",
@@ -86,7 +94,8 @@
       "duration_sec": 30.0,
       "signal_type": "trigger_word",
       "signal_intensity": 0.85,
-      "signal_start": "00:19:00.800"
+      "signal_start": "00:19:00.800",
+      "top_words": "okay  how  so  how  how  was  the  audio  better  the  mic  is  man  stop  it  stop  messing  with  me  okay  we're  gonna  do  reactions  for  a  little  bit  okay  that's  not  brother  the  fucky"
     }
   ]
 }
