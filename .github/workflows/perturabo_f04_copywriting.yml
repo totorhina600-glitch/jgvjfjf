@@ -1,0 +1,66 @@
+name: PERTURABO — F04_COPYWRITER PUR (VOX direct)
+
+on:
+  workflow_dispatch:
+    inputs:
+      vod_url:
+        description: 'URL VOD traitée par VOX'
+        required: true
+        default: 'https://www.twitch.tv/videos/2864600351'
+      candidats_path:
+        description: 'Chemin candidats.json VOX (repo-relatif)'
+        required: false
+        default: 'MONDES_FORGES/CLIPPING/ARCHIVUM/montage/transcripts/v2864600351_candidats.json'
+      platform:
+        description: 'Plateforme cible'
+        required: false
+        default: 'youtube_shorts'
+      market:
+        description: 'Marché cible'
+        required: false
+        default: 'us_young_english'
+
+jobs:
+  copywriting:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      NVIDIA_NIM_API_KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
+      NVIDIA_NIM_MODEL: moonshotai/kimi-k3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Adaptateur PUR direct (VOX -> angles + specimen)
+        run: |
+          python MONDES_FORGES/CLIPPING/pur_adapter_direct.py \
+            --candidats "${{ inputs.candidats_path }}" \
+            --vod "${{ inputs.vod_url }}" \
+            --platform "${{ inputs.platform }}" \
+            --market "${{ inputs.market }}"
+
+      - name: F04 setup-context (premier angle)
+        run: |
+          python MONDES_FORGES/CLIPPING/F04_COPYWRITER/CODEBASE/copywriter.py \
+            --setup-context --angle A01 --platform "${{ inputs.platform }}" --market "${{ inputs.market }}"
+
+      - name: F04 generate (premium direct) + ordonnance + finalize (A01)
+        run: |
+          cd MONDES_FORGES/CLIPPING/F04_COPYWRITER/CODEBASE
+          python copywriter.py --generate --angle A01 --force
+          python copywriter.py --ordonnance --angle A01 --auto-ord
+          python copywriter.py --finalize --angle A01
+
+      - name: Commit copywriting output
+        run: |
+          git config user.name "OracleF04"
+          git config user.email "oracle@perturabo.iron"
+          git add MONDES_FORGES/CLIPPING/F02_TYRANT_CAMP/OUT/angles.json \
+                  MONDES_FORGES/CLIPPING/F03_SOURCE_HUNTER/OUT \
+                  MONDES_FORGES/CLIPPING/F04_COPYWRITER/IN \
+                  MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT
+          git commit -m "[F04] copywriting PUR (VOX direct, skip F01-F02-F03)" || echo "nothing to commit"
+          git push origin HEAD:main
