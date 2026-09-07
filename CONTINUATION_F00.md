@@ -414,3 +414,24 @@ Run complet sur NOUVELLE VOD = dernière validation de production.
 
 ### Reste
 Lancer F02 pour produire le verdict GO/NO-GO PUR (Porte 1).
+
+
+---
+
+## Session 2026-09-07 (PUR : chemin direct VOX -> F04)
+
+### Décision doctrine
+En Mode PUR, le flux est **F00B_VOX → F04_COPYWRITER (direct)**. F01 (acquisition),
+F02 (verdict/angles océan bleu) et F03 (sélection segment) sont **SKIP** : VOX a déjà
+détecté + scoré + sélectionné. La viralité est gérée par VOX ; F04 écrit le copywriting.
+
+### Livré
+- `MONDES_FORGES/CLIPPING/pur_adapter_direct.py` : produit `angles.json` (F02_OUT) +
+  `source_specimen_{angle_id}.json` (F03_OUT) à partir des candidats VOX. Angles PUR =
+  famille `reframing` (hooks_pur), 1 angle/candidat, reframe_dim dérivé du signal.
+- `.github/workflows/perturabo_f04_copywriting.yml` : adaptateur → F04 setup-context →
+  generate premium (kimi-k3, provider other, base_url NVIDIA) → ordonnance → finalize → commit.
+- `copywriter_secrets.json` écrit à la volée dans le workflow (gitignored, absent en CI).
+
+### Reste
+Lancer F04 pour produire le text_payload (3 titres + reframing + caption + hashtags).
