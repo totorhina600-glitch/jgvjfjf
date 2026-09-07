@@ -724,6 +724,8 @@ def build_candidats_json(scored_candidates, vod_url, words):
             "signal_type": c["signal_type"],
             "signal_intensity": c["signal_intensity"],
             "signal_start": c["signal_start"],
+            "top_words": c.get("top_words", ""),
+            "score": c.get("score"),
         })
 
     return {
