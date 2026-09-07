@@ -70,13 +70,13 @@ jobs:
           python copywriter.py --ordonnance --angle A01 --auto-ord
           python copywriter.py --finalize --angle A01
 
-      - name: Commit copywriting output
+      - name: Commit copywriting output (ARCHIVUM only)
         run: |
           git config user.name "OracleF04"
           git config user.email "oracle@perturabo.iron"
-          git add MONDES_FORGES/CLIPPING/F02_TYRANT_CAMP/OUT/angles.json \
-                  MONDES_FORGES/CLIPPING/F03_SOURCE_HUNTER/OUT \
-                  MONDES_FORGES/CLIPPING/F04_COPYWRITER/IN \
-                  MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT
-          git commit -m "[F04] copywriting PUR (VOX direct, skip F01-F02-F03)" || echo "nothing to commit"
+          mkdir -p MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
+          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_*.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_*.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+          git add MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
+          git commit -m "[F04] copywriting PUR -> ARCHIVUM/copywriting" || echo "nothing to commit"
           git push origin HEAD:main
