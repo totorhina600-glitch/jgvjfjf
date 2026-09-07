@@ -28,6 +28,7 @@ jobs:
     env:
       NVIDIA_NIM_API_KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
       NVIDIA_NIM_MODEL: moonshotai/kimi-k3
+      CLIPPING_PREMIUM_API_KEY: ${{ secrets.NVIDIA_NIM_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41,6 +42,21 @@ jobs:
             --vod "${{ inputs.vod_url }}" \
             --platform "${{ inputs.platform }}" \
             --market "${{ inputs.market }}"
+
+      - name: Write copywriter_secrets.json (NVIDIA, provider other)
+        run: |
+          mkdir -p MONDES_FORGES/CLIPPING/CONTRACTS
+          cat > MONDES_FORGES/CLIPPING/CONTRACTS/copywriter_secrets.json <<'EOF'
+          {
+            "env_var_name": "CLIPPING_PREMIUM_API_KEY",
+            "model_id": "moonshotai/kimi-k3",
+            "provider": "other",
+            "base_url": "https://integrate.api.nvidia.com/v1",
+            "max_tokens_per_call": 8192,
+            "temperature_default": 0.7
+          }
+          EOF
+          echo "copywriter_secrets.json -> NVIDIA (kimi-k3)"
 
       - name: F04 setup-context (premier angle)
         run: |
