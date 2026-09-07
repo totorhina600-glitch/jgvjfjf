@@ -71,3 +71,9 @@ Notes de calibration :
 **Ne PAS valider en re-scorant l'archive.** Les candidats archivés viennent du vieux code
 cassé. La bonne méthode : détection FRAÎCHE (capteurs → fenêtres neuves) sur transcript + chat + clips réels.
 C'est ça qui a révélé le bug `tos_hits` (fenêtre sans mots) et prouvé le premium (kimi-k3 200 OK).
+
+
+## Doctrine PUR — skip F01 (2026-09-07)
+En Mode PUR, **F01_SCOUT est court-circuité** : F00B_VOX fait déjà l'acquisition + transcription + scoring.
+Un adaptateur (`pur_adapter.py`) transforme les candidats VOX en `source_specimen.json` pour F02.
+F01 reste intact pour les autres modes (YouTube/MEME/LOGO/WHOP). F02 est utilisé tel quel (auto+finalize).
