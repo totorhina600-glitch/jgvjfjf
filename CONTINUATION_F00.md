@@ -373,3 +373,23 @@ Gate Warsmith : **GO** sur la refonte VOX (intensité réelle multi-capteurs + v
 
 ### Reste (production)
 Run complet sur NOUVELLE VOD (les capteurs doivent SÉLECTIONNER les fenêtres, pas re-scorer les anciennes).
+
+
+---
+
+## Session 2026-09-07 (test réel bout-en-bout — le vrai test)
+
+### Leçon
+La validation hors-ligne (re-scorer l'archive) était une erreur : elle re-scorait des
+fenêtres sélectionnées par l'ANCIEN code cassé (garbage in). Le VRAI test = détection
+fraîche sur transcript + chat réel + clips réels → fenêtres neuves.
+
+### Ce que le test réel a trouvé
+- `score_candidates` : `tos_hits` non initialisé quand fenêtre SANS mots → UnboundLocalError.
+  Corrigé (commit f57f43e). Cas jamais rencontré par l'archive.
+
+### Bilan réel
+10 candidats frais · 9 survivants · intensité 0.11–0.42 · 7/9 top_words · premium kimi-k3 OK (200).
+
+### Reste
+Run complet sur NOUVELLE VOD (cycle réel) quand une VOD fraîche sera dispo.
