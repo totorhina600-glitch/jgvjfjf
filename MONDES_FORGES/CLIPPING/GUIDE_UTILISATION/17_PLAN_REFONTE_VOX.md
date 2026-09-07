@@ -65,3 +65,9 @@ Notes de calibration :
 - `chat_velocity` = courbe douce (discriminante), PAS de saturation.
 - `chat_spike` = burstiness (concentration temporelle), distinct de la vélocité.
 - Prochain run de production = nouvelle VOD (sélection fraîche des fenêtres).
+
+
+## Leçon validation (2026-09-07)
+**Ne PAS valider en re-scorant l'archive.** Les candidats archivés viennent du vieux code
+cassé. La bonne méthode : détection FRAÎCHE (capteurs → fenêtres neuves) sur transcript + chat + clips réels.
+C'est ça qui a révélé le bug `tos_hits` (fenêtre sans mots) et prouvé le premium (kimi-k3 200 OK).
