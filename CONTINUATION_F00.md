@@ -395,3 +395,22 @@ fraîche sur transcript + chat réel + clips réels → fenêtres neuves.
 Injection `NVIDIA_NIM_API_KEY` DANS le workflow = **FAITE** (204, libsodium, aveugle) + vérifiée.
 Premium prêt (test direct 200 OK).
 Run complet sur NOUVELLE VOD = dernière validation de production.
+
+
+---
+
+## Session 2026-09-07 (PUR : skip F01 + adaptateur + F02)
+
+### Doctrine PUR actée
+- **F01_SCOUT = SKIP en Mode PUR** (redondant avec F00B_VOX qui a déjà ingéré/transcrit/scoré).
+  F01 reste INTACT pour les modes YouTube classiques / MEME / LOGO / WHOP.
+- **Adaptateur PUR** : `MONDES_FORGES/CLIPPING/pur_adapter.py` mappe `candidats.json` (VOX)
+  → `source_specimen.json` compatible F02 (`reference_clip: null`, assets = candidats VOX).
+- **F02_TYRANT_CAMP** = utilisé TEL QUEL (mode `--auto` + `--finalize`), car sa 3e lib
+  `skeleton_extractor` gère déjà `reference_clip` vide (squelette neutre `iron_status pending`).
+
+### Workflow
+`.github/workflows/perturabo_f02_verdict.yml` : adaptateur → F02 --auto → F02 --finalize → commit.
+
+### Reste
+Lancer F02 pour produire le verdict GO/NO-GO PUR (Porte 1).
