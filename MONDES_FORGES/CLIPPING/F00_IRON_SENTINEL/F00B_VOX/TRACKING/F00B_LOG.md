@@ -189,3 +189,19 @@ fetch_chat GraphQL · réordonnancement · campaign_veto status · emote_signal 
 - Nouveau `spike_signal` : burstiness (concentration temporelle 5s) — distinct de la vélocité.
 - Pondération intensité : emo 0.30 · vel 0.15 · **spike 0.15** · evt 0.20 · hook 0.20.
 - `chat_spike` dans le tableau brut = vrai spike (plus un doublon de vélocité).
+
+
+## 2026-09-07 — Test RÉEL de détection bout-en-bout
+
+**Statut** : ✅ Test réel complet (détection fraîche, pas re-scoring d'archive).
+
+### Ce que le test réel a révélé (et pourquoi il valait mieux que la valisation hors-ligne)
+- **Bug `tos_hits`** (`UnboundLocalError`) sur fenêtre sans mots → corrigé (commit `f57f43e`).
+  La valisation hors-ligne sur l'archive ne l'aurait JAMAIS vu (les candidats frais créent des fenêtres sans texte).
+
+### Résultats réels
+- chat = 5 301 messages (GraphQL public, balayage homogène 80s).
+- 642 speech peaks + 30 chat peaks → 10 candidats frais → 9 survivants (0 veto dur).
+- `top_words` renseignés 7/9 (le premium a de quoi analyser).
+- intensité réelle différenciée : 0.11 → 0.42.
+- premium kimi-k3 : HTTP 200 OK (test direct), score réel discriminant (≠ neutre 5.0).
