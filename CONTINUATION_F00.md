@@ -392,4 +392,6 @@ fraîche sur transcript + chat réel + clips réels → fenêtres neuves.
 10 candidats frais · 9 survivants · intensité 0.11–0.42 · 7/9 top_words · premium kimi-k3 OK (200).
 
 ### Reste
-Run complet sur NOUVELLE VOD (cycle réel) quand une VOD fraîche sera dispo.
+Injection `NVIDIA_NIM_API_KEY` DANS le workflow = **FAITE** (204, libsodium, aveugle) + vérifiée.
+Premium prêt (test direct 200 OK).
+Run complet sur NOUVELLE VOD = dernière validation de production.
