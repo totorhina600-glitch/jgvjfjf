@@ -201,3 +201,46 @@ python ARCHIVUM/campaign/campaign_directive_parser.py \
 ---
 
 *Fer au-dedans, Fer au-dehors. Le siège continue.* 🔩
+
+
+---
+
+## Contrat opérateur F04 (2026-09-08) — assets à la demande
+
+L'opérateur décide CE QUE F04 produit via les inputs du workflow
+GitHub Actions (aucune édition manuelle de fichier) :
+
+| Input | Valeurs | Effet |
+|---|---|---|
+| `nb_videos` | 1-10 | Nombre de vidéos finales = nombre d'angles/clip packs |
+| `asset_mode` | `ranking` / `blur` / `split` / `overlay_only` | Type de contenu |
+| `example_description` | texte libre | Guide la description du pack ranking |
+| `platform` / `market` | inchangé | Cibles |
+
+Livrables F04 selon le mode :
+
+- **blur / split / overlay_only** → `overlay_payload_<angle>.json/.md` :
+  UN titre overlay de **1-2 lignes** par clip (porte tout le sens, rend le
+  clip viral — l'image est floutée/découpée).
+- **ranking** → `overlay_payload_<angle>.json/.md` avec 3 blocs :
+  1. `overlay_title` : **max 4 mots** (règle ranking stricte — validation
+     IRON refuse au-delà)
+  2. `labels` : titre pour chaque numéro de classement
+  3. `metadata_title` + `description` (modèle directive) + `tags` +
+     `hashtags` (issus des directives) + compliance FTC
+
+Dans TOUS les modes : jamais de script/narration — la voix est déjà sur le
+clip (on coupe une séquence, on ne produit pas une vidéo).
+
+Commandes locales équivalentes :
+
+```bash
+python MONDES_FORGES/CLIPPING/pur_adapter_direct.py \
+  --candidats <candidats.json> --vod <url> \
+  --nb-videos 5 --asset-mode blur
+
+cd F04_COPYWRITER/CODEBASE
+python copywriter.py --setup-context   --angle A01 --platform youtube_shorts --market us_young_english
+python copywriter.py --generate-overlay --angle A01 --asset-mode blur
+python copywriter.py --finalize-overlay --angle A01 --asset-mode blur
+```

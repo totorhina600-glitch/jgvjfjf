@@ -19,6 +19,18 @@ on:
         description: 'Marché cible'
         required: false
         default: 'us_young_english'
+      nb_videos:
+        description: 'Nombre de vidéos finales (1-10) — détermine le nombre d''assets'
+        required: false
+        default: '1'
+      asset_mode:
+        description: 'Type de contenu : ranking | blur | split | overlay_only'
+        required: false
+        default: 'ranking'
+      example_description:
+        description: 'Exemple de description fourni par l''opérateur (guide F04)'
+        required: false
+        default: ''
 
 jobs:
   copywriting:
@@ -35,13 +47,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Adaptateur PUR direct (VOX -> angles + specimen)
+      - name: Adaptateur PUR direct (VOX -> angles + specimen, contrat opérateur)
         run: |
           python MONDES_FORGES/CLIPPING/pur_adapter_direct.py \
             --candidats "${{ inputs.candidats_path }}" \
             --vod "${{ inputs.vod_url }}" \
             --platform "${{ inputs.platform }}" \
-            --market "${{ inputs.market }}"
+            --market "${{ inputs.market }}" \
+            --nb-videos "${{ inputs.nb_videos }}" \
+            --asset-mode "${{ inputs.asset_mode }}"
 
       - name: Write fresh liber (mode whop, overrides stale logo/meme_v2)
         run: |
@@ -53,11 +67,28 @@ jobs:
             "campaign_status": "active",
             "inputs_warsmith": {
               "platform_target": "${{ inputs.platform }}",
-              "market_target": "${{ inputs.market }}"
+              "market_target": "${{ inputs.market }}",
+              "nb_videos_finales": ${{ inputs.nb_videos || 1 }},
+              "asset_mode": "${{ inputs.asset_mode || 'ranking' }}",
+              "exemple_description": "${{ inputs.example_description }}"
             }
           }
           EOF
-          echo "liber_clipping.json -> mode whop (flux PUR direct)"
+          echo "liber_clipping.json -> mode whop (flux PUR direct + contrat opérateur)"
+
+      - name: Write operator_brief (contrat opérateur pour F04)
+        run: |
+          mkdir -p MONDES_FORGES/CLIPPING/F04_COPYWRITER/IN
+          cat > MONDES_FORGES/CLIPPING/F04_COPYWRITER/IN/operator_brief.json <<'EOF'
+          {
+            "nb_videos_finales": ${{ inputs.nb_videos || 1 }},
+            "asset_mode": "${{ inputs.asset_mode || 'ranking' }}",
+            "platform_target": "${{ inputs.platform }}",
+            "market_target": "${{ inputs.market }}",
+            "exemple_description": "${{ inputs.example_description }}"
+          }
+          EOF
+          echo "operator_brief.json -> contrat opérateur en place"
 
       - name: Write copywriter_secrets.json (NVIDIA, provider other)
         run: |
@@ -74,25 +105,34 @@ jobs:
           EOF
           echo "copywriter_secrets.json -> NVIDIA (kimi-k3)"
 
-      - name: F04 setup-context (premier angle)
+      - name: F04 assets par clip (contrat opérateur — boucle sur N angles)
         run: |
-          python MONDES_FORGES/CLIPPING/F04_COPYWRITER/CODEBASE/copywriter.py \
-            --setup-context --angle A01 --platform "${{ inputs.platform }}" --market "${{ inputs.market }}"
-
-      - name: F04 generate (premium direct) + ordonnance + finalize (A01)
-        run: |
+          NB="${{ inputs.nb_videos || 1 }}"
+          MODE="${{ inputs.asset_mode || 'ranking' }}"
+          NB=$(( NB < 1 ? 1 : (NB > 10 ? 10 : NB) ))
+          ANGLES=$(python3 -c "print(','.join('A%02d' % i for i in range(1, int('$NB')+1)))")
+          echo "Contrat opérateur : $NB clip(s), mode $MODE, angles=[$ANGLES]"
           cd MONDES_FORGES/CLIPPING/F04_COPYWRITER/CODEBASE
-          python copywriter.py --generate --angle A01 --force
-          python copywriter.py --ordonnance --angle A01 --auto-ord
-          python copywriter.py --finalize --angle A01
+          IFS=',' read -ra LIST <<< "$ANGLES"
+          for ANGLE in "${LIST[@]}"; do
+            echo "=== CLIP $ANGLE ==="
+            python copywriter.py --setup-context --angle "$ANGLE" \
+              --platform "${{ inputs.platform }}" --market "${{ inputs.market }}"
+            python copywriter.py --generate-overlay --angle "$ANGLE" \
+              --asset-mode "$MODE" --example-description "${{ inputs.example_description }}"
+            python copywriter.py --finalize-overlay --angle "$ANGLE" \
+              --asset-mode "$MODE"
+          done
 
       - name: Commit copywriting output (ARCHIVUM only)
         run: |
           git config user.name "OracleF04"
           git config user.email "oracle@perturabo.iron"
           mkdir -p MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
+          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/overlay_payload_*.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/overlay_payload_*.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
           cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_*.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
           cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_*.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
           git add MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
-          git commit -m "[F04] copywriting PUR -> ARCHIVUM/copywriting" || echo "nothing to commit"
+          git commit -m "[F04] copywriting PUR (${{ inputs.asset_mode }} x${{ inputs.nb_videos }}) -> ARCHIVUM/copywriting" || echo "nothing to commit"
           git push origin HEAD:main

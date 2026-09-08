@@ -741,6 +741,266 @@ def cmd_generate(args):
 
 
 # ----------------------------------------------------------------------
+# ASSETS — modes opérateur (overlay_only | ranking)
+# Le contrat opérateur décide ce que F04 produit :
+#   - overlay_only (blur/split/…) : UN titre overlay 1-2 lignes par clip,
+#     qui change le sens du clip et le rend viral. RIEN d'autre.
+#   - ranking : overlay <= 4 mots + labels (titre par numéro) + titre
+#     métadonnée + description (modèle directive) + tags/# directives.
+# La voix est déjà sur le clip (clipping, pas de script/narration jamais).
+# ----------------------------------------------------------------------
+OVERLAY_MAX_WORDS_RANKING = 4
+OVERLAY_MAX_CHARS_RANKING = 40
+OVERLAY_MAX_LINES_FREE = 2
+
+
+def _load_operator_brief(args) -> dict:
+    """Contrat opérateur : workflow_dispatch (--asset-mode/--example-description)
+    > IN/operator_brief.json > défaut (ranking)."""
+    brief = {}
+    brief_path = os.path.join(IN_DIR, "operator_brief.json")
+    if os.path.exists(brief_path):
+        try:
+            brief = load_json(brief_path)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"[F04] operator_brief.json illisible ({e}) — défauts utilisés")
+    if getattr(args, "asset_mode", None):
+        brief["asset_mode"] = args.asset_mode
+    if getattr(args, "example_description", None):
+        brief["exemple_description"] = args.example_description
+    brief.setdefault("asset_mode", "ranking")
+    return brief
+
+
+def _overlay_free_prompt(context: dict, brief: dict) -> dict:
+    """Prompt overlay-only : UN titre 1-2 lignes porteur de sens."""
+    return {
+        "mission": (
+            "Forge UN SEUL titre overlay (1 à 2 lignes max, style racourci) "
+            "pour CET angle : c'est LUI qui donne le sens du clip, le rend "
+            "relevant et viral. La voix est déjà sur la vidéo (on coupe une "
+            "séquence, on n'écrit pas de script). Utilise toute la puissance "
+            "de l'ARCHIVUM (viralité, copywriting, directive, trend, learnings). "
+            "Réponds en JSON strict conforme au schéma ci-dessous."
+        ),
+        "asset_mode": "overlay_only",
+        "content_type": brief.get("asset_mode"),
+        "exemple_description_operateur": brief.get("exemple_description"),
+        "campaign_id": context.get("campaign_id"),
+        "angle_id": context.get("angle_id"),
+        "angle": context.get("angle"),
+        "specimen_source": context.get("specimen"),
+        "verdict": context.get("verdict"),
+        "platform_target": context.get("platform_target"),
+        "market_target": context.get("market_target"),
+        "archivum": context.get("archivum"),
+        "output_schema": {
+            "overlay_title": "...  (1-2 lignes max, MAX 60 chars/ligne)",
+            "overlay_lines": 1,
+            "rationale": "pourquoi ce titre change le sens et rend le clip viral",
+        },
+        "heresies_interdites": [
+            "Script ou narration (on fait du clipping, la voix existe déjà)",
+            "Clickbait sans payoff (le titre doit livrer dans la vidéo)",
+            "Reframing qui ment sur le contenu source (anti-cond)",
+            "Overlay > 2 lignes",
+        ],
+    }
+
+
+def _overlay_ranking_prompt(context: dict, brief: dict) -> dict:
+    """Prompt ranking : overlay <=4 mots + labels + titre métadonnée +
+    description (modèle directive) + tags/# (directives)."""
+    return {
+        "mission": (
+            "Forge les assets RANKING complets pour CET angle : "
+            "1) overlay_title de 4 mots MAX (règle ranking stricte, pas 2 lignes) ; "
+            "2) labels : le titre pour chaque numéro de classement ; "
+            "3) metadata_title + description inspirée du modèle de la directive "
+            "campagne + tags et hashtags issus des directives. "
+            "La voix est déjà sur la vidéo (clipping — jamais de script). "
+            "Réponds en JSON strict conforme au schéma ci-dessous."
+        ),
+        "asset_mode": "ranking",
+        "exemple_description_operateur": brief.get("exemple_description"),
+        "campaign_id": context.get("campaign_id"),
+        "angle_id": context.get("angle_id"),
+        "angle": context.get("angle"),
+        "specimen_source": context.get("specimen"),
+        "verdict": context.get("verdict"),
+        "platform_target": context.get("platform_target"),
+        "market_target": context.get("market_target"),
+        "archivum": context.get("archivum"),
+        "output_schema": {
+            "overlay_title": "...  (MAX 4 mots)",
+            "labels": ["...", "...", "..."],
+            "metadata_title": "...",
+            "description": "... (inspirée du modèle de la directive campagne)",
+            "tags": ["..."],
+            "hashtags": ["#...", "#..."],
+            "compliance": {"disclosure": "#ad", "ftc_required": True},
+        },
+        "heresies_interdites": [
+            "Script ou narration (on fait du clipping)",
+            "Overlay > 4 mots en mode ranking",
+            "Clickbait sans payoff",
+            "Reframing qui ment sur le contenu source (anti-cond)",
+            "Tags/hashtags absents des directives",
+        ],
+    }
+
+
+def cmd_generate_overlay(args):
+    """Phase B assets : appel premium direct, sortie overlay_raw_<angle>.json."""
+    angle = find_angle(args.angle)
+    context = _load_context(args.angle)
+    brief = _load_operator_brief(args)
+    ranking = brief.get("asset_mode") == "ranking"
+
+    system_prompt = ""
+    if os.path.exists(SYSTEM_PROMPT_PATH):
+        system_prompt = read_text(SYSTEM_PROMPT_PATH)
+    if not system_prompt or PLACEHOLDER_MARKER in system_prompt:
+        system_prompt = (
+            "Tu es F04_COPYWRITER, frégate copywriting du forge CLIPPING. "
+            "Tu forges des assets de clipping viraux. La voix est déjà sur le "
+            "clip — tu n'écris JAMAIS de script ou de narration. En mode "
+            "overlay_only tu produis UN titre overlay 1-2 lignes qui change le "
+            "sens du clip ; en mode ranking tu produis overlay <=4 mots + labels "
+            "+ titre métadonnée + description + tags/hashtags conformes à la "
+            "directive. Réponds en JSON strict conforme au schéma fourni."
+        )
+
+    user_prompt = (_overlay_ranking_prompt(context, brief) if ranking
+                   else _overlay_free_prompt(context, brief))
+
+    client = PremiumClient(_FORGE_ROOT)
+    if getattr(args, "dry_run", False):
+        call = {
+            "mode": "dry-run — aucun appel réseau",
+            "asset_mode": brief.get("asset_mode"),
+            "model_id": client.config.get("model_id", "<model_premium_id>"),
+            "system_prompt": system_prompt,
+            "user_prompt": user_prompt,
+        }
+        out = os.path.join(IN_DIR, f"premium_call_{args.angle}.json")
+        save_json(out, call)
+        print(f"[F04:ASSETS] Phase B (dry-run) : {out}")
+        return
+
+    if not client._api_key():
+        print("[F04:ASSETS] Clé premium absente — définir CLIPPING_PREMIUM_API_KEY")
+        sys.exit(1)
+
+    client.require_config()
+    result = client.chat(system_prompt=system_prompt,
+                         user_prompt=json.dumps(user_prompt, indent=2, ensure_ascii=False))
+    if not result:
+        print("[F04:ASSETS] Échec premium — overlay_raw absent")
+        sys.exit(1)
+    try:
+        raw = json.loads(client.extract_json(result))
+    except (json.JSONDecodeError, ValueError) as e:
+        fallback = os.path.join(OUT_DIR, f"overlay_raw_{args.angle}.txt")
+        with open(fallback, "w", encoding="utf-8") as f:
+            f.write(result)
+        print(f"[F04:ASSETS] Sortie premium non-JSON: {e} — brute conservée : {fallback}")
+        sys.exit(1)
+
+    raw["campaign_id"] = context.get("campaign_id")
+    raw["angle_id"] = args.angle
+    raw["asset_mode"] = brief.get("asset_mode")
+    out = os.path.join(OUT_DIR, f"overlay_raw_{args.angle}.json")
+    save_json(out, raw)
+    print(f"[F04:ASSETS] Phase B : {out}")
+
+
+def cmd_finalize_overlay(args):
+    """Phase D assets : validation IRON locale + overlay_payload_<angle>.json/.md."""
+    raw_path = os.path.join(OUT_DIR, f"overlay_raw_{args.angle}.json")
+    if not os.path.exists(raw_path):
+        print(f"[F04:ASSETS] overlay_raw introuvable: {raw_path}")
+        print("[F04:ASSETS] Lancer --generate-overlay d'abord (Phase B)")
+        sys.exit(1)
+    raw = load_json(raw_path)
+    context = _load_context(args.angle)
+    brief = _load_operator_brief(args)
+    ranking = brief.get("asset_mode") == "ranking"
+
+    overlay = str(raw.get("overlay_title", "") or "").strip()
+    if not overlay:
+        print("[F04:ASSETS] HÉRÉSIE : overlay_title vide — finalize refusé")
+        sys.exit(1)
+    if ranking:
+        words = len(overlay.split())
+        if words > OVERLAY_MAX_WORDS_RANKING:
+            print(f"[F04:ASSETS] HÉRÉSIE : overlay {words} mots (> {OVERLAY_MAX_WORDS_RANKING}) "
+                  "— règle ranking. Finalize refusé.")
+            sys.exit(1)
+    else:
+        lines = overlay.count("\n") + 1
+        if lines > OVERLAY_MAX_LINES_FREE:
+            print(f"[F04:ASSETS] HÉRÉSIE : overlay {lines} lignes (> {OVERLAY_MAX_LINES_FREE})")
+            sys.exit(1)
+
+    payload = {
+        "campaign_id": raw.get("campaign_id") or context.get("campaign_id"),
+        "angle_id": args.angle,
+        "asset_mode": raw.get("asset_mode"),
+        "content_type": brief.get("asset_mode"),
+        "overlay_title": overlay,
+        "overlay_lines": overlay.count("\n") + 1,
+        "rationale": str(raw.get("rationale", "") or "").strip() or None,
+    }
+    if ranking:
+        payload.update({
+            "labels": [str(l).strip() for l in (raw.get("labels") or [])
+                       if isinstance(l, str) and l.strip()],
+            "metadata_title": str(raw.get("metadata_title", "") or "").strip(),
+            "description": str(raw.get("description", "") or "").strip(),
+            "tags": [str(t).strip() for t in (raw.get("tags") or [])
+                     if isinstance(t, str) and t.strip()],
+            "hashtags": [str(h).strip() for h in (raw.get("hashtags") or [])
+                         if isinstance(h, str) and h.strip()],
+            "compliance": {"disclosure": "#ad", "ftc_required": True},
+        })
+    payload["check_in_iw_custos"] = now_iso()
+
+    out = os.path.join(OUT_DIR, f"overlay_payload_{args.angle}.json")
+    save_json(out, payload)
+
+    mode_label = "RANKING" if ranking else "OVERLAY"
+    lines_md = [
+        f"═══ CLIP {args.angle} — ASSETS {mode_label} ═══",
+        f"CAMPAGNE : {payload['campaign_id']}",
+        "",
+        "── TITRE OVERLAY (posé sur la vidéo) ──",
+        payload["overlay_title"],
+        "",
+    ]
+    if ranking:
+        lines_md += ["── LABELS (titre par numéro) ──"]
+        if payload["labels"]:
+            lines_md += [f"{i}. {label}" for i, label in enumerate(payload["labels"], 1)]
+        else:
+            lines_md += ["—"]
+        lines_md += [
+            "",
+            "── MÉTADONNÉES ──",
+            f"Titre : {payload['metadata_title']}",
+            f"Description : {payload['description']}",
+            f"Tags : {' '.join(payload['tags'])}",
+            f"Hashtags : {' '.join(payload['hashtags'])}",
+        ]
+    else:
+        lines_md += [f"Rationale : {payload['rationale'] or '—'}"]
+    md_path = os.path.join(OUT_DIR, f"overlay_payload_{args.angle}.md")
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines_md) + "\n")
+    print(f"[F04:ASSETS] Phase D : {out} + {md_path}")
+
+
+# ----------------------------------------------------------------------
 # Phase C — iron_ordonnancing
 # ----------------------------------------------------------------------
 def _load_raw(angle_id: str) -> dict:
@@ -1190,6 +1450,15 @@ def main():
                         help="Init system prompt malgré un fichier déjà figé / placeholder")
     parser.add_argument("--sub-mode", default=None,
                         help="Mode LOGO: informatif | humour | meme (auto-détecté sinon)")
+    parser.add_argument("--generate-overlay", action="store_true",
+                        help="Phase B ASSETS : generation premium overlay (modes operateur)")
+    parser.add_argument("--finalize-overlay", action="store_true",
+                        help="Phase D ASSETS : validation IRON + overlay_payload_<angle>")
+    parser.add_argument("--asset-mode", default=None,
+                        choices=["ranking", "blur", "split", "overlay_only"],
+                        help="Contrat operateur : type de contenu (override operator_brief)")
+    parser.add_argument("--example-description", default=None,
+                        help="Exemple de description fourni par l'operateur (guide F04)")
     args = parser.parse_args()
 
     try:
@@ -1211,6 +1480,14 @@ def main():
             if not args.angle:
                 print("[F04] --angle requis pour --finalize"); sys.exit(1)
             (cmd_finalize_logo if is_logo() else cmd_finalize)(args)
+        elif args.generate_overlay:
+            if not args.angle:
+                print("[F04] --angle requis pour --generate-overlay"); sys.exit(1)
+            cmd_generate_overlay(args)
+        elif args.finalize_overlay:
+            if not args.angle:
+                print("[F04] --angle requis pour --finalize-overlay"); sys.exit(1)
+            cmd_finalize_overlay(args)
         else:
             parser.print_help()
     except PremiumClientError as e:

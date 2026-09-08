@@ -435,3 +435,57 @@ détecté + scoré + sélectionné. La viralité est gérée par VOX ; F04 écri
 
 ### Reste
 Lancer F04 pour produire le text_payload (3 titres + reframing + caption + hashtags).
+
+
+---
+
+## Session 2026-09-08 (contrat opérateur F04 : assets à la demande)
+
+### Décision doctrine
+Le Warsmith décide CE QUE F04 produit. Le workflow n'impose plus le pack
+"ranking" par défaut. Deux modes d'assets, choisis à l'exécution :
+
+- **overlay_only** (blur, split…) : UN titre overlay de 1-2 lignes par clip.
+  C'est LUI qui donne le sens, rend le clip relevant et viral. Rien d'autre.
+- **ranking** : 3 livrables par clip —
+  1. titre overlay **max 4 mots** (règle ranking stricte, pas 2 lignes)
+  2. **labels** : le titre pour chaque numéro de classement
+  3. **titre métadonnée + description** (inspirée du modèle de la directive
+     campagne) + **tags et hashtags issus des directives**
+
+La voix est déjà sur le clip (on coupe une séquence) : F04 n'écrit JAMAIS
+de script/narration, dans aucun mode.
+
+Le nombre de vidéos finales (1-10) est aussi une décision opérateur : il
+détermine le nombre d'angles/clip packs produits par l'adaptateur.
+
+### Livré
+- `pur_adapter_direct.py` : `--nb-videos N` (1-10, tronque les candidats VOX
+  aux N premiers) + `--asset-mode ranking|blur|split|overlay_only`. L'asset_mode
+  est propagé dans angles.json (niveau doc ET angle) + specimens.
+- `F04_COPYWRITER/CODEBASE/copywriter.py` :
+  - `--generate-overlay` (Phase B assets) : appel premium direct, sortie
+    `OUT/overlay_raw_<angle>.json`. Prompt overlay_only (1-2 lignes) ou
+    ranking (≤4 mots + labels + métadonnées) selon le contrat.
+  - `--finalize-overlay` (Phase D assets) : validation IRON locale
+    (overlay ≤4 mots si ranking, ≤2 lignes sinon — hérésie sinon) +
+    `OUT/overlay_payload_<angle>.json` + `.md` lisible opérateur.
+  - Contrat lu depuis `IN/operator_brief.json` ou flags CLI
+    (`--asset-mode`, `--example-description`).
+- `.github/workflows/perturabo_f04_copywriting.yml` : nouveaux inputs
+  `nb_videos` (1-10), `asset_mode`, `example_description`. Écrit
+  `IN/operator_brief.json` puis boucle setup-context → generate-overlay →
+  finalize-overlay sur les N angles. Commit copie overlay_payload_* +
+  text_payload_* vers ARCHIVUM/copywriting.
+
+### Testé (local, sans réseau)
+- Adaptateur : nb_videos=3 + asset_mode=blur -> 3 angles A01-A03 + 3 specimens.
+- Dry-run premium : prompt overlay_only correct (schema 1-2 lignes).
+- Finalize blur : overlay 5 mots accepté (libre). Finalize ranking : 5 mots
+  refusé (hérésie), 4 mots accepté + payload ranking complet (labels,
+  métadonnées, tags).
+
+### Reste
+- Pousser sur PERTURABO puis lancer le workflow avec le contrat opérateur
+  (ex : nb_videos=5, asset_mode=blur).
+- Iron Sentinel — Capteurs : dernier run en échec (ee109a83), à diagnostiquer.

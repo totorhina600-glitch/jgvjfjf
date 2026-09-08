@@ -16,10 +16,15 @@ Angles PUR : famille 'reframing' (hooks_pur.json), 1 angle par candidat VOX,
 reframe_dim dérivé du type de signal détecté. Le copywriting premium (kimi-k3)
 fait le vrai travail de formulation.
 
+Contrat opérateur (operator_brief) :
+  --nb-videos N     nombre de vidéos finales (1-10) -> N angles/clip packs
+  --asset-mode M    ranking | blur | split  (type de contenu demandé)
+
 Usage :
   python pur_adapter_direct.py \
       --candidats F00B_VOX/OUT/candidats.json \
-      --vod <url> --platform youtube_shorts --market us_young_english
+      --vod <url> --platform youtube_shorts --market us_young_english \
+      --nb-videos 5 --asset-mode blur
 """
 
 import argparse
@@ -62,7 +67,14 @@ def main():
     ap.add_argument("--vod", required=True)
     ap.add_argument("--platform", default="youtube_shorts")
     ap.add_argument("--market", default="us_young_english")
+    ap.add_argument("--nb-videos", type=int, default=1,
+                    help="Nombre de vidéos finales (1-10) — détermine le nombre d'assets")
+    ap.add_argument("--asset-mode", default="ranking",
+                    choices=["ranking", "blur", "split", "overlay_only"],
+                    help="Type de contenu demandé par l'opérateur")
     args = ap.parse_args()
+
+    nb_videos = max(1, min(10, int(args.nb_videos or 1)))
 
     # chemins relatifs au repo (l'adaptateur vit à MONDES_FORGES/CLIPPING/)
     here = os.path.dirname(os.path.abspath(__file__))
@@ -74,6 +86,9 @@ def main():
 
     cands = load_json(args.candidats)
     candidates = cands.get("candidates", []) if isinstance(cands, dict) else cands
+    # L'opérateur décide du nombre de vidéos finales : on garde les N premiers
+    # candidats (déjà triés par priorité VOX).
+    candidates = candidates[:nb_videos]
 
     angles = []
     for i, c in enumerate(candidates):
@@ -96,6 +111,7 @@ def main():
             "weight": round(0.6 + float(intens) * 0.4, 3),
             "vox_signal_type": sig,
             "vox_intensity": intens,
+            "asset_mode": args.asset_mode,
         })
         # specimen par candidat (ce que F04 attend dans F03_SOURCE_HUNTER/OUT)
         specimen = {
@@ -124,6 +140,8 @@ def main():
         "weighting_eligible": False,
         "sub_mode": "pur",
         "forge_mode": "premium",
+        "asset_mode": args.asset_mode,
+        "nb_videos_finales": nb_videos,
         "angles": angles,
     }
     ang_path = os.path.join(f02_out, "angles.json")
