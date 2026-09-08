@@ -99,7 +99,8 @@ jobs:
             "model_id": "moonshotai/kimi-k3",
             "provider": "other",
             "base_url": "https://integrate.api.nvidia.com/v1",
-            "max_tokens_per_call": 8192,
+            "max_tokens_per_call": 4096,
+            "timeout_seconds": 600,
             "temperature_default": 0.7
           }
           EOF
