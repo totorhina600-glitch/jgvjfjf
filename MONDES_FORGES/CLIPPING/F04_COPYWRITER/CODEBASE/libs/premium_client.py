@@ -28,6 +28,7 @@ compatible avec le poste faible du Warsmith.
 
 import json
 import os
+import time
 import urllib.error
 import urllib.request
 
@@ -193,12 +194,27 @@ class PremiumClient:
 
     def _fetch(self, req: urllib.request.Request) -> str:
         timeout = self.config.get("timeout_seconds", 240)
-        try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read().decode("utf-8")
-        except urllib.error.HTTPError as e:
-            snippet = e.read().decode("utf-8", errors="replace")[:500]
-            raise PremiumClientError(
-                f"HTTP {e.code} de {req.full_url}: {snippet}") from e
-        except urllib.error.URLError as e:
-            raise PremiumClientError(f"Réseau vers {req.full_url}: {e.reason}") from e
+        max_retries = int(self.config.get("max_retries", 3))
+        retry_base_delay = float(self.config.get("retry_base_delay", 2.0))
+        last_err = "inconnue"
+        for attempt in range(1, max_retries + 1):
+            try:
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    return resp.read().decode("utf-8")
+            except urllib.error.HTTPError as e:
+                snippet = e.read().decode("utf-8", errors="replace")[:500]
+                if e.code < 500 or attempt == max_retries:
+                    raise PremiumClientError(
+                        f"HTTP {e.code} de {req.full_url}: {snippet}") from e
+                last_err = f"HTTP {e.code}"
+            except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+                reason = getattr(e, "reason", e)
+                if attempt == max_retries:
+                    raise PremiumClientError(
+                        f"Réseau vers {req.full_url}: {reason}") from e
+                last_err = f"réseau: {reason}"
+            # backoff exponentiel (2s, 4s, ...) avant la tentative suivante
+            if attempt < max_retries:
+                time.sleep(retry_base_delay * (2 ** (attempt - 1)))
+        raise PremiumClientError(
+            f"Échec après {max_retries} tentatives vers {req.full_url} ({last_err})")

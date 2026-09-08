@@ -101,12 +101,14 @@ jobs:
             "base_url": "https://integrate.api.nvidia.com/v1",
             "max_tokens_per_call": 4096,
             "timeout_seconds": 600,
+            "max_retries": 3,
+            "retry_base_delay": 2.0,
             "temperature_default": 0.7
           }
           EOF
           echo "copywriter_secrets.json -> NVIDIA (kimi-k3)"
 
-      - name: F04 assets par clip (contrat opérateur — boucle sur N angles)
+      - name: F04 assets par clip (résilient — retry + commit par clip)
         run: |
           NB="${{ inputs.nb_videos || 1 }}"
           MODE="${{ inputs.asset_mode || 'ranking' }}"
@@ -114,26 +116,34 @@ jobs:
           ANGLES=$(python3 -c "print(','.join('A%02d' % i for i in range(1, int('$NB')+1)))")
           echo "Contrat opérateur : $NB clip(s), mode $MODE, angles=[$ANGLES]"
           cd MONDES_FORGES/CLIPPING/F04_COPYWRITER/CODEBASE
+          git config user.name "OracleF04"
+          git config user.email "oracle@perturabo.iron"
           IFS=',' read -ra LIST <<< "$ANGLES"
           for ANGLE in "${LIST[@]}"; do
             echo "=== CLIP $ANGLE ==="
             python copywriter.py --setup-context --angle "$ANGLE" \
-              --platform "${{ inputs.platform }}" --market "${{ inputs.market }}"
+              --platform "${{ inputs.platform }}" --market "${{ inputs.market }}" \
+              || { echo "::warning::CLIP $ANGLE setup échoué"; continue; }
             python copywriter.py --generate-overlay --angle "$ANGLE" \
-              --asset-mode "$MODE" --example-description "${{ inputs.example_description }}"
+              --asset-mode "$MODE" --example-description "${{ inputs.example_description }}" \
+              || { echo "::warning::CLIP $ANGLE generate échoué"; continue; }
             python copywriter.py --finalize-overlay --angle "$ANGLE" \
-              --asset-mode "$MODE"
+              --asset-mode "$MODE" || true
+
+            # Résilience : on commite CE clip immédiatement (un échec n'efface plus les autres)
+            cd "$GITHUB_WORKSPACE"
+            mkdir -p MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
+            cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/overlay_payload_$ANGLE.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+            cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/overlay_payload_$ANGLE.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+            cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_$ANGLE.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+            cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_$ANGLE.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
+            git add MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
+            git commit -m "[F04] $ANGLE copywriting PUR ($MODE) -> ARCHIVUM/copywriting" || echo "rien à commiter"
+
+            # Pause anti-limite NVIDIA entre clips
+            cd MONDES_FORGES/CLIPPING/F04_COPYWRITER/CODEBASE
+            sleep 4
           done
 
-      - name: Commit copywriting output (ARCHIVUM only)
-        run: |
-          git config user.name "OracleF04"
-          git config user.email "oracle@perturabo.iron"
-          mkdir -p MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
-          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/overlay_payload_*.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
-          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/overlay_payload_*.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
-          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_*.json MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
-          cp MONDES_FORGES/CLIPPING/F04_COPYWRITER/OUT/text_payload_*.md   MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting/ 2>/dev/null || true
-          git add MONDES_FORGES/CLIPPING/ARCHIVUM/copywriting
-          git commit -m "[F04] copywriting PUR (${{ inputs.asset_mode }} x${{ inputs.nb_videos }}) -> ARCHIVUM/copywriting" || echo "nothing to commit"
-          git push origin HEAD:main
+          cd "$GITHUB_WORKSPACE"
+          git push origin HEAD:main || echo "::warning::push échoué"
