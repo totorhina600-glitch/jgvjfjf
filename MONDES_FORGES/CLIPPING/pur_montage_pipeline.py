@@ -52,6 +52,19 @@ def _angle_id(idx):
     return "A%02d" % (idx + 1)
 
 
+def _word_window(all_words, start_sec, end_sec):
+    out = []
+    for w in all_words:
+        try:
+            s = float(w["start"]); e = float(w.get("end", s))
+        except (KeyError, TypeError, ValueError):
+            continue
+        if s >= start_sec and e <= end_sec:
+            out.append({"word": w.get("word", ""), "start": round(s - start_sec, 2),
+                        "end": round(e - start_sec, 2)})
+    return out
+
+
 def load_overlay(angle_id):
     """Charge l'overlay F04 (F04_OUT en runtime, sinon ARCHIVUM/copywriting commité)."""
     for p in [
@@ -63,7 +76,8 @@ def load_overlay(angle_id):
     return {}
 
 
-def build_pack(cand, overlay, angle_id, idx, total, camp_id, vod, platform, market, mode):
+def build_pack(cand, overlay, angle_id, idx, total, camp_id, vod, platform, market, mode,
+               word_timings=()):
     text_payload = overlay or {
         "overlay_title": " ".join((cand.get("top_words") or "").split()[:8]),
         "overlay_lines": 2,
@@ -79,6 +93,7 @@ def build_pack(cand, overlay, angle_id, idx, total, camp_id, vod, platform, mark
         "signal_type": cand.get("signal_type", "mixed"),
         "signal_intensity": cand.get("signal_intensity", 0.5),
         "top_words": cand.get("top_words", ""),
+        "word_timings": word_timings,
     }
     context = {"campaign_id": camp_id, "angle_id": angle_id,
                "platform": platform, "market": market, "mode": "pur"}
@@ -118,10 +133,15 @@ def main():
     ap.add_argument("--market", default="us_young_english")
     ap.add_argument("--nb-videos", type=int, default=1)
     ap.add_argument("--asset-mode", default="overlay_only")
+    ap.add_argument("--transcript", default=None)
     args = ap.parse_args()
 
     nb = max(1, min(10, int(args.nb_videos or 1)))
     cands = load_json(args.candidats)
+    transcript_path = args.transcript or args.candidats.replace("_candidats.json", "_transcript.json")
+    transcript_words = []
+    if transcript_path and os.path.exists(transcript_path):
+        transcript_words = load_json(transcript_path).get("words") or []
     camp_id = cands.get("campaign_id") or cands.get("campaign") or "pur"
     candidates = cands.get("candidates", []) if isinstance(cands, dict) else cands
     candidates = candidates[:nb]
@@ -130,8 +150,10 @@ def main():
     for i, c in enumerate(candidates):
         aid = _angle_id(i)
         overlay = load_overlay(aid)
+        wt = _word_window(transcript_words, c.get("start_sec") or 0, c.get("end_sec") or 0)
         pack = build_pack(c, overlay, aid, i + 1, len(candidates),
-                          camp_id, args.vod, args.platform, args.market, args.asset_mode)
+                          camp_id, args.vod, args.platform, args.market, args.asset_mode,
+                          word_timings=wt)
         out_p = os.path.join(PACKS_DIR, "production_pack_%s.json" % aid)
         save_json(out_p, pack)
         packs.append({"angle_id": aid, "file": os.path.basename(out_p)})

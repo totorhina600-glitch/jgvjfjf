@@ -23,6 +23,103 @@ _EMOTION = {
     "punchline": "shock", "trigger_word": "outrage", "energy": "hype",
     "chat_spike": "shock", "mixed": "intrigue",
 }
+_DISC = {
+    "anyways", "anyway", "but", "so", "okay", "ok", "wait", "actually",
+    "then", "however", "meanwhile", "besides", "look", "now", "and then",
+    "the thing is", "how so",
+}
+
+def _clean_word(w):
+    return (w or "").strip().lower().rstrip(",.!?;:\"'…-")
+
+def _word_at(word_timings, t):
+    anchor = ""
+    for w in word_timings:
+        try:
+            s = float(w.get("start", 0)); e = float(w.get("end", s))
+        except (TypeError, ValueError):
+            continue
+        if s <= t <= e:
+            return (w.get("word") or "").strip()
+        if s <= t:
+            anchor = (w.get("word") or "").strip()
+    return anchor
+
+def _beat_analysis(word_timings, duration):
+    breaths, strongs, ideas = [], [], []
+    for i in range(len(word_timings) - 1):
+        w = word_timings[i]; nxt = word_timings[i + 1]
+        try:
+            s = float(w.get("start", 0)); e = float(w.get("end", s))
+            ns = float(nxt.get("start", 0))
+        except (TypeError, ValueError):
+            continue
+        gap = round(ns - e, 2)
+        if gap >= 0.55:
+            breaths.append(round(e, 2))
+            if gap >= 1.0:
+                strongs.append((round(e, 2), gap))
+        if _clean_word(w.get("word", "")) in _DISC:
+            ideas.append(round(s, 2))
+    strongs.sort(key=lambda x: -x[1])
+    third = duration * 0.66
+    late = [(t, g) for (t, g) in strongs if t >= third]
+    if late:
+        punch = max(late, key=lambda x: x[1])[0]
+    elif strongs:
+        punch = strongs[0][0]
+    else:
+        later = [float(w.get("start", 0)) for w in word_timings
+                 if float(w.get("start", 0)) >= third]
+        punch = round(later[0], 2) if later else round(duration * 0.85, 2)
+    return breaths, strongs, ideas, punch
+
+def _mk_zoom(kind, t, word_timings):
+    if kind == "snap_zoom":
+        z = {"type": "snap_zoom", "intensity_pct": "115-130%",
+             "duration_in": "1 frame (instantane)", "duration_out": "fade 0.3s",
+             "easing": "NONE", "target": "centre du visage du speaker",
+             "sfx_sync": "boom (60%) + flash blanc subtil (1-2 frames)"}
+    else:
+        z = {"type": "brutal_impact", "intensity_pct": "108-115%",
+             "duration_in": "0.1s (2-3 frames a 30fps)", "duration_out": "0.1s (retour immediat)",
+             "easing": "NONE", "target": "centre du visage du speaker",
+             "sfx_sync": "impact (50-60%) synchronise frame-exacte"}
+    z["moment_sec"] = t
+    z["word_anchor"] = _word_at(word_timings, t)
+    return z
+
+def _word_aligned_cut_plan(word_timings, duration):
+    breaths, _strongs, ideas, punch = _beat_analysis(word_timings, duration)
+    cuts = []
+    for t in breaths[:8]:
+        cuts.append({"type": "breath_cut", "moment_sec": t,
+                     "word_anchor": _word_at(word_timings, t),
+                     "technique": "couper exactement sur la respiration du speaker"})
+    for t in ideas[:3]:
+        cuts.append({"type": "idea_cut", "moment_sec": t,
+                     "word_anchor": _word_at(word_timings, t),
+                     "technique": "couper quand le speaker change d'idee"})
+    cuts.append({"type": "smash_cut", "moment_sec": punch,
+                 "word_anchor": _word_at(word_timings, punch),
+                 "technique": "cut brutal zero transition sur la punchline",
+                 "sfx_sync": "whoosh_fast/impact"})
+    cuts.sort(key=lambda c: c["moment_sec"])
+    return cuts
+
+def _word_aligned_zoom_plan(word_timings, duration, emotion):
+    shock = emotion in ("shock", "outrage")
+    _breaths, strongs, _ideas, punch = _beat_analysis(word_timings, duration)
+    zooms = []
+    if strongs:
+        zooms.append(_mk_zoom("brutal_impact", strongs[0][0], word_timings))
+    if shock and punch is not None and (not zooms or abs(punch - zooms[0]["moment_sec"]) > 0.5):
+        zooms.append(_mk_zoom("snap_zoom", punch, word_timings))
+    if len(strongs) > 1 and len(zooms) < 2:
+        zooms.append(_mk_zoom("brutal_impact", strongs[1][0], word_timings))
+    zooms.sort(key=lambda z: z["moment_sec"])
+    return zooms[:3]
+
 
 def _load_json(path):
     if not path.exists():
@@ -71,6 +168,7 @@ def normalize_segment(seg):
         "signal_type": seg.get("signal_type") or "mixed",
         "signal_intensity": float(seg.get("signal_intensity", 0.5) or 0.5),
         "transcript_segment": (seg.get("transcript_segment") or seg.get("top_words") or seg.get("text") or ""),
+        "word_timings": seg.get("word_timings") or [],
     }
 
 def _emotion_of(segment):
@@ -176,6 +274,13 @@ def generate_montage_instructions(segment, text_payload, context):
     duration = float(seg["duration_sec"] or rules.get("max_duration_sec", 30))
     hook_dur = int(rules.get("hook_duration_sec", 3))
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    word_timings = seg.get("word_timings") or []
+    if word_timings:
+        cuts = _word_aligned_cut_plan(word_timings, duration)
+        zooms = _word_aligned_zoom_plan(word_timings, duration, emotion)
+    else:
+        cuts = _cut_plan(duration, emotion, seg["signal_intensity"])
+        zooms = _zoom_plan(duration, emotion, seg["signal_intensity"])
     return {
         "metadata": {"generated_at": now, "generator": "F06_DIRECTOR", "version": "2.0.0-viral",
                      "doctrine_source": "ARCHIVUM/montage/patterns/",
@@ -190,8 +295,8 @@ def generate_montage_instructions(segment, text_payload, context):
                  "philosophy": "0-3s : visage speaker, PAS de B-roll, voix claire",
                  "zoom": {"type": "brutal_impact", "intensity": "108-115%", "easing": "NONE"}},
         "body": {"duration_sec": round(duration - hook_dur, 1),
-                 "cuts": _cut_plan(duration, emotion, seg["signal_intensity"]),
-                 "zooms": _zoom_plan(duration, emotion, seg["signal_intensity"]),
+                 "cuts": cuts,
+                 "zooms": zooms,
                  "text_overlays": _text_plan(doctrine, text_payload, seg, platform),
                  "audio": _audio_plan(doctrine, emotion),
                  "energy_curve": _energy_curve(duration, emotion),

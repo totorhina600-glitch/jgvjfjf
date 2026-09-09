@@ -27,6 +27,10 @@ on:
         description: 'Type de contenu : ranking | blur | split | overlay_only'
         required: false
         default: 'overlay_only'
+      transcript_path:
+        description: 'Chemin transcript word-timestamps (vide = auto derive de candidats)'
+        required: false
+        default: ''
 
 jobs:
   montage:
@@ -47,7 +51,8 @@ jobs:
             --platform "${{ inputs.platform }}" \
             --market "${{ inputs.market }}" \
             --nb-videos "${{ inputs.nb_videos }}" \
-            --asset-mode "${{ inputs.asset_mode }}"
+            --asset-mode "${{ inputs.asset_mode }}" \
+            --transcript "${{ inputs.transcript_path }}"
 
       - name: Commit packs vers ARCHIVUM/montage/packs
         run: |
