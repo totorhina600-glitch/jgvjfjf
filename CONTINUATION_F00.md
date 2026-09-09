@@ -504,3 +504,17 @@ détermine le nombre d'angles/clip packs produits par l'adaptateur.
 - Lancer le workflow montage (nb_videos=3, overlay_only) et valider les packs viraux.
 - Si OK : envoyer les `production_pack_Axx.json` à OMNIS_WATCH pour le rendu vidéo.
 - Brancher le reste (A04-A09) si les 3 premiers clips passent le gate.
+
+## Session 2026-09-09 — Montage frame-près validé + EXPORT
+
+### Fait
+- Calage frame-près : cuts/zooms ancrés sur les word-timestamps du transcript (fini la grille fixe).
+- Run montage vert (commit de sortie 69f3da0) : 3 packs calibrés commités dans `ARCHIVUM/montage/packs/`.
+- Doublon `copywriting` corrigé dans `director.py` (supprimé du bloc montage_instructions, conservé au niveau racine du pack).
+- Les 3 packs PUR (A01/A02/A03) copiés dans `EXPORT/` pour le gate Warsmith.
+- Docs de suivi mises à jour.
+
+### Reste
+- Gate Warsmith sur les packs EXPORT.
+- Si OK : lancer OMNIS_WATCH (rendu vidéo) depuis `EXPORT/`.
+- Brancher les candidats restants A04–A09 (VOX en a 9).

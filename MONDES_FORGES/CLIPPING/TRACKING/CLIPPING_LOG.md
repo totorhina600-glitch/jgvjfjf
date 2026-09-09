@@ -772,3 +772,10 @@ F00_CAPTEURS/CODEBASE/capteurs.py
 - `pur_montage_pipeline.py` : VOX (candidats) + F04 (overlay) -> `production_pack_<angle>.json` complet, montage EMBARQUÉ dans le pack (bloc `montage_instructions`).
 - Sorties dans `ARCHIVUM/montage/packs/` (git-trackées, contrairement à OUT/).
 - Workflow `perturabo_montage.yml` créé.
+
+## [2026-09-09T03:25:06Z] F06 — montage frame-près validé + EXPORT
+
+- Calage frame-près des cuts/zooms sur les word-timestamps (commit 31a576a) ; run montage vert.
+- Packs calibrés A01/A02/A03 commités dans ARCHIVUM/montage/packs/ (commit de sortie 69f3da0).
+- Doublon `copywriting` corrigé dans director.py (retiré du bloc montage_instructions).
+- Packs PUR corrigés copiés dans EXPORT/ pour validation Warsmith.

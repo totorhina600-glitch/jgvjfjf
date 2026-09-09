@@ -143,3 +143,10 @@ Minimum 5 secondes entre chaque B-roll.
 - Anti-détection : mirror + speed 1.02-1.08x + crop 2-3% + sfx layer + color shift + trim (obligatoire).
 - Overlay texte : Montserrat/Bebas Neue, accent jaune/vert, captions word-by-word, safe zones.
 - Émotion dérivée du signal VOX (punchline -> shock, etc.).
+
+## v2.0.0-viral — frame-près (2026-09-09)
+
+- director.py cale cuts/zooms sur les word-timestamps du transcript (respiration, silences forts, marqueurs de discours, punchline).
+- Chaque événement reçoit un `word_anchor` exact.
+- Doublon `copywriting` retiré du bloc montage_instructions.
+- 3 packs PUR calibrés validés + copiés dans EXPORT/.

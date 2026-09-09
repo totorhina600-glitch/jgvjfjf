@@ -55,3 +55,10 @@
 - Émotion déduite du signal VOX (punchline -> shock, trigger_word -> outrage, etc.).
 - `pur_montage_pipeline.py` : recolle le flux VOX + F04 -> pack COMPLET (source + copywriting + montage_instructions + anti-détection) vers `ARCHIVUM/montage/packs/`. Le pack contient TOUT.
 - Nouveau workflow `.github/workflows/perturabo_montage.yml`.
+
+## v2.0.0-viral — frame-près (2026-09-09)
+
+- Calage frame-près : cuts/zooms ancrés sur les vrais timestamps de mots. Plus de grille fixe.
+- Chaque événement porte un `word_anchor` exact (ex. A01 snap_zoom@24.43s sur « that? »).
+- Doublon `copywriting` retiré des instructions de montage (reste au niveau racine du pack).
+- Run vert → packs calibrés A01/A02/A03 + copie EXPORT.

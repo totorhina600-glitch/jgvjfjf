@@ -175,4 +175,12 @@ python ARCHIVUM/campaign/campaign_directive_parser.py directive.md
 
 ---
 
+## Montage frame-près (F06_DIRECTOR v2)
+
+Le montage est lancé via le workflow `perturabo_montage.yml` (GitHub Actions) : `nb_videos=3, asset_mode=overlay_only`.
+Les cuts/zooms sont calés sur les word-timestamps du transcript — plus de grille fixe.
+Sorties : `ARCHIVUM/montage/packs/production_pack_Axx.json`. Après gate Warsmith, copie dans `EXPORT/` pour OMNIS_WATCH.
+
+---
+
 *Fer au-dedans, Fer au-dehors. Le siège continue.* 🔩
