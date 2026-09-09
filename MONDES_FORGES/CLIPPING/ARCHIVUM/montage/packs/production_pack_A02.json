@@ -1,6 +1,6 @@
 {
   "pack_id": "pur-A02",
-  "generated_at": "2026-09-09T02:07:21Z",
+  "generated_at": "2026-09-09T02:51:16Z",
   "mode": "pur",
   "asset_mode": "overlay_only",
   "identite": {
@@ -29,7 +29,7 @@
   },
   "montage_instructions": {
     "metadata": {
-      "generated_at": "2026-09-09T02:07:21Z",
+      "generated_at": "2026-09-09T02:51:16Z",
       "generator": "F06_DIRECTOR",
       "version": "2.0.0-viral",
       "doctrine_source": "ARCHIVUM/montage/patterns/",
@@ -59,97 +59,59 @@
       "duration_sec": 27.0,
       "cuts": [
         {
+          "type": "idea_cut",
+          "moment_sec": 1.92,
+          "word_anchor": "you",
+          "technique": "couper quand le speaker change d'idee"
+        },
+        {
           "type": "breath_cut",
-          "moment_sec": 0.0,
+          "moment_sec": 5.18,
+          "word_anchor": "appreciate",
           "technique": "couper exactement sur la respiration du speaker"
         },
         {
           "type": "breath_cut",
-          "moment_sec": 3.0,
+          "moment_sec": 13.78,
+          "word_anchor": "funny",
           "technique": "couper exactement sur la respiration du speaker"
         },
         {
           "type": "breath_cut",
-          "moment_sec": 6.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 9.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 12.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 15.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 18.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 21.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 24.0,
-          "technique": "couper exactement sur la respiration du speaker"
-        },
-        {
-          "type": "breath_cut",
-          "moment_sec": 27.0,
+          "moment_sec": 20.17,
+          "word_anchor": "this",
           "technique": "couper exactement sur la respiration du speaker"
         },
         {
           "type": "smash_cut",
-          "moment_sec": 25.5,
+          "moment_sec": 20.17,
+          "word_anchor": "this",
           "technique": "cut brutal zero transition sur la punchline",
           "sfx_sync": "whoosh_fast/impact"
-        },
-        {
-          "type": "idea_cut",
-          "moment_sec": 15.0,
-          "technique": "couper quand le speaker change d'idee"
         }
       ],
       "zooms": [
         {
           "type": "brutal_impact",
-          "moment_sec": 9.0,
           "intensity_pct": "108-115%",
           "duration_in": "0.1s (2-3 frames a 30fps)",
           "duration_out": "0.1s (retour immediat)",
           "easing": "NONE",
           "target": "centre du visage du speaker",
-          "sfx_sync": "impact (50-60%) synchronise frame-exacte"
+          "sfx_sync": "impact (50-60%) synchronise frame-exacte",
+          "moment_sec": 13.78,
+          "word_anchor": "funny"
         },
         {
           "type": "snap_zoom",
-          "moment_sec": 18.0,
           "intensity_pct": "115-130%",
           "duration_in": "1 frame (instantane)",
           "duration_out": "fade 0.3s",
           "easing": "NONE",
           "target": "centre du visage du speaker",
-          "sfx_sync": "boom (60%) + flash blanc subtil (1-2 frames)"
-        },
-        {
-          "type": "snap_zoom",
-          "moment_sec": 27.0,
-          "intensity_pct": "115-130%",
-          "duration_in": "1 frame (instantane)",
-          "duration_out": "fade 0.3s",
-          "easing": "NONE",
-          "target": "centre du visage du speaker",
-          "sfx_sync": "boom (60%) + flash blanc subtil (1-2 frames)"
+          "sfx_sync": "boom (60%) + flash blanc subtil (1-2 frames)",
+          "moment_sec": 20.17,
+          "word_anchor": "this"
         }
       ],
       "text_overlays": {
