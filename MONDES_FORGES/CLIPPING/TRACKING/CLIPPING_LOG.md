@@ -764,3 +764,11 @@ F00_CAPTEURS/CODEBASE/capteurs.py
 - Les artefacts de production ont été commités et poussés dans le commit `bf78ea3`.
 
 ## [2026-08-24T09:35:33Z] F05 — check-in — output: /home/ubuntu/perturabo_work/MONDES_FORGES/CLIPPING/F05_PACKAGER/OUT/packager_summary.md — md5: 88f0278700e1c19b612ba400bc73481d — status: done
+
+
+## [2026-09-09T02:06:42Z] F06 — montage VIRAL (v2) — doctrine ARCHIVUM consommée
+
+- `director.py` réécrit : plus de défauts morts. Zooms brutaux, smash/breath/idea cut, SFX sync, anti-détection obligatoire, émotion dérivée du signal VOX.
+- `pur_montage_pipeline.py` : VOX (candidats) + F04 (overlay) -> `production_pack_<angle>.json` complet, montage EMBARQUÉ dans le pack (bloc `montage_instructions`).
+- Sorties dans `ARCHIVUM/montage/packs/` (git-trackées, contrairement à OUT/).
+- Workflow `perturabo_montage.yml` créé.

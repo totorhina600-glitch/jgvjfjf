@@ -489,3 +489,18 @@ détermine le nombre d'angles/clip packs produits par l'adaptateur.
 - Pousser sur PERTURABO puis lancer le workflow avec le contrat opérateur
   (ex : nb_videos=5, asset_mode=blur).
 - Iron Sentinel — Capteurs : dernier run en échec (ee109a83), à diagnostiquer.
+
+
+## Session 2026-09-08 — Montage viral branché (F05/F06)
+
+### Fait
+- F04 copywriting lancé + validé (3 clips A01/A02/A03, overlay_only).
+- Fix timeout NVIDIA (600s) + max_tokens 4096 + retry RemoteDisconnected + commit par clip.
+- `director.py` RÉÉCRIT (v2.0.0-viral) : consomme la doctrine ARCHIVUM, zooms brutaux, smash/breath cut, SFX sync, anti-détection. Fini les défauts morts (zoom lent, #FF0000, 'Follow for more').
+- `pur_montage_pipeline.py` : le pack contient TOUT (montage embarqué). Sorties `ARCHIVUM/montage/packs/`.
+- Workflow `perturabo_montage.yml`.
+
+### Reste
+- Lancer le workflow montage (nb_videos=3, overlay_only) et valider les packs viraux.
+- Si OK : envoyer les `production_pack_Axx.json` à OMNIS_WATCH pour le rendu vidéo.
+- Brancher le reste (A04-A09) si les 3 premiers clips passent le gate.

@@ -46,3 +46,12 @@
 ---
 
 *"Chaque instruction est un ordre. Chaque seconde est un champ de bataille."*
+
+
+## v2.0.0-viral — 2026-09-08
+
+- `director.py` RÉÉCRIT : consomme la doctrine réelle d'ARCHIVUM/montage/patterns/ (zoom_patterns, cut_patterns, audio_presets, energy_patterns, anti_detection, text_overlay_patterns, pur_montage_rules, hooks_pur).
+- Fini les défauts morts (zoom lent, rouge #FF0000, 'Follow for more'). Désormais : zooms BRUTAUX (brutal_impact + snap_zoom, NO easing), smash/breath/idea cut, SFX sync frame-exacte, courbe d'énergie par émotion, anti-détection obligatoire (mirror + speed + crop + sfx layer + color shift + trim).
+- Émotion déduite du signal VOX (punchline -> shock, trigger_word -> outrage, etc.).
+- `pur_montage_pipeline.py` : recolle le flux VOX + F04 -> pack COMPLET (source + copywriting + montage_instructions + anti-détection) vers `ARCHIVUM/montage/packs/`. Le pack contient TOUT.
+- Nouveau workflow `.github/workflows/perturabo_montage.yml`.

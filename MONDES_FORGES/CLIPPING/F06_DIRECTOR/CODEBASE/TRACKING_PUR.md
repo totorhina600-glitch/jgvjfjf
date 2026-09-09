@@ -132,3 +132,14 @@ Minimum 5 secondes entre chaque B-roll.
 | Split Scene | ✅ Implémenté (pattern + pur.py + docs) |
 | Copywriting PUR | ✅ Implémenté (hooks_pur.json + copywriting_pur.json + pur.py Gate 3 amélioré) |
 | Tests | ⏳ En attente |
+
+
+## v2.0.0-viral — Doctrine ARCHIVUM consommée (2026-09-08)
+
+`director.py` lit désormais réellement la doctrine :
+- Zooms : `brutal_impact` (0.1s, NO easing) + `snap_zoom` (1 frame) — **plus de zoom lent**.
+- Cuts : `smash_cut` (punchline) / `breath_cut` (respiration) / `idea_cut` (changement d'idée).
+- Audio : hiérarchie volume (voix prioritaire), SFX whoosh/impact/pop/boom **sync frame-exacte**.
+- Anti-détection : mirror + speed 1.02-1.08x + crop 2-3% + sfx layer + color shift + trim (obligatoire).
+- Overlay texte : Montserrat/Bebas Neue, accent jaune/vert, captions word-by-word, safe zones.
+- Émotion dérivée du signal VOX (punchline -> shock, etc.).

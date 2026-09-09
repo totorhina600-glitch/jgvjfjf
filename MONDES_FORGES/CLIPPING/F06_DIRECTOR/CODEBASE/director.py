@@ -1,536 +1,226 @@
 #!/usr/bin/env python3
-"""
-F06_DIRECTOR — Le Directeur de Montage
-"Une campagne est une forteresse. Le montage est l'artillerie qui ouvre la brèche."
-
-F06 reçoit le segment (F03), le text_payload (F04), et le contexte.
-Il lit ARCHIVUM/montage/ (patterns + rules + learnings).
-Il produit montage_instructions.json — le guide ultime pour OMNIS_WATCH.
-
-Hérésies interdites :
--❌ Ne touche JAMAIS à la vidéo
--❌ Ne décide JAMAIS du contenu (c'est F02/F04)
--❌ Ne poste JAMAIS (c'est l'opérateur)
-"""
-
+"""F06_DIRECTOR — Le Directeur de Montage (PUR viral). Consomme la doctrine ARCHIVUM."""
 import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
-# ─── Paths ───────────────────────────────────────────────────────────────────
-BASE = Path(__file__).resolve().parent.parent.parent  # MONDES_FORGES/CLIPPING
+BASE = Path(__file__).resolve().parent.parent.parent
 ARCHIVUM = BASE / "ARCHIVUM"
 MONTAGE = ARCHIVUM / "montage"
 PATTERNS_DIR = MONTAGE / "patterns"
 RULES_DIR = MONTAGE / "rules"
-LEARNINGS_DIR = ARCHIVUM / "learnings"
 F06_OUT = BASE / "F06_DIRECTOR" / "OUT"
 
+VIRAL_PATTERNS = [
+    "zoom_patterns.json", "cut_patterns.json", "audio_presets.json",
+    "energy_patterns.json", "anti_detection.json", "text_overlay_patterns.json",
+    "pur_montage_rules.json", "hooks_pur.json",
+]
+_EMOTION = {
+    "punchline": "shock", "trigger_word": "outrage", "energy": "hype",
+    "chat_spike": "shock", "mixed": "intrigue",
+}
 
-def load_json(path: Path) -> dict:
-    """Charge un fichier JSON. Retourne {} si absent."""
+def _load_json(path):
     if not path.exists():
         return {}
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
+def load_doctrine():
+    doc = {}
+    for name in VIRAL_PATTERNS:
+        j = _load_json(PATTERNS_DIR / name)
+        if j:
+            doc[name.replace(".json", "")] = j
+    pmr = _load_json(PATTERNS_DIR / "pur_montage_rules.json")
+    doc["global_rules"] = pmr.get("global_rules", {})
+    doc["universal"] = pmr.get("universal_ingredients", {})
+    return doc
 
-def save_json(path: Path, data: dict):
-    """Sauvegarde un fichier JSON."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"  ✅ Sauvegardé : {path}")
-
-
-def load_platform_rules(platform: str) -> dict:
-    """Charge les règles de montage pour une plateforme donnée."""
-    rules_file = RULES_DIR / f"{platform}.md"
-    if not rules_file.exists():
-        print(f"  ⚠️ Pas de règles pour {platform}, utilisation des défauts")
-        return get_default_rules()
-
-    with open(rules_file, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    # Parse les règles depuis le markdown
-    return parse_rules_md(content, platform)
-
-
-def get_default_rules() -> dict:
-    """Règles de montage par défaut."""
-    return {
-        "platform": "youtube_shorts",
-        "max_duration_sec": 60,
-        "hook_duration_sec": 3,
-        "aspect_ratio": "9:16",
-        "cut_density": "high",
-        "zoom_enabled": True,
-        "text_overlay_enabled": True,
-        "pacing": "fast"
-    }
-
-
-def parse_rules_md(content: str, platform: str) -> dict:
-    """Parse de façon tolérante les règles Markdown du profil plateforme."""
-    rules = {
-        "platform": platform,
-        "max_duration_sec": 60,
-        "hook_duration_sec": 3,
-        "aspect_ratio": "9:16",
-        "cut_density": "high",
-        "zoom_enabled": True,
-        "text_overlay_enabled": True,
-        "pacing": "fast"
-    }
-
-    def first_number(value: str, default: int) -> int:
-        match = re.search(r"\d+", value)
-        return int(match.group()) if match else default
-
-    for raw_line in content.splitlines():
-        line = raw_line.strip()
-        lower = line.lower()
-        if line.startswith("- **Hook**"):
-            rules["hook_duration_sec"] = first_number(line, rules["hook_duration_sec"])
-        elif line.startswith("- **Durée max**"):
-            rules["max_duration_sec"] = first_number(line, rules["max_duration_sec"])
-        elif line.startswith("- **Format**"):
-            rules["aspect_ratio"] = line.split(":", 1)[-1].strip()
-        elif line.startswith("- **Rythme**"):
-            rules["pacing"] = line.split(":", 1)[-1].strip()
-        elif line.startswith("- **Zoom**"):
-            rules["zoom_enabled"] = "oui" in lower or "yes" in lower or "✅" in line
-        elif line.startswith("- **Texte à l'écran**"):
-            rules["text_overlay_enabled"] = "oui" in lower or "yes" in lower or "✅" in line
-        elif line.startswith("- **Densité des cuts**"):
-            rules["cut_density"] = line.split(":", 1)[-1].strip().lower()
-
+def load_platform_rules(platform):
+    rules = {"platform": platform, "max_duration_sec": 60, "min_duration_sec": 15,
+             "hook_duration_sec": 3, "aspect_ratio": "9:16", "resolution": "1080x1920"}
+    p = RULES_DIR / f"{platform}.md"
+    if not p.exists():
+        return rules
+    text = p.read_text(encoding="utf-8")
+    def num(label, default):
+        m = re.search(re.escape(label) + r"\D*(\d+)", text)
+        return int(m.group(1)) if m else default
+    rules["max_duration_sec"] = num("Duree max", 60)
+    m = re.search(r"(\d+)\s*[:x]\s*(\d+)", text)
+    if m:
+        rules["aspect_ratio"] = "%s:%s" % (m.group(1), m.group(2))
     return rules
 
-
-def load_patterns() -> dict:
-    """Charge les patterns de montage depuis ARCHIVUM/montage/patterns/."""
-    patterns = {
-        "hook_patterns": [],
-        "zoom_patterns": [],
-        "cut_patterns": [],
-        "transition_patterns": []
-    }
-
-    for pattern_file in PATTERNS_DIR.glob("*.json"):
-        data = load_json(pattern_file)
-        for key in patterns:
-            if key in data:
-                patterns[key].extend(data[key])
-
-    return patterns
-
-
-def load_learnings() -> dict:
-    """Charge les learnings des campagnes précédentes."""
-    learnings_file = LEARNINGS_DIR / "learnings.json"
-    return load_json(learnings_file)
-
-
-def build_montage_context(segment: dict, text_payload: dict, context: dict) -> dict:
-    """Construit le contexte pour la génération des instructions."""
+def normalize_segment(seg):
+    start = seg.get("start_sec") if seg.get("start_sec") is not None else seg.get("start")
+    end = seg.get("end_sec") if seg.get("end_sec") is not None else seg.get("end")
+    dur = seg.get("duration_sec")
+    if dur is None and start is not None and end is not None:
+        dur = round(float(end) - float(start), 1)
     return {
-        "segment": segment,
-        "text_payload": text_payload,
-        "campaign": context.get("campaign", {}),
-        "platform": context.get("platform", "youtube_shorts"),
-        "market": context.get("market", "us_young_english"),
-        "mode": context.get("mode", "pur"),
-        "emotion": context.get("emotion", "neutral"),
-        "energy_level": context.get("energy_level", "high")
+        "id": seg.get("id") or seg.get("angle_id") or seg.get("candidate_id") or "unknown",
+        "source_url": seg.get("source_url") or seg.get("vod_url") or "",
+        "start_sec": start, "end_sec": end,
+        "duration_sec": dur or 30,
+        "signal_type": seg.get("signal_type") or "mixed",
+        "signal_intensity": float(seg.get("signal_intensity", 0.5) or 0.5),
+        "transcript_segment": (seg.get("transcript_segment") or seg.get("top_words") or seg.get("text") or ""),
     }
 
+def _emotion_of(segment):
+    return _EMOTION.get(segment.get("signal_type"), "intrigue")
 
-def generate_hook_instructions(context: dict, patterns: dict, rules: dict) -> dict:
-    """Génère les instructions pour le hook (3 premières secondes)."""
-    hook_duration = rules.get("hook_duration_sec", 3)
-    platform = rules.get("platform", "youtube_shorts")
-
-    # Sélection du pattern de hook selon l'émotion
-    emotion = context.get("emotion", "neutral")
-    hook_patterns = patterns.get("hook_patterns", [])
-
-    selected_pattern = None
-    for pattern in hook_patterns:
-        if pattern.get("emotion") == emotion or pattern.get("emotion") == "any":
-            selected_pattern = pattern
-            break
-
-    if not selected_pattern and hook_patterns:
-        selected_pattern = hook_patterns[0]
-
-    hook = {
-        "duration_sec": hook_duration,
-        "type": selected_pattern.get("type", "statement") if selected_pattern else "statement",
-        "template": selected_pattern.get("template", "This changed everything") if selected_pattern else "This changed everything",
-        "text_overlay": {
-            "enabled": True,
-            "position": "center",
-            "font_size": 72,
-            "color": "#FFFFFF",
-            "animation": "pop_in",
-            "duration_sec": hook_duration
-        },
-        "zoom": {
-            "enabled": rules.get("zoom_enabled", True),
-            "type": "slow_zoom",
-            "intensity": 1.3,
-            "target": "face"
-        },
-        "sound_effect": {
-            "type": "subtle_whoosh",
-            "timing": "start"
-        }
-    }
-
-    return hook
-
-
-def generate_body_instructions(context: dict, segment: dict, patterns: dict, rules: dict) -> dict:
-    """Génère les instructions pour le corps du clip."""
-    total_duration = segment.get("duration_sec", 45)
-    hook_duration = rules.get("hook_duration_sec", 3)
-    body_duration = total_duration - hook_duration
-
-    body = {
-        "duration_sec": body_duration,
-        "cuts": generate_cuts(body_duration, context, rules),
-        "zooms": generate_zooms(body_duration, context, rules),
-        "text_overlays": generate_text_overlays(context, rules),
-        "transitions": generate_transitions(context, rules),
-        "pacing": rules.get("pacing", "fast"),
-        "energy_curve": generate_energy_curve(body_duration, context)
-    }
-
-    return body
-
-
-def generate_cuts(duration: int, context: dict, rules: dict) -> list:
-    """Génère les instructions de cut."""
-    density = rules.get("cut_density", "high")
-
-    # Calcul du nombre de cuts selon la densité
-    if density == "high":
-        cut_interval = 2
-    elif density == "very_high":
-        cut_interval = 1
-    elif density == "medium":
-        cut_interval = 4
-    else:
-        cut_interval = 6
-
-    cuts = []
-    current_time = 0
-
-    while current_time < duration:
-        cut_type = "jump_cut" if current_time % 4 == 0 else "subtle_cut"
-        cuts.append({
-            "type": cut_type,
-            "moment": format_time(current_time),
-            "duration_sec": cut_interval,
-            "intensity": 0.8 if cut_type == "jump_cut" else 0.5
-        })
-        current_time += cut_interval
-
-    return cuts
-
-
-def generate_zooms(duration: int, context: dict, rules: dict) -> list:
-    """Génère les instructions de zoom."""
-    if not rules.get("zoom_enabled", True):
-        return []
-
+def _zoom_plan(duration, emotion, intensity):
+    shock = emotion in ("shock", "outrage")
     zooms = []
-    emotion = context.get("emotion", "neutral")
-
-    # Zoom sur les moments clés
-    key_moments = [0.3, 0.6, 0.9]  # 30%, 60%, 90% de la durée
-
-    for ratio in key_moments:
-        moment = int(duration * ratio)
-        zoom_type = "dramatic_zoom" if emotion in ["shock", "outrage"] else "slow_zoom"
+    for ratio in (0.3, 0.6, 0.9):
+        t = round(duration * ratio, 1)
+        kind = "snap_zoom" if (shock and ratio >= 0.6) else "brutal_impact"
         zooms.append({
-            "type": zoom_type,
-            "moment": format_time(moment),
-            "intensity": 1.5 if emotion in ["shock", "outrage"] else 1.2,
-            "target": "face",
-            "duration_sec": 2
+            "type": kind, "moment_sec": t,
+            "intensity_pct": "115-130%" if kind == "snap_zoom" else "108-115%",
+            "duration_in": "1 frame (instantane)" if kind == "snap_zoom" else "0.1s (2-3 frames a 30fps)",
+            "duration_out": "fade 0.3s" if kind == "snap_zoom" else "0.1s (retour immediat)",
+            "easing": "NONE", "target": "centre du visage du speaker",
+            "sfx_sync": ("boom (60%) + flash blanc subtil (1-2 frames)" if kind == "snap_zoom"
+                         else "impact (50-60%) synchronise frame-exacte"),
         })
-
     return zooms
 
+def _cut_plan(duration, emotion, intensity):
+    cuts = []
+    t = 0.0
+    while t < duration:
+        cuts.append({"type": "breath_cut", "moment_sec": round(t, 1),
+                     "technique": "couper exactement sur la respiration du speaker"})
+        t += 3.0
+    cuts.append({"type": "smash_cut", "moment_sec": round(duration * 0.85, 1),
+                 "technique": "cut brutal zero transition sur la punchline", "sfx_sync": "whoosh_fast/impact"})
+    cuts.append({"type": "idea_cut", "moment_sec": round(duration * 0.5, 1),
+                 "technique": "couper quand le speaker change d'idee"})
+    return cuts
 
-def generate_text_overlays(context: dict, rules: dict) -> list:
-    """Génère les instructions de texte à l'écran."""
-    if not rules.get("text_overlay_enabled", True):
-        return []
-
-    overlays = []
-    text_payload = context.get("text_payload", {})
-
-    # Titre principal
-    title = text_payload.get("title", "WAIT FOR IT")
-    overlays.append({
-        "type": "title",
-        "text": title,
-        "position": "top_center",
-        "font_size": 64,
-        "color": "#FF0000",
-        "font": "bold",
-        "animation": "pop_in",
-        "duration_sec": 3
-    })
-
-    # Sous-titres (word by word)
-    caption = text_payload.get("caption", "")
-    if caption:
-        overlays.append({
-            "type": "subtitle",
-            "text": caption,
-            "position": "bottom",
-            "font_size": 36,
-            "color": "#FFFFFF",
-            "animation": "word_by_word",
-            "word_by_word": True
-        })
-
-    # Hashtags
-    hashtags = text_payload.get("hashtags", [])
-    if hashtags:
-        overlays.append({
-            "type": "hashtags",
-            "text": " ".join(hashtags[:5]),
-            "position": "bottom_right",
-            "font_size": 24,
-            "color": "#AAAAAA",
-            "animation": "fade_in",
-            "duration_sec": 5
-        })
-
-    return overlays
-
-
-def generate_transitions(context: dict, rules: dict) -> list:
-    """Génère les instructions de transition."""
-    transitions = []
-    emotion = context.get("emotion", "neutral")
-
-    # Transition d'ouverture
-    transitions.append({
-        "type": "hard_cut",
-        "moment": "0:00",
-        "from": "black",
-        "to": "clip_start"
-    })
-
-    # Transitions internes (selon l'émotion)
-    if emotion in ["shock", "outrage"]:
-        transitions.append({
-            "type": "flash",
-            "moment": "hook_end",
-            "duration_sec": 0.1
-        })
-
-    # Transition de fin
-    transitions.append({
-        "type": "fade_to_black",
-        "moment": "clip_end",
-        "duration_sec": 0.5
-    })
-
-    return transitions
-
-
-def generate_energy_curve(duration: int, context: dict) -> list:
-    """Génère la courbe d'énergie du clip."""
-    emotion = context.get("emotion", "neutral")
-
-    if emotion in ["shock", "outrage"]:
-        return [
-            {"moment": "0:00", "energy": 100},
-            {"moment": format_time(int(duration * 0.2)), "energy": 70},
-            {"moment": format_time(int(duration * 0.5)), "energy": 90},
-            {"moment": format_time(int(duration * 0.8)), "energy": 100},
-            {"moment": format_time(duration), "energy": 60}
-        ]
-    else:
-        return [
-            {"moment": "0:00", "energy": 100},
-            {"moment": format_time(int(duration * 0.3)), "energy": 60},
-            {"moment": format_time(int(duration * 0.6)), "energy": 80},
-            {"moment": format_time(duration), "energy": 50}
-        ]
-
-
-def generate_outro_instructions(context: dict, rules: dict) -> dict:
-    """Génère les instructions pour l'outro."""
-    outro = {
-        "duration_sec": 2,
-        "type": "fade_to_black",
-        "text_overlay": {
-            "enabled": True,
-            "text": "Follow for more",
-            "position": "center",
-            "font_size": 48,
-            "color": "#FFFFFF",
-            "animation": "fade_in"
-        },
-        "sound_effect": {
-            "type": "subtle_swoosh",
-            "timing": "end"
-        }
+def _audio_plan(doctrine, emotion):
+    hierarchy = doctrine.get("audio_presets", {}).get("volume_hierarchy", {})
+    return {
+        "principle": "La voix du speaker est TOUJOURS prioritaire.",
+        "volume_hierarchy": hierarchy,
+        "sfx_events": [
+            {"name": "whoosh", "when": "transition/changement de plan", "volume": "-12dB"},
+            {"name": "impact", "when": "au moment exact du zoom brutal", "volume": "-8dB", "sync": "frame exacte"},
+            {"name": "pop", "when": "apparition texte/chiffre", "volume": "-10dB"},
+            {"name": "boom", "when": "moment de shock/twist", "volume": "-8dB", "sync": "snap_zoom + flash"},
+        ],
+        "music_be": {"enabled": False, "note": "pas de musique sur le hook (0-3s)"},
     }
 
-    return outro
+def _anti_detection_plan(doctrine):
+    return {
+        "obligatoire": True,
+        "principe": "Empreinte digitale unique par clip.",
+        "techniques": [
+            {"name": "mirror", "action": "Flip horizontal sur CHAQUE clip"},
+            {"name": "speed", "action": "vitesse 1.02x-1.08x", "optimal": "1.05x"},
+            {"name": "crop", "action": "crop 2-3%", "optimal": "2.5%"},
+            {"name": "sfx_background_layer", "action": "bruit de fond leger continu", "volume": "10-15%"},
+            {"name": "color_shift", "action": "variation de teinte 2-5 degres"},
+            {"name": "trim", "action": "1-2 frames trimees au debut/fin"},
+        ],
+    }
 
+def _text_plan(doctrine, text_payload, segment, platform):
+    safe = doctrine.get("text_overlay_patterns", {}).get("safe_zones", {}).get(platform, {})
+    overlay_title = text_payload.get("overlay_title") or text_payload.get("title") or ""
+    overlay_lines = text_payload.get("overlay_lines") or 2
+    transcript = segment.get("transcript_segment", "")
+    return {
+        "main_title": {
+            "text": overlay_title,
+            "font": "Montserrat ExtraBold / Bebas Neue (800-900)",
+            "fallback": "Arial Black, Impact",
+            "color": "#FFFFFF", "accent": "#FFD700 (jaune) ou #00FF88 (vert)",
+            "outline": "#000000 (3-4px)", "shadow": "drop-shadow 2px 2px 4px rgba(0,0,0,0.8)",
+            "max_lines": overlay_lines, "position": "haut vers le centre", "font_size": "64-72px",
+            "animation": "pop_in (scale 0 -> 110% -> 100% en 0.2s)", "visible": "toute la duree",
+        },
+        "captions": {
+            "source": "TRANSCRIPT du speech (word-by-word)", "text_sample": transcript[:300],
+            "font": "Montserrat Bold / Poppins Bold (700)", "color": "blanc outline sombre",
+            "highlight": "mots-cles en accent (jaune/vert)", "animation": "word_by_word",
+        },
+        "safe_zones": safe,
+    }
 
-def format_time(seconds: int) -> str:
-    """Convertit des secondes en format MM:SS."""
-    minutes = seconds // 60
-    secs = seconds % 60
-    return f"{minutes}:{secs:02d}"
+def _energy_curve(duration, emotion):
+    def fmt(s): return "%d:%02d" % (int(s)//60, int(s)%60)
+    if emotion in ("shock", "outrage"):
+        return [{"moment": "0:00", "energy": 100}, {"moment": fmt(duration*0.2), "energy": 70},
+                {"moment": fmt(duration*0.5), "energy": 90}, {"moment": fmt(duration*0.85), "energy": 100},
+                {"moment": fmt(duration), "energy": 60}]
+    return [{"moment": "0:00", "energy": 100}, {"moment": fmt(duration*0.3), "energy": 60},
+            {"moment": fmt(duration*0.6), "energy": 80}, {"moment": fmt(duration), "energy": 50}]
 
-
-def generate_montage_instructions(segment: dict, text_payload: dict, context: dict) -> dict:
-    """Fonction principale : génère les instructions de montage complètes."""
-    print("\n🎬 F06_DIRECTOR — Génération des instructions de montage")
-    print("=" * 60)
-
-    # 1. Charger les règles de la plateforme
+def generate_montage_instructions(segment, text_payload, context):
+    doctrine = load_doctrine()
+    seg = normalize_segment(segment)
     platform = context.get("platform", "youtube_shorts")
-    print(f"\n  📋 Plateforme : {platform}")
+    market = context.get("market", "us_young_english")
+    emotion = context.get("emotion") or _emotion_of(seg)
     rules = load_platform_rules(platform)
-    print(f"  ✅ Règles chargées : {rules.get('max_duration_sec', 60)}s max, hook {rules.get('hook_duration_sec', 3)}s")
-
-    # 2. Charger les patterns
-    print("\n  🔍 Chargement des patterns...")
-    patterns = load_patterns()
-    print(f"  ✅ {len(patterns.get('hook_patterns', []))} hook patterns, {len(patterns.get('zoom_patterns', []))} zoom patterns")
-
-    # 3. Charger les learnings
-    print("\n  📚 Chargement des learnings...")
-    learnings = load_learnings()
-    print(f"  ✅ {learnings.get('total_packs', 0)} packs analysés")
-
-    # 4. Construire le contexte
-    print("\n  🔧 Construction du contexte...")
-    montage_context = build_montage_context(segment, text_payload, context)
-
-    # 5. Générer les instructions
-    print("\n  🎨 Génération des instructions...")
-
-    instructions = {
-        "metadata": {
-            "generated_at": datetime.utcnow().isoformat() + "Z",
-            "generator": "F06_DIRECTOR",
-            "version": "1.0.0",
-            "campaign_id": context.get("campaign", {}).get("id", "unknown"),
-            "angle_id": context.get("angle_id", "unknown"),
-            "segment_id": segment.get("id", "unknown")
-        },
-        "segment": {
-            "source_url": segment.get("source_url", ""),
-            "start_sec": segment.get("start_sec", 0),
-            "end_sec": segment.get("end_sec", 60),
-            "duration_sec": segment.get("duration_sec", 60),
-            "transcript_segment": segment.get("transcript_segment", "")
-        },
-        "hook": generate_hook_instructions(montage_context, patterns, rules),
-        "body": generate_body_instructions(montage_context, segment, patterns, rules),
-        "outro": generate_outro_instructions(montage_context, rules),
-        "text_payload": {
-            "titles": text_payload.get("titles", []),
-            "caption": text_payload.get("caption", ""),
-            "hashtags": text_payload.get("hashtags", []),
-            "on_screen_text": text_payload.get("on_screen_text", ""),
-            "cta": text_payload.get("cta", "")
-        },
+    duration = float(seg["duration_sec"] or rules.get("max_duration_sec", 30))
+    hook_dur = int(rules.get("hook_duration_sec", 3))
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return {
+        "metadata": {"generated_at": now, "generator": "F06_DIRECTOR", "version": "2.0.0-viral",
+                     "doctrine_source": "ARCHIVUM/montage/patterns/",
+                     "campaign_id": context.get("campaign_id", "unknown"),
+                     "angle_id": context.get("angle_id", seg.get("id", "unknown")),
+                     "segment_id": seg.get("id", "unknown")},
+        "segment": {"source_url": seg["source_url"], "start_sec": seg["start_sec"],
+                    "end_sec": seg["end_sec"], "duration_sec": duration,
+                    "signal_type": seg["signal_type"], "signal_intensity": seg["signal_intensity"],
+                    "emotion": emotion},
+        "hook": {"duration_sec": hook_dur,
+                 "philosophy": "0-3s : visage speaker, PAS de B-roll, voix claire",
+                 "zoom": {"type": "brutal_impact", "intensity": "108-115%", "easing": "NONE"}},
+        "body": {"duration_sec": round(duration - hook_dur, 1),
+                 "cuts": _cut_plan(duration, emotion, seg["signal_intensity"]),
+                 "zooms": _zoom_plan(duration, emotion, seg["signal_intensity"]),
+                 "text_overlays": _text_plan(doctrine, text_payload, seg, platform),
+                 "audio": _audio_plan(doctrine, emotion),
+                 "energy_curve": _energy_curve(duration, emotion),
+                 "pacing": "rapide — aucun temps mort"},
+        "outro": {"duration_sec": 1, "type": "fade_to_black",
+                  "note": "PAS de CTA 'Follow for more' en PUR — finir sur la chute"},
+        "anti_detection": _anti_detection_plan(doctrine),
+        "copywriting": {"overlay_title": text_payload.get("overlay_title", ""),
+                        "overlay_lines": text_payload.get("overlay_lines", 2),
+                        "rationale": text_payload.get("rationale", "")},
         "platform_rules": rules,
-        "style": {
-            "pacing": rules.get("pacing", "fast"),
-            "energy_level": context.get("energy_level", "high"),
-            "color_palette": context.get("color_palette", "vibrant"),
-            "text_treatment": context.get("text_treatment", "bold")
-        },
-        "compliance": {
-            "disclosure": "#ad",
-            "submit_deadline_min": 60,
-            "platform": platform
-        }
+        "style": {"pacing": "fast", "energy_level": "high",
+                  "color_palette": "contraste fort — blanc/accent jaune", "text_treatment": "bold"},
+        "compliance": {"disclosure": "#ad", "submit_deadline_min": 60, "platform": platform},
     }
-
-    print("  ✅ Instructions générées avec succès")
-
-    return instructions
-
 
 def main():
-    """Point d'entrée principal."""
-    print("\n" + "=" * 60)
-    print("F06_DIRECTOR — Le Directeur de Montage")
-    print("=" * 60)
-
-    # Vérifier les arguments
-    if len(sys.argv) < 4:
-        print("\n  ❌ Usage : python director.py <segment.json> <text_payload.json> <context.json>")
-        print("  ❌ Exemple : python director.py F03_OUT/segment.json F04_OUT/text_payload.json context.json")
+    if len(sys.argv) >= 4:
+        seg = _load_json(Path(sys.argv[1]))
+        payload = _load_json(Path(sys.argv[2]))
+        ctx = _load_json(Path(sys.argv[3]))
+        F06_OUT.mkdir(parents=True, exist_ok=True)
+        instructions = generate_montage_instructions(seg, payload, ctx)
+        out = F06_OUT / "montage_instructions.json"
+        out.write_text(json.dumps(instructions, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"[F06] Instructions virales -> {out}")
+    else:
+        print("Usage: director.py <segment.json> <text_payload.json> <context.json>")
         sys.exit(1)
-
-    segment_path = Path(sys.argv[1])
-    text_payload_path = Path(sys.argv[2])
-    context_path = Path(sys.argv[3])
-
-    # Charger les entrées
-    print(f"\n  📂 Chargement des entrées...")
-    segment = load_json(segment_path)
-    text_payload = load_json(text_payload_path)
-    context = load_json(context_path)
-
-    if not segment:
-        print("  ❌ Segment vide ou introuvable")
-        sys.exit(1)
-
-    if not text_payload:
-        print("  ❌ Text payload vide ou introuvable")
-        sys.exit(1)
-
-    print(f"  ✅ Segment : {segment.get('id', 'unknown')} ({segment.get('duration_sec', '?')}s)")
-    print(f"  ✅ Text payload : {len(text_payload.get('titles', []))} titres")
-    print(f"  ✅ Contexte : {context.get('platform', '?')}/{context.get('market', '?')}")
-
-    # Générer les instructions
-    instructions = generate_montage_instructions(segment, text_payload, context)
-
-    # Sauvegarder
-    output_file = F06_OUT / "montage_instructions.json"
-    save_json(output_file, instructions)
-
-    # Résumé
-    print("\n" + "=" * 60)
-    print("📦 RÉSUMÉ DES INSTRUCTIONS DE MONTAGE")
-    print("=" * 60)
-    print(f"  🎬 Hook : {instructions['hook']['duration_sec']}s ({instructions['hook']['type']})")
-    print(f"  📹 Corps : {instructions['body']['duration_sec']}s ({len(instructions['body']['cuts'])} cuts)")
-    print(f"  🎯 Outro : {instructions['outro']['duration_sec']}s")
-    print(f"  📝 Text overlays : {len(instructions['body']['text_overlays'])}")
-    print(f"  🔍 Zooms : {len(instructions['body']['zooms'])}")
-    print(f"  🔄 Transitions : {len(instructions['body']['transitions'])}")
-    print(f"  ⏱️  Durée totale : {segment.get('duration_sec', '?')}s")
-    print("=" * 60)
-    print("  ✅ F06_DIRECTOR — Mission accomplie")
-    print("  📤 Output : F06_DIRECTOR/OUT/montage_instructions.json")
-    print("  ⏳ Prochaine étape : F05_PACKAGER embarque les instructions")
-    print("=" * 60 + "\n")
-
 
 if __name__ == "__main__":
     main()
