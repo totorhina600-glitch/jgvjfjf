@@ -32,7 +32,7 @@ Le pipeline de sortie (`candidats` → `scoring` → `gate` → `trail.json`) pr
    réversible). Sinon : lancer l'Oracle à la main (Run workflow) quand tu veux vérifier.
 4. **Gate hybride** — score ≥ 8.5 + intensité ≥ 0.9 → auto-approuvé (le live n'attend pas) ; le reste en file d'attente Warsmith.
 5. **Clips Helix en direct** — capture serveur immédiate au moment détecté (secrets `TWITCH_TOKEN` + `TWITCH_CLIENT_ID`) ; sans token : timestamps seuls + segment VOD extrait après le live.
-6. **Board GitHub Pages** — `BOARD_LIVE/index.html` lit `data/live_status.json` (poussé par le radar toutes les 3 min). Consultable au téléphone.
+6. **Board GitHub Pages** — `docs/index.html` lit `data/live_status.json` (poussé par le radar toutes les 3 min). Consultable au téléphone. Pages sert le dossier `/docs` de la branche `v2-live`.
 7. **Le Warsmith reste le dernier contrôle humain** — la machine produit, l'humain publie.
 
 ---
@@ -72,6 +72,7 @@ Le pipeline de sortie (`candidats` → `scoring` → `gate` → `trail.json`) pr
       via twitchtokengenerator.com (avec notre client ID/secret) et remettre à jour
       `TWITCH_TOKEN` + `TWITCH_REFRESH_TOKEN`.
 - [ ] **Pages actives** : le board répond sur `https://kioka8877-ux.github.io/PERTURABO/` ?
+      (Settings → Pages → source = branche `v2-live`, dossier `/docs`)
 - [ ] **PAS de fusion v2 → main.** Décision du Warsmith : `main` reste la forge VOD
       (elle est déjà pleine). `v2-live` vit sa vie sur sa propre branche. Si un jour le
       radar fait ses preuves, on peut *copier* `chat_pulse` dans `main` comme lib
@@ -93,7 +94,7 @@ Le radar **n'écoute que les chaînes autorisées par les campagnes actives**
    `TWITCH_TOKEN` scope `clips:edit`) — sans eux le radar fonctionne en timestamps seuls
    (pas de clip serveur immédiat). Le token user vit ~4 h : le refresh est automatique
    au début de chaque run (`refresh_twitch_token.py`).
-2. Activer GitHub Pages (Settings → Pages → branch `v2-live`, dossier `BOARD_LIVE` ou `/`).
+2. Activer GitHub Pages (Settings → Pages → branch `v2-live`, dossier `/docs`).
 3. Une session de test sur un live réel pour calibrer `min_rate` / `spike_factor`
    (une grande chaîne ≠ une petite : la baseline EMA s'adapte, mais les seuils se peaufinent).
 
