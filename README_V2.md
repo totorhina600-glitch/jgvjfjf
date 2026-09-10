@@ -26,6 +26,10 @@ Le pipeline de sortie (`candidats` → `scoring` → `gate` → `trail.json`) pr
 1. **Branche `v2-live`** = copie exacte de `main` (base `8ee8c8b`). Seule divergence : la couche live de VOX.
 2. **Radar sur GitHub Actions** — `workflow_dispatch`, multi-chaînes (un IRC par chaîne), 6h max par job, gratuit.
 3. **Oracle en cron 5 min** — détecte les lives via Helix, ouvre une issue `[ORACLE][chaîne]`, le Warsmith valide, le radar se lève.
+   ⚠️ **Piège GitHub** : un cron ne tourne QUE sur la branche par défaut du repo.
+   Pour que l'Oracle se réveille tout seul, `v2-live` doit être la branche par défaut
+   (Settings → Branches → switch default branch — ça ne touche pas à `main`, c'est
+   réversible). Sinon : lancer l'Oracle à la main (Run workflow) quand tu veux vérifier.
 4. **Gate hybride** — score ≥ 8.5 + intensité ≥ 0.9 → auto-approuvé (le live n'attend pas) ; le reste en file d'attente Warsmith.
 5. **Clips Helix en direct** — capture serveur immédiate au moment détecté (secrets `TWITCH_TOKEN` + `TWITCH_CLIENT_ID`) ; sans token : timestamps seuls + segment VOD extrait après le live.
 6. **Board GitHub Pages** — `BOARD_LIVE/index.html` lit `data/live_status.json` (poussé par le radar toutes les 3 min). Consultable au téléphone.
