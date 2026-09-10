@@ -60,9 +60,13 @@ Le pipeline de sortie (`candidats` → `scoring` → `gate` → `trail.json`) pr
       version indépendante, on ne dépend d'eux pour rien).
 - [ ] **Les campagnes actives** : quelles chaînes sont autorisées cette semaine ?
       Mettre à jour `IN/live_input.example.json` + `IN/oracle_input.example.json`.
-- [ ] **Secrets GH présents et valides** : `TWITCH_TOKEN`, `TWITCH_CLIENT_ID` (Settings →
-      Secrets). ⚠️ Un token user `clips:edit` expire tous les ~60 jours → le régénérer
-      (même méthode que la 1re fois), sinon le radar repasse en mode « timestamps seuls ».
+- [ ] **Les 4 secrets GH présents et valides** (Settings → Secrets → Actions) :
+      `TWITCH_CLIENT_ID` (fixe), `TWITCH_CLIENT_SECRET` (fixe), `TWITCH_REFRESH_TOKEN`
+      (longue durée) et `TWITCH_TOKEN`. Les workflows **rafraîchissent le token tout
+      seuls à chaque run** (`refresh_twitch_token.py`) : plus besoin d'y toucher, SAUF si
+      l'Oracle/le radar loggent « Refresh échoué » → alors seulement régénérer le token
+      via twitchtokengenerator.com (avec notre client ID/secret) et remettre à jour
+      `TWITCH_TOKEN` + `TWITCH_REFRESH_TOKEN`.
 - [ ] **Pages actives** : le board répond sur `https://kioka8877-ux.github.io/PERTURABO/` ?
 - [ ] **PAS de fusion v2 → main.** Décision du Warsmith : `main` reste la forge VOD
       (elle est déjà pleine). `v2-live` vit sa vie sur sa propre branche. Si un jour le
@@ -81,8 +85,10 @@ Le radar **n'écoute que les chaînes autorisées par les campagnes actives**
 
 ## 🧱 Ce qu'il reste avant le premier vrai live
 
-1. Secrets GH : `TWITCH_TOKEN` (scope `clips:edit`) + `TWITCH_CLIENT_ID` — sans eux le radar
-   fonctionne en timestamps seuls (pas de clip serveur immédiat).
+1. Secrets GH : les 4 (`TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `TWITCH_REFRESH_TOKEN`,
+   `TWITCH_TOKEN` scope `clips:edit`) — sans eux le radar fonctionne en timestamps seuls
+   (pas de clip serveur immédiat). Le token user vit ~4 h : le refresh est automatique
+   au début de chaque run (`refresh_twitch_token.py`).
 2. Activer GitHub Pages (Settings → Pages → branch `v2-live`, dossier `BOARD_LIVE` ou `/`).
 3. Une session de test sur un live réel pour calibrer `min_rate` / `spike_factor`
    (une grande chaîne ≠ une petite : la baseline EMA s'adapte, mais les seuils se peaufinent).

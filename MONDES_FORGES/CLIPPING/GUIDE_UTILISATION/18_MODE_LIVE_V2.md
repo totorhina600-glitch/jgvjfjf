@@ -18,9 +18,18 @@ le reste attend ta validation. À la fin, `trail.json` alimente F04/F06 comme en
 
 | Quoi | Où | Sans ça |
 |---|---|---|
-| `TWITCH_TOKEN` (scope `clips:edit`) | Secrets GitHub | Pas de clip serveur immédiat (timestamps seuls) |
-| `TWITCH_CLIENT_ID` | Secrets GitHub | idem |
+| `TWITCH_CLIENT_ID` + `TWITCH_CLIENT_SECRET` | Secrets GitHub | Refresh du token impossible |
+| `TWITCH_REFRESH_TOKEN` (longue durée) | Secrets GitHub | idem |
+| `TWITCH_TOKEN` (scope `clips:edit`, vit ~4 h) | Secrets GitHub | Pas de clip serveur immédiat (timestamps seuls) |
 | GitHub Pages activé (branche `v2-live`) | Settings → Pages | Board inaccessible (le radar tourne quand même) |
+
+> **Le token vit ~4 h — et alors ?** Chaque workflow commence par
+> `refresh_twitch_token.py` : il échange le refresh token contre un token frais
+> (via client ID + secret) avant tout appel Twitch. Zéro maintenance au quotidien.
+> Si un jour les logs disent « Refresh échoué » : régénérer sur
+> twitchtokengenerator.com (avec notre client ID/secret, redirection
+> `https://twitchtokengenerator.com/oauth/callback`) et remettre à jour
+> `TWITCH_TOKEN` + `TWITCH_REFRESH_TOKEN`.
 
 ## 3. Le flow d'une session
 
