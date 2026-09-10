@@ -46,12 +46,13 @@ FILES = {
     "MONDES_FORGES/CLIPPING/ARCHIVUM/campaign/live_campaigns.json": "add",
     "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/IN/live_input.example.json": "fix",
     "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE/refresh_twitch_token.py": "add",
+    "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/TRACKING/F00B_LOG.md": "fix",
     "MONDES_FORGES/CLIPPING/GUIDE_UTILISATION/18_MODE_LIVE_V2.md": "fix",
     "README_V2.md": "fix",
     "CONTINUATION_F00.md": "fix",
     ".github/workflows/perturabo_live_radar.yml": "fix",
     ".github/workflows/perturabo_oracle_watch.yml": "fix",
-    "docs/index.html": "move",
+    "docs/index.html": "fix",
     "docs/data/.gitkeep": "add",
 }
 
