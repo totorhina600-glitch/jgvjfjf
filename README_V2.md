@@ -60,11 +60,14 @@ Le pipeline de sortie (`candidats` → `scoring` → `gate` → `trail.json`) pr
       version indépendante, on ne dépend d'eux pour rien).
 - [ ] **Les campagnes actives** : quelles chaînes sont autorisées cette semaine ?
       Mettre à jour `IN/live_input.example.json` + `IN/oracle_input.example.json`.
-- [ ] **Secrets GH présents** : `TWITCH_TOKEN`, `TWITCH_CLIENT_ID` (Settings → Secrets).
+- [ ] **Secrets GH présents et valides** : `TWITCH_TOKEN`, `TWITCH_CLIENT_ID` (Settings →
+      Secrets). ⚠️ Un token user `clips:edit` expire tous les ~60 jours → le régénérer
+      (même méthode que la 1re fois), sinon le radar repasse en mode « timestamps seuls ».
 - [ ] **Pages actives** : le board répond sur `https://kioka8877-ux.github.io/PERTURABO/` ?
-- [ ] **Fusion v2 → main ?** Si le radar a fait ses preuves sur plusieurs sessions :
-      refusionner `chat_pulse` dans `main` comme lib optionnelle (elle ne casse rien :
-      c'est juste un producteur de signaux en plus). La branche peut alors dormir.
+- [ ] **PAS de fusion v2 → main.** Décision du Warsmith : `main` reste la forge VOD
+      (elle est déjà pleine). `v2-live` vit sa vie sur sa propre branche. Si un jour le
+      radar fait ses preuves, on peut *copier* `chat_pulse` dans `main` comme lib
+      optionnelle — jamais de merge de branches.
 
 ---
 
