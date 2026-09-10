@@ -41,7 +41,10 @@ print(f"HEAD {BRANCH}: {current_sha[:10]} | tree: {base_tree[:10]}")
 FILES = {
     "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE/libs/chat_pulse.py": "fix",
     "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE/libs/helix_clipper.py": "fix",
+    "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE/libs/campaign_gate.py": "add",
     "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE/f00b_vox_live.py": "fix",
+    "MONDES_FORGES/CLIPPING/ARCHIVUM/campaign/live_campaigns.json": "add",
+    "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/IN/live_input.example.json": "fix",
     "MONDES_FORGES/CLIPPING/F00_IRON_SENTINEL/F00B_VOX/CODEBASE/refresh_twitch_token.py": "add",
     "MONDES_FORGES/CLIPPING/GUIDE_UTILISATION/18_MODE_LIVE_V2.md": "fix",
     "README_V2.md": "fix",
